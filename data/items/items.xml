@@ -2660,7 +2660,9 @@
 		<attribute key="absorbpercentfire" value="-5"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="750"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="35"/>
 			<attribute key="slot" value="feet"/>
@@ -2726,6 +2728,7 @@
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="750"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -2740,7 +2743,9 @@
 		<attribute key="absorbpercentenergy" value="-5"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="750"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="35"/>
 			<attribute key="slot" value="feet"/>
@@ -2755,6 +2760,7 @@
 		<attribute key="weight" value="750"/>
 		<attribute key="imbuementslot" value="1">
 			<attribute key="increase speed" value="3"/>
+			<attribute key="paralysis deflection" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="35"/>
@@ -7219,7 +7225,10 @@
 		<attribute key="showAttributes" value="1"/>
 		<attribute key="speed" value="20"/>
 		<attribute key="weight" value="750"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+			<attribute key="increase speed" value="10"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="slot" value="feet"/>
 		</attribute>
@@ -11086,6 +11095,7 @@
 		<attribute key="primarytype" value="boots"/>
 		<attribute key="weight" value="600"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -11097,6 +11107,7 @@
 		<attribute key="armor" value="1"/>
 		<attribute key="weight" value="900"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -11107,6 +11118,7 @@
 		<attribute key="primarytype" value="boots"/>
 		<attribute key="weight" value="600"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -11118,6 +11130,7 @@
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="2900"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -11129,6 +11142,7 @@
 		<attribute key="armor" value="4"/>
 		<attribute key="weight" value="3100"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -11140,6 +11154,7 @@
 		<attribute key="armor" value="1"/>
 		<attribute key="weight" value="900"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -12121,7 +12136,9 @@
 		<attribute key="speed" value="15"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="2500"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="80"/>
 			<attribute key="slot" value="feet"/>
@@ -14893,6 +14910,7 @@
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="800"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -20508,7 +20526,9 @@
 		<attribute key="speed" value="-6"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="1200"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="slot" value="feet"/>
 		</attribute>
@@ -23915,6 +23935,7 @@
 		<attribute key="primarytype" value="boots"/>
 		<attribute key="weight" value="600"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -26485,6 +26506,7 @@
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="1850"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -26500,6 +26522,7 @@
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="1850"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -26838,7 +26861,9 @@
 		<attribute key="absorbpercentholy" value="-2"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="2250"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="70"/>
 			<attribute key="slot" value="feet"/>
@@ -27131,7 +27156,9 @@
 		<attribute key="speed" value="5"/>
 		<attribute key="armor" value="1"/>
 		<attribute key="weight" value="700"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="slot" value="feet"/>
 		</attribute>
@@ -31966,7 +31993,9 @@
 		<attribute key="speed" value="-5"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="3700"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="150"/>
 			<attribute key="slot" value="feet"/>
@@ -34186,6 +34215,7 @@
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="1800"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -39517,6 +39547,7 @@
 		<attribute key="primarytype" value="boots"/>
 		<attribute key="weight" value="1150"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -41832,6 +41863,7 @@
 		<attribute key="armor" value="1"/>
 		<attribute key="weight" value="1800"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -43480,7 +43512,9 @@ Awarded by TibiaMagazine.com.ve"/>
 		<attribute key="speed" value="15"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="500"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="80"/>
 			<attribute key="slot" value="feet"/>
@@ -43903,6 +43937,7 @@ Awarded by TibiaMagazine.com.ve"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="1200"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -45268,6 +45303,7 @@ Awarded by TibiaMisterios.com.br"/>
 		<attribute key="armor" value="4"/>
 		<attribute key="weight" value="3600"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -55561,6 +55597,7 @@ hands of its owner. Granted by TibiaRoyal.com"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="800"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -57277,7 +57314,9 @@ hands of its owner. Granted by TibiaRoyal.com"/>
 		<attribute key="speed" value="10"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="900"/>
-		<attribute key="imbuementslot" value="1"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+		</attribute>
 		<attribute key="script" value="moveevent">
 			<attribute key="level" value="220"/>
 			<attribute key="slot" value="feet"/>
@@ -61744,6 +61783,7 @@ hands of its owner. Granted by TibiaRoyal.com"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="1300"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -64292,6 +64332,7 @@ hands of its owner. Granted by TibiaRoyal.com"/>
 		<attribute key="armor" value="4"/>
 		<attribute key="weight" value="1300"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -64307,6 +64348,7 @@ hands of its owner. Granted by TibiaRoyal.com"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="1300"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -65960,6 +66002,7 @@ former students at the Noodles Academy. Awarded by TibiaLabs.com"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="1450"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -65975,6 +66018,7 @@ former students at the Noodles Academy. Awarded by TibiaLabs.com"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="1450"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -70576,6 +70620,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="primarytype" value="boots"/>
 		<attribute key="weight" value="600"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -71557,6 +71602,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="1100"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -71611,6 +71657,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="980"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -73975,6 +74022,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="1600"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -73990,6 +74038,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="armor" value="2"/>
 		<attribute key="weight" value="1100"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -76062,6 +76111,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="1900"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="10"/>
 		</attribute>
 		<attribute key="augments" value="1">
@@ -76155,6 +76205,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="armor" value="3"/>
 		<attribute key="weight" value="1700"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="10"/>
 		</attribute>
 		<attribute key="augments" value="1">
@@ -76676,7 +76727,8 @@ Granted by TibiaGoals.com"/>
 		<attribute key="skilldist" value="1"/>
 		<attribute key="weight" value="1500"/>
 		<attribute key="imbuementslot" value="1">
-			<attribute key="increase speed" value="10"/>
+			<attribute key="paralysis deflection" value="3"/>
+			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="augments" value="1">
 			<attribute key="divine missile" value="critical extra damage">
@@ -76696,7 +76748,8 @@ Granted by TibiaGoals.com"/>
 		<attribute key="absorbpercentice" value="6"/>
 		<attribute key="weight" value="900"/>
 		<attribute key="imbuementslot" value="1">
-			<attribute key="increase speed" value="10"/>
+			<attribute key="paralysis deflection" value="3"/>
+			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="augments" value="1">
 			<attribute key="great energy beam" value="critical extra damage">
@@ -84389,6 +84442,696 @@ Granted by TibiaGoals.com"/>
 		<attribute key="primarytype" value="doors"/>
 		<attribute key="type" value="door"/>
 	</item>
+	<item id="50239" article="an" name="amber kusarigama">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="46"/>
+		<attribute key="defense" value="20"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="skillfist" value="5"/>
+		<attribute key="elementalbond" value="physical"/>
+		<attribute key="slotType" value="two-handed"/>
+		<attribute key="weight" value="8600"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="330"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="imbuementslot" value="2">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="Devastating Knockout" value="critical extra damage">
+				<attribute key="value" value="14"/>
+			</attribute>
+			<attribute key="Devastating Knockout" value="cooldown">
+				<attribute key="value" value="12000" />
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50240" name="soulsoles">
+		<attribute key="primarytype" value="boots"/>
+		<attribute key="armor" value="2"/>
+		<attribute key="skillfist" value="3"/>
+		<attribute key="absorbpercentphysical" value="3"/>
+		<attribute key="absorbpercentice" value="6"/>
+		<attribute key="weight" value="1300"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="400"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="feet"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
+			<attribute key="increase speed" value="3"/>
+		</attribute>
+	</item>
+	<item id="50250" article="a" name="inferniarch claws">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="45"/>
+		<attribute key="defense" value="21"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="elementalbond" value="energy"/>
+		<attribute key="slottype" value="dualwielding"/>
+		<attribute key="weight" value="8400"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="300"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="imbuementslot" value="2">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="50251" article="a" name="rending inferniarch claws">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="45"/>
+		<attribute key="defense" value="21"/>
+		<attribute key="skillfist" value="4"/> 
+		<attribute key="elementalbond" value="energy"/>
+		<attribute key="slottype" value="dualwielding"/>
+		<attribute key="imbuementslot" value="1"/>
+		<attribute key="weight" value="8400"/> 
+		<attribute key="criticalhitchance" value="1000"/>
+		<attribute key="criticalhitdamage" value="5800"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="330"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="50252" article="a" name="draining inferniarch claws">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="45"/>
+		<attribute key="defense" value="21"/>
+		<attribute key="skillfist" value="4"/> 
+		<attribute key="lifeleechchance" value="10000"/>
+		<attribute key="lifeleechamount" value="2900"/>
+		<attribute key="elementalbond" value="energy"/>
+		<attribute key="slottype" value="dualwielding"/>
+		<attribute key="weight" value="8400"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="300"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="50253" name="siphoning inferniarch claws">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="45"/>
+		<attribute key="defense" value="21"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="manaleechchance" value="100"/>
+		<attribute key="manaleechamount" value="1000"/>
+		<attribute key="elementalbond" value="energy"/>
+		<attribute key="slottype" value="dualwielding"/>
+		<attribute key="weight" value="8400"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="300"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="50254" name="soulgarb">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="11"/>
+		<attribute key="mantra" value="19"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="magiclevelpoints" value="2"/>
+		<attribute key="absorbpercentphysical" value="4"/>
+		<attribute key="absorbpercentice" value="8"/>
+		<attribute key="weight" value="10700"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="400"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="2">
+			<attribute key="life leech" value="3"/>
+			<attribute key="elemental protection earth" value="3"/>
+			<attribute key="elemental protection fire" value="3"/>
+			<attribute key="elemental protection death" value="3"/>
+			<attribute key="elemental protection ice" value="3"/>
+			<attribute key="elemental protection energy" value="3"/>
+			<attribute key="elemental protection holy" value="3"/>
+		</attribute>
+	</item>
+	<item id="50255" name="stoic iks robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="description" value="A robe worn by a separatis caste of the ancient Iks."/>
+		<attribute key="armor" value="9"/>
+		<attribute key="mantra" value="16"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="absorbpercentphysical" value="2"/>
+		<attribute key="absorbpercentenergy" value="5"/>
+		<attribute key="weight" value="128000"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="250"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="2">
+			<attribute key="life leech" value="3"/>
+			<attribute key="elemental protection earth" value="3"/>
+			<attribute key="elemental protection fire" value="3"/>
+			<attribute key="elemental protection death" value="3"/>
+			<attribute key="elemental protection ice" value="3"/>
+			<attribute key="elemental protection energy" value="3"/>
+			<attribute key="elemental protection holy" value="3"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="spirit mend" value="base">
+				<attribute key="value" value="8"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50257" name="plain monk robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="description" value="A plain variant of the traditional robe of Merudri monks."/>
+		<attribute key="armor" value="6"/>
+		<attribute key="mantra" value="7"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="weight" value="6500"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+	</item>
+	<item id="50258" name="monk robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="description" value="The traditional robe of a Merudri monk."/>
+		<attribute key="armor" value="7"/>
+		<attribute key="mantra" value="9"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="weight" value="7000"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+	</item>
+	<item id="50259" name="zaoan monk robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="7"/>
+		<attribute key="mantra" value="11"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="weight" value="110000"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="50"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="mystic repulse" value="critical extra damage">
+				<attribute key="value" value="10"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50260" name="death oyoroi">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="9"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="mantra" value="16"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="absorbpercentdeath" value="5"/>
+		<attribute key="weight" value="10500"/>
+		<attribute key="description" value="A dark oyoroi with an even darker past. Worn and ragged from many a battle."/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="230"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="50261" name="merudri nanbando">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="description" value="A rare metal breastplate worn by early Merudri guardians."/>
+		<attribute key="armor" value="7"/>
+		<attribute key="mantra" value="13"/>
+		<attribute key="skillfist" value="3"/>
+		<attribute key="weight" value="10600"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="125"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="life leech" value="3"/>
+			<attribute key="elemental protection earth" value="3"/>
+			<attribute key="elemental protection fire" value="3"/>
+			<attribute key="elemental protection death" value="3"/>
+			<attribute key="elemental protection ice" value="3"/>
+			<attribute key="elemental protection energy" value="3"/>
+			<attribute key="elemental protection holy" value="3"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="greater flurry of blows" value="critical extra damage">
+				<attribute key="value" value="8"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50262" name="naga tanko">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="description" value="A metal tanko, originally manufactured and refined by the ancient Naga."/>
+		<attribute key="armor" value="10"/>
+		<attribute key="mantra" value="15"/>
+		<attribute key="skillfist" value="3"/>
+		<attribute key="magiclevelpoints" value="2"/>
+		<attribute key="absorbpercentphysical" value="2"/>
+		<attribute key="absorbpercentfire" value="6"/>
+		<attribute key="weight" value="9000"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="270"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="2">
+			<attribute key="life leech" value="3"/>
+			<attribute key="elemental protection earth" value="3"/>
+			<attribute key="elemental protection fire" value="3"/>
+			<attribute key="elemental protection death" value="3"/>
+			<attribute key="elemental protection ice" value="3"/>
+			<attribute key="elemental protection energy" value="3"/>
+			<attribute key="elemental protection holy" value="3"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="flurry of blows" value="life leech">
+				<attribute key="value" value="3"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50263" name="merudri scale mail">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="description" value="A magical mail with scales. Worn by ancient Merudri beast slayers."/>
+		<attribute key="armor" value="7"/>
+		<attribute key="mantra" value="13"/>
+		<attribute key="skillfist" value="2"/>
+		<attribute key="absorbpercentfire" value="4"/>
+		<attribute key="weight" value="2900"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="100"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+	</item>
+	<item id="50264" name="merudri battle mail">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="10"/>
+		<attribute key="mantra" value="17"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="absorbpercentearth" value="10"/>
+		<attribute key="absorbpercentenergy" value="-5"/>
+		<attribute key="weight" value="2900"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="300"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="2">
+			<attribute key="life leech" value="3"/>
+			<attribute key="elemental protection earth" value="3"/>
+			<attribute key="elemental protection fire" value="3"/>
+			<attribute key="elemental protection death" value="3"/>
+			<attribute key="elemental protection ice" value="3"/>
+			<attribute key="elemental protection energy" value="3"/>
+			<attribute key="elemental protection holy" value="3"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="flurry of blows" value="life leech">
+				<attribute key="value" value="3"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50266" name="eldritch monk boots">
+		<attribute key="primarytype" value="boots"/>
+		<attribute key="armor" value="2"/>
+		<attribute key="skillfist" value="2"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="absorbpercentenergy" value="5"/>
+		<attribute key="weight" value="1300"/>
+		<attribute key="description" value="Traditional boots worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths."/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="increase speed" value="3"/>
+		</attribute>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="300"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="feet"/>
+		</attribute>
+	</item>
+	<item id="50267" name="boots of enlightenment">
+		<attribute key="primarytype" value="boots"/>
+		<attribute key="armor" value="1"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="weight" value="900"/>
+		<attribute key="description" value="Traditional boots worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths."/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="8"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="feet"/>
+		</attribute>
+	</item>
+	<item id="50268" name="robe of enlightenment">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="description" value="Traditional robe worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths."/>
+		<attribute key="armor" value="8"/>
+		<attribute key="mantra" value="15"/>
+		<attribute key="skillfist" value="3"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="absorbpercentice" value="4"/>
+		<attribute key="weight" value="2400"/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="150"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="life leech" value="3"/>
+			<attribute key="elemental protection earth" value="3"/>
+			<attribute key="elemental protection fire" value="3"/>
+			<attribute key="elemental protection death" value="3"/>
+			<attribute key="elemental protection ice" value="3"/>
+			<attribute key="elemental protection energy" value="3"/>
+			<attribute key="elemental protection holy" value="3"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="forceful uppercut" value="cooldown">
+				<attribute key="value" value="15000"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50269" name="legs of enlightenment">
+		<attribute key="primarytype" value="legs"/>
+		<attribute key="armor" value="4"/>
+		<attribute key="mantra" value="3"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="absorbpercentearth" value="3"/>
+		<attribute key="weight" value="2100"/>
+		<attribute key="description" value="Traditional legs worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths."/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="40"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="legs"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="double jab" value="base">
+				<attribute key="value" value="12"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50270" name="bambus jo">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="42"/>
+		<attribute key="defense" value="19"/>
+		<attribute key="skillfist" value="2"/>
+		<attribute key="elementalbond" value="earth"/>
+		<attribute key="slottype" value="two-handed"/>
+		<attribute key="weight" value="3800"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="150"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="imbuementslot" value="2">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="50271" article="a" name="fists of enlightenment">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="description" value="Traditional wraps worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths."/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="24"/>
+		<attribute key="defense" value="14"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="elementalbond" value="energy"/>
+		<attribute key="slottype" value="dualwielding"/>
+		<attribute key="weight" value="1800"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="20"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="greater tiger clash" value="base">
+				<attribute key="value" value="8"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50272" name="sai of enlightenment">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="description" value="Traditional sais worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths."/>
+		<attribute key="attack" value="42"/>
+		<attribute key="defense" value="16"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="elementalbond" value="earth"/>
+		<attribute key="slottype" value="dualwielding"/>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+		<attribute key="weight" value="5900"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="100"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="greater tiger clash" value="base">
+				<attribute key="value" value="16"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50273" article="a" name="nunchaku of enlightenment">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="description" value="Traditional nunchaku used by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths."/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="34"/>
+		<attribute key="defense" value="15"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="elementalbond" value="physical"/>
+		<attribute key="slottype" value="two-handed"/>
+		<attribute key="weight" value="2900"/>
+		<attribute key="script" value="moveevent;weapon">
+			<attribute key="level" value="50"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="weaponType" value="fist"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="hand"/>
+		</attribute>
+		<attribute key="augments" value="1">
+			<attribute key="greater tiger clash" value="base">
+				<attribute key="value" value="12"/>
+			</attribute>
+		</attribute>
+	</item>
+	<item id="50274" article="a" name="coned hat of enlightenment">
+		<attribute key="primarytype" value="helmet"/>
+		<attribute key="description" value="Traditional coned hat worn by pilgrims of the Three-Fold Path. Its design features elements of the natural appearance of moths." />
+		<attribute key="mantra" value="4"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="armor" value="4"/>
+		<attribute key="weight" value="1000"/>
+		<attribute key="augments" value="1">
+			<attribute key="chained penance" value="base">
+				<attribute key="value" value="6" />
+			</attribute>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="life leech" value="3"/>
+			<attribute key="elemental protection earth" value="3"/>
+			<attribute key="elemental protection fire" value="3"/>
+			<attribute key="elemental protection death" value="3"/>
+			<attribute key="elemental protection ice" value="3"/>
+			<attribute key="elemental protection energy" value="3"/>
+			<attribute key="elemental protection holy" value="3"/>
+		</attribute>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="70"/>
+			<attribute key="slot" value="head"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+		</attribute>
+	</item>
+	<item id="50275" name="ghazbaran oyoroi">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="8"/>
+		<attribute key="mantra" value="12"/>
+		<attribute key="skillfist" value="1"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="absorbpercentenergy" value="7"/>
+		<attribute key="absorbpercentice" value="-7"/>
+		<attribute key="weight" value="13500"/>
+		<attribute key="description" value="A beastly oyoroi, folded and bolstered to withstand even the hardest blows."/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="75"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+	</item>
+	<item id="50276" name="gnomish cuirass">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="8"/>
+		<attribute key="mantra" value="14"/>
+		<attribute key="skillfist" value="3"/>
+		<attribute key="absorbpercentphysical" value="2"/>
+		<attribute key="weight" value="10000"/>
+		<attribute key="description" value="Gnomish cuirass with intricate gems worked into it."/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="150"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="imbuementslot" value="1">
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="50277" name="leaf robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="9"/>
+		<attribute key="mantra" value="14"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="absorbpercentearth" value="8"/> 
+		<attribute key="absorbpercentfire" value="-8"/>
+		<attribute key="weight" value="7500"/>
+		<attribute key="description" value="Monk robe with mysticals leaves woven into it."/>	
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="200"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>	
+	</item>
+	<item id="50278" name="magma robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="9"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="absorbpercentfire" value="8"/>
+		<attribute key="absorbpercentice" value="-8"/>
+		<attribute key="weight" value="7500"/>
+		<attribute key="description" value="Monk robe strengthened with plates of cooled magma."/>	
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="200"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+		<attribute key="mantra" value="14"/>
+	</item>
+	<item id="50279" name="energy robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="9"/>
+		<attribute key="mantra" value="14"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="absorbpercentenergy" value="8"/>
+		<attribute key="absorbpercentearth" value="-8"/>
+		<attribute key="weight" value="7500"/>
+		<attribute key="description" value="Monk robe interwoven with mystical fabrics and brimming with energy."/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="200"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+	</item>
+	<item id="50280" name="ice robe">
+		<attribute key="primarytype" value="armors"/>
+		<attribute key="armor" value="9"/>
+		<attribute key="skillfist" value="4"/>
+		<attribute key="mantra" value="14"/>
+		<attribute key="absorbpercentice" value="8"/>
+		<attribute key="absorbpercentenergy" value="-8"/>
+		<attribute key="weight" value="7500"/>
+		<attribute key="description" value="Monk robe fortified with floes of century old unmelting ice."/>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="200"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="body"/>
+		</attribute>
+	</item>
 	<item id="50289" name="yalahari footwraps">
 		<attribute key="primarytype" value="boots"/>
 		<attribute key="armor" value="1"/>
@@ -84396,6 +85139,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="absorbpercentdeath" value="3"/>
 		<attribute key="weight" value="700"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -84412,6 +85156,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="absorbpercentearth" value="3"/>
 		<attribute key="weight" value="1100"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -84427,6 +85172,7 @@ Granted by TibiaGoals.com"/>
 		<attribute key="absorbpercentfire" value="4"/>
 		<attribute key="weight" value="800"/>
 		<attribute key="imbuementslot" value="1">
+			<attribute key="paralysis deflection" value="3"/>
 			<attribute key="increase speed" value="3"/>
 		</attribute>
 		<attribute key="script" value="moveevent">
@@ -86032,6 +86778,105 @@ Granted by TibiaGoals.com"/>
 		<attribute key="defense" value="33"/>
 		<attribute key="weight" value="3500"/>
 		<attribute key="imbuementslot" value="3">
+			<attribute key="elemental damage" value="3"/>
+			<attribute key="life leech" value="3"/>
+			<attribute key="mana leech" value="3"/>
+			<attribute key="critical hit" value="3"/>
+			<attribute key="skillboost fist" value="3"/>
+		</attribute>
+	</item>
+	<item id="51299" name="genesis serenity legs">
+		<attribute key="primarytype" value="legs"/>
+		<attribute key="mantra" value="11"/>
+		<attribute key="armor" value="7"/>
+		<attribute key="skillfist" value="5"/>
+		<attribute key="magiclevelpoints" value="3"/>
+		<attribute key="absorbpercentphysical" value="5"/>
+		<attribute key="absorbpercentdeath" value="5"/>
+		<attribute key="weight" value="4100"/>
+		<attribute key="augments" value="1">
+			<attribute key="avatar of balance" value="cooldown">
+				<attribute key="value" value="900000"/>
+			</attribute>
+			<attribute key="chained penance" value="critical extra damage">
+				<attribute key="value" value="8"/>
+			</attribute>
+		</attribute>
+		<attribute key="script" value="moveevent">
+			<attribute key="level" value="800"/>
+			<attribute key="unproperly" value="true"/>
+			<attribute key="vocation" value="Monk;true, Exalted Monk"/>
+			<attribute key="slot" value="legs"/>
+		</attribute>
+	</item>
+	<item id="51302" article="a" name="transcendence potion">
+		<attribute key="primarytype" value="liquids"/>
+		<attribute key="description" value="Drinking this potion temporarily increases your fist skill"/>
+		<attribute key="weight" value="290"/>
+	</item>
+	<item id="51303" article="a" name="transcendent box">
+			<attribute key="weight" value="10"/>
+	</item>
+	<item id="51304" article="a" name="transcendent headband">
+			<attribute key="absorbpercentphysical" value="5"/>
+			<attribute key="armor" value="9"/>
+			<attribute key="weight" value="4500"/>
+			<attribute key="imbuementslot" value="2">
+				<attribute key="mana leech" value="3"/>
+				<attribute key="skillboost axe" value="3"/>
+				<attribute key="skillboost sword" value="3"/>
+				<attribute key="skillboost club" value="3"/>
+				<attribute key="skillboost shielding" value="3"/>
+			</attribute>
+	</item>
+	<item id="51305" article="a" name="transcendent robe">
+			<attribute key="absorbpercentphysical" value="6"/>
+			<attribute key="skillshield" value="1"/>
+			<attribute key="skillclub" value="2"/>
+			<attribute key="skillaxe" value="2"/>
+			<attribute key="skillsword" value="2"/>
+			<attribute key="armor" value="16"/>
+			<attribute key="weight" value="12000"/>
+			<attribute key="imbuementslot" value="2">
+				<attribute key="life leech" value="3"/>
+				<attribute key="elemental protection death" value="3"/>
+				<attribute key="elemental protection earth" value="3"/>
+				<attribute key="elemental protection fire" value="3"/>
+				<attribute key="elemental protection ice" value="3"/>
+				<attribute key="elemental protection energy" value="3"/>
+				<attribute key="elemental protection holy" value="3"/>
+			</attribute>
+	</item>
+	<item id="51306" article="a" name="transcendent trousers">
+			<attribute key="absorbpercentphysical" value="5"/>
+			<attribute key="skillclub" value="2"/>
+			<attribute key="skillaxe" value="2"/>
+			<attribute key="skillsword" value="2"/>
+			<attribute key="armor" value="8"/>
+			<attribute key="weight" value="5800"/>
+	</item>
+	<item id="51307" article="a" name="transcendent footwraps">
+			<attribute key="showAttributes" value="1"/>
+			<attribute key="absorbpercentphysical" value="3"/>
+			<attribute key="speed" value="10"/>
+			<attribute key="armor" value="3"/>
+			<attribute key="weight" value="1400"/>
+			<attribute key="imbuementslot" value="1">
+				<attribute key="paralysis deflection" value="3"/>
+				<attribute key="increase speed" value="3"/>
+			</attribute>
+	</item>
+	<item id="51308" article="a" name="transcendent bo">
+		<attribute key="primarytype" value="fist weapons"/>
+		<attribute key="weapontype" value="fist"/>
+		<attribute key="attack" value="45"/>
+		<attribute key="defense" value="18"/>
+		<attribute key="skillfist" value="2"/>
+		<attribute key="magiclevelpoints" value="1"/>
+		<attribute key="elementalbond" value="energy"/>
+		<attribute key="slottype" value="dualwielding"/>
+		<attribute key="weight" value="6400"/>
+		<attribute key="imbuementslot" value="2">
 			<attribute key="elemental damage" value="3"/>
 			<attribute key="life leech" value="3"/>
 			<attribute key="mana leech" value="3"/>
