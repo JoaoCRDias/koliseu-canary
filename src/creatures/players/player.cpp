@@ -11126,7 +11126,11 @@ void Player::onRemoveCreature(const std::shared_ptr<Creature> &creature, bool is
 				guild->removeMember(player);
 			}
 
-			loginPosition = getPosition();
+			if (isDead()) {
+				loginPosition = getTemplePosition();
+			} else {
+				loginPosition = getPosition();
+			}
 			lastLogout = time(nullptr);
 			g_logger().info("{} has logged out", getName());
 			g_chat().removeUserFromAllChannels(player);
