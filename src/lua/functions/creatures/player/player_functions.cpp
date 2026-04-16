@@ -17,6 +17,7 @@
 #include "creatures/monsters/monsters.hpp"
 #include "creatures/players/player.hpp"
 #include "creatures/players/vocations/vocation.hpp"
+#include "database/databasetasks.hpp"
 #include "server/network/protocol/protocolgame.hpp"
 #include "game/game.hpp"
 #include "game/scheduling/save_manager.hpp"
@@ -4487,6 +4488,24 @@ int PlayerFunctions::luaPlayerChangeName(lua_State* L) {
 	}
 	player->kv()->remove("namelock");
 	const auto newName = Lua::getString(L, 2);
+
+	const auto &formerName = player->getName();
+	if (!formerName.empty() && formerName != newName) {
+		auto &db = Database::getInstance();
+		// former_name accumulates all previous names (comma-separated); old_name holds only the last one.
+		const auto auditQuery = fmt::format(
+			"INSERT INTO `player_oldnames` (`player_id`, `former_name`, `name`, `old_name`, `date`) VALUES ({}, {}, {}, {}, {})"
+			" ON DUPLICATE KEY UPDATE `former_name` = IF(`former_name` = '', VALUES(`old_name`), CONCAT(`former_name`, ', ', VALUES(`old_name`))),"
+			" `name` = VALUES(`name`), `old_name` = VALUES(`old_name`), `date` = VALUES(`date`)",
+			player->getGUID(),
+			db.escapeString(formerName),
+			db.escapeString(newName),
+			db.escapeString(formerName),
+			time(nullptr)
+		);
+		g_databaseTasks().execute(auditQuery);
+	}
+
 	player->setName(newName);
 	g_saveManager().savePlayer(player);
 	return 1;
