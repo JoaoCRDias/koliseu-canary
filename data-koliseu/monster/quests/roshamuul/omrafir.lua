@@ -1,0 +1,158 @@
+local mType = Game.createMonsterType("Omrafir")
+local monster = {}
+
+monster.description = "Omrafir"
+monster.experience = 75000000
+monster.outfit = {
+	lookType = 12,
+	lookHead = 78,
+	lookBody = 3,
+	lookLegs = 79,
+	lookFeet = 79,
+	lookAddons = 0,
+	lookMount = 0,
+}
+
+monster.bosstiary = {
+	bossRaceId = 1011,
+	bossRace = RARITY_NEMESIS,
+}
+
+monster.health = 5000000
+monster.maxHealth = 5000000
+monster.race = "fire"
+monster.corpse = 6068
+monster.speed = 240
+monster.manaCost = 0
+
+monster.changeTarget = {
+	interval = 2000,
+	chance = 25,
+}
+
+monster.strategiesTarget = {
+	nearest = 70,
+	health = 10,
+	damage = 10,
+	random = 10,
+}
+
+monster.flags = {
+	summonable = false,
+	attackable = true,
+	hostile = true,
+	convinceable = false,
+	pushable = false,
+	rewardBoss = true,
+	illusionable = false,
+	canPushItems = true,
+	canPushCreatures = true,
+	staticAttackChance = 90,
+	targetDistance = 1,
+	runHealth = 0,
+	healthHidden = false,
+	isBlockable = false,
+	canWalkOnEnergy = true,
+	canWalkOnFire = true,
+	canWalkOnPoison = true,
+}
+
+monster.light = {
+	level = 0,
+	color = 0,
+}
+
+monster.voices = {
+	interval = 5000,
+	chance = 10,
+	{ text = "FIRST I'LL OBLITERATE YOU THEN I BURN THIS PRISON DOWN!!", yell = true },
+	{ text = "I'M TOO HOT FOR YOU TO HANDLE!", yell = true },
+	{ text = "FREEDOM FOR THE PRINCES!", yell = true },
+	{ text = "OMRAFIR INHALES DEEPLY!", yell = true },
+	{ text = "OMRAFIR BREATHES INFERNAL FIRE", yell = true },
+	{ text = "THE POWER OF HIS INTERNAL FIRE RENEWS OMRAFIR!", yell = true },
+	{ text = "I WILL RULE WHEN THE NEW ORDER IS ESTABLISHED!", yell = true },
+	{ text = "INFERNATIL! COME HERE AND FIGHT ME YOU COWARD!", yell = true },
+}
+
+monster.loot = {
+	{ id = 16119, chance = 37500, maxCount = 5 }, -- blue crystal shard
+	{ id = 20062, chance = 62500, maxCount = 4 }, -- cluster of solace
+	{ id = 16125, chance = 43750, maxCount = 3 }, -- cyan crystal fragment
+	{ id = 5954, chance = 100000 }, -- demon horn
+	{ id = 6499, chance = 812500, maxCount = 4 }, -- demonic essence
+	{ id = 20278, chance = 6250 }, -- demonic tapestry
+	{ id = 20063, chance = 81250, maxCount = 2 }, -- dream matter
+	{ id = 20276, chance = 3250, unique = true }, -- dream warden mask
+	{ id = 20279, chance = 2500 }, -- eye pod
+	{ id = 281, chance = 43750 }, -- giant shimmering pearl (green)
+	{ id = 282, chance = 43750 }, -- giant shimmering pearl (brown)
+	{ id = 3031, chance = 18750, maxCount = 100 }, -- gold coin
+	{ id = 238, chance = 6250, maxCount = 8 }, -- great mana potion
+	{ id = 7642, chance = 56250, maxCount = 8 }, -- great spirit potion
+	{ id = 16127, chance = 37500, maxCount = 3 }, -- green crystal fragment
+	{ id = 16121, chance = 18750, maxCount = 5 }, -- green crystal shard
+	{ id = 3038, chance = 18750 }, -- green gem
+	{ id = 820, chance = 12500 }, -- lightning boots
+	{ id = 825, chance = 18750 }, -- lightning robe
+	{ id = 20282, chance = 12500 }, -- nightmare hook
+	{ id = 20274, chance = 100000, unique = true }, -- nightmare horn
+	{ id = 3035, chance = 93750, maxCount = 20 }, -- platinum coin
+	{ id = 20277, chance = 6250 }, -- psychedelic tapestry
+	{ id = 16126, chance = 6250, maxCount = 3 }, -- red crystal fragment
+	{ id = 3098, chance = 6250 }, -- ring of healing
+	{ id = 5741, chance = 6250 }, -- skull helmet
+	{ id = 3554, chance = 6250 }, -- steel boots
+	{ id = 7643, chance = 31250, maxCount = 8 }, -- ultimate health potion
+	{ id = 20264, chance = 81250, maxCount = 3 }, -- unrealized dream
+	{ id = 16120, chance = 18750, maxCount = 5 }, -- violet crystal shard
+	{ id = 60648, chance = 10000, maxCount = 1 },
+	{ id = 60427, chance = 5000, maxCount = 1 },
+	{ id = 60428, chance = 5000, maxCount = 1 },
+	{ id = 60429, chance = 5000, maxCount = 1 },
+	{ id = 58051, chance = 5000, maxCount = 1 },
+	{ id = 58052, chance = 5000, maxCount = 1 },
+	{ id = 58053, chance = 5000, maxCount = 1 },
+	{ id = 58054, chance = 5000, maxCount = 1 },
+
+}
+
+monster.attacks = {
+	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -11000 },
+	{ name = "combat", interval = 2000, chance = 22, type = COMBAT_FIREDAMAGE, minDamage = -5000, maxDamage = -12000, length = 10, spread = 3, effect = CONST_ME_FIREATTACK, target = false },
+	{ name = "combat", interval = 2000, chance = 20, type = COMBAT_FIREDAMAGE, minDamage = -4000, maxDamage = -9000, radius = 3, effect = CONST_ME_MAGIC_RED, target = false },
+	{ name = "combat", interval = 2000, chance = 18, type = COMBAT_FIREDAMAGE, minDamage = -3000, maxDamage = -8000, radius = 4, effect = CONST_ME_EXPLOSIONHIT, target = false },
+	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_FIREDAMAGE, minDamage = -4000, maxDamage = -10000, radius = 1, shootEffect = CONST_ANI_FIRE, effect = CONST_ME_HITBYFIRE, target = true },
+	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_ENERGYDAMAGE, minDamage = -3000, maxDamage = -7000, length = 8, spread = 0, effect = CONST_ME_ENERGYHIT, target = false },
+	{ name = "combat", interval = 2000, chance = 12, type = COMBAT_MANADRAIN, minDamage = -2000, maxDamage = -5000, radius = 5, effect = CONST_ME_ENERGYAREA, target = false },
+}
+
+monster.defenses = {
+	defense = 85,
+	armor = 80,
+	--	mitigation = ???,
+	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_HEALING, minDamage = 3000, maxDamage = 5000, effect = CONST_ME_MAGIC_BLUE, target = false },
+	{ name = "combat", interval = 3000, chance = 20, type = COMBAT_HEALING, minDamage = 1500, maxDamage = 3000, effect = CONST_ME_MAGIC_BLUE, target = false },
+}
+
+monster.elements = {
+	{ type = COMBAT_PHYSICALDAMAGE, percent = 50 },
+	{ type = COMBAT_ENERGYDAMAGE, percent = 50 },
+	{ type = COMBAT_EARTHDAMAGE, percent = 50 },
+	{ type = COMBAT_FIREDAMAGE, percent = 100 },
+	{ type = COMBAT_LIFEDRAIN, percent = 0 },
+	{ type = COMBAT_MANADRAIN, percent = 0 },
+	{ type = COMBAT_DROWNDAMAGE, percent = 0 },
+	{ type = COMBAT_ICEDAMAGE, percent = 50 },
+	{ type = COMBAT_HOLYDAMAGE, percent = 50 },
+	{ type = COMBAT_DEATHDAMAGE, percent = 50 },
+}
+
+monster.immunities = {
+	{ type = "paralyze", condition = true },
+	{ type = "outfit", condition = true },
+	{ type = "invisible", condition = true },
+	{ type = "bleed", condition = false },
+}
+
+mType:register(monster)

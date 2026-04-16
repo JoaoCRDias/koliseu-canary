@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<raids>
+	<!-- Ferumbras -->
+	<!-- <raid name="Ferumbras" file="ferumbras.xml" interval2="20160" margin="120" />
+	<raid name="Orshabaal" file="orshabaal.xml" interval2="2880" margin="360" />
+	<raid name="Ghazbaran" file="ghazbaran.xml" interval2="7200" margin="360" />
+	<raid name="Morgaroth" file="morgaroth.xml" interval2="7200" margin="360" />
+	<raid name="Gaz" file="gaz_haragoth.xml" interval2="5760" margin="720" />
+	<raid name="Mawhawk" file="mawhawk.xml" interval2="1440" margin="360" />
+	<raid name="RotwormQueen" file="rotworm_queen.xml" interval2="2880" margin="180" />
+	<raid name="Chayenne" file="chayenne.xml" interval2="10080" margin="720" /> -->
+</raids>

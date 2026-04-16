@@ -1,0 +1,4 @@
+TOWNS_LIST = {
+	ROCKET_TOWN = 1,
+	EDRON_KINGDOM = 2,
+}
