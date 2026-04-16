@@ -25,8 +25,7 @@
 #endif
 
 namespace {
-	constexpr std::array<std::pair<uint32_t, uint32_t>, 5> kPassThroughRanges { {
-		{ PSTRG_MOUNTS_RANGE_START, PSTRG_MOUNTS_RANGE_SIZE },
+	constexpr std::array<std::pair<uint32_t, uint32_t>, 4> kPassThroughRanges { {
 		{ PSTRG_WING_RANGE_START, PSTRG_WING_RANGE_SIZE },
 		{ PSTRG_EFFECT_RANGE_START, PSTRG_EFFECT_RANGE_SIZE },
 		{ PSTRG_AURA_RANGE_START, PSTRG_AURA_RANGE_SIZE },

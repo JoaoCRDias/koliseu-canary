@@ -157,6 +157,9 @@ bool IOLoginData::loadPlayer(const std::shared_ptr<Player> &player, const DBResu
 		// load storage map
 		IOLoginDataLoad::loadPlayerStorageMap(player);
 
+		// load tamed mounts
+		IOLoginDataLoad::loadPlayerMounts(player);
+
 		// load vip
 		IOLoginDataLoad::loadPlayerVip(player, result);
 
@@ -227,6 +230,10 @@ bool IOLoginData::savePlayerGuard(const std::shared_ptr<Player> &player) {
 
 	if (!IOLoginDataSave::savePlayerSpells(player)) {
 		throw DatabaseException("[IOLoginDataSave::savePlayerSpells] - Failed to save player spells: " + player->getName());
+	}
+
+	if (!IOLoginDataSave::savePlayerMounts(player)) {
+		throw DatabaseException("[IOLoginDataSave::savePlayerMounts] - Failed to save player mounts: " + player->getName());
 	}
 
 	if (!IOLoginDataSave::savePlayerKills(player)) {

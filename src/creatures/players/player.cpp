@@ -7467,9 +7467,8 @@ void Player::sendOpenPvpSituations() {
 }
 
 uint8_t Player::getLastMount() const {
-	const int32_t value = getStorageValue(PSTRG_MOUNTS_CURRENTMOUNT);
-	if (value > 0) {
-		return static_cast<uint8_t>(value);
+	if (currentMount > 0) {
+		return currentMount;
 	}
 	const auto lastMount = kv()->get("last-mount");
 	if (!lastMount.has_value()) {
@@ -7480,15 +7479,11 @@ uint8_t Player::getLastMount() const {
 }
 
 uint8_t Player::getCurrentMount() const {
-	const int32_t value = getStorageValue(PSTRG_MOUNTS_CURRENTMOUNT);
-	if (value > 0) {
-		return value;
-	}
-	return 0;
+	return currentMount;
 }
 
 void Player::setCurrentMount(uint8_t mount) {
-	addStorageValue(PSTRG_MOUNTS_CURRENTMOUNT, mount);
+	currentMount = mount;
 }
 
 bool Player::hasAnyMount() const {
@@ -7555,19 +7550,19 @@ bool Player::toggleMount(bool mount) {
 			currentMountId = getRandomMountId();
 		}
 
-		const auto &currentMount = g_game().mounts->getMountByID(currentMountId);
-		if (!currentMount) {
+		const auto &mountData = g_game().mounts->getMountByID(currentMountId);
+		if (!mountData) {
 			return false;
 		}
 
-		if (!hasMount(currentMount)) {
+		if (!hasMount(mountData)) {
 			setCurrentMount(0);
 			kv()->set("last-mount", 0);
 			sendOutfitWindow();
 			return false;
 		}
 
-		if (currentMount->premium && !isPremium()) {
+		if (mountData->premium && !isPremium()) {
 			sendCancelMessage(RETURNVALUE_YOUNEEDPREMIUMACCOUNT);
 			return false;
 		}
@@ -7577,12 +7572,12 @@ bool Player::toggleMount(bool mount) {
 			return false;
 		}
 
-		defaultOutfit.lookMount = currentMount->clientId;
-		setCurrentMount(currentMount->id);
-		kv()->set("last-mount", currentMount->id);
+		defaultOutfit.lookMount = mountData->clientId;
+		setCurrentMount(mountData->id);
+		kv()->set("last-mount", mountData->id);
 
-		if (currentMount->speed != 0) {
-			g_game().changeSpeed(static_self_cast<Player>(), currentMount->speed);
+		if (mountData->speed != 0) {
+			g_game().changeSpeed(static_self_cast<Player>(), mountData->speed);
 		}
 	} else {
 		if (!isMounted()) {
@@ -7603,17 +7598,9 @@ bool Player::tameMount(uint8_t mountId) {
 		return false;
 	}
 
-	const uint8_t tmpMountId = mountId - 1;
-	const uint32_t key = PSTRG_MOUNTS_RANGE_START + (tmpMountId / 31);
-
-	int32_t value = getStorageValue(key);
-	if (value != -1) {
-		value |= (1 << (tmpMountId % 31));
-	} else {
-		value = (1 << (tmpMountId % 31));
+	if (tamedMounts.insert(mountId).second) {
+		tamedMountsDirty = true;
 	}
-
-	addStorageValue(key, value);
 
 	sendScreenshotAndBannerUnlockedCosmetic(mount->name, mount->clientId, 3);
 
@@ -7625,16 +7612,9 @@ bool Player::untameMount(uint8_t mountId) {
 		return false;
 	}
 
-	const uint8_t tmpMountId = mountId - 1;
-	const uint32_t key = PSTRG_MOUNTS_RANGE_START + (tmpMountId / 31);
-
-	int32_t value = getStorageValue(key);
-	if (value == -1) {
-		return true;
+	if (tamedMounts.erase(mountId) > 0) {
+		tamedMountsDirty = true;
 	}
-
-	value &= ~(1 << (tmpMountId % 31));
-	addStorageValue(key, value);
 
 	if (getCurrentMount() == mountId) {
 		if (isMounted()) {
@@ -7658,14 +7638,7 @@ bool Player::hasMount(const std::shared_ptr<Mount> &mount) const {
 		return false;
 	}
 
-	const uint8_t tmpMountId = mount->id - 1;
-
-	const int32_t value = getStorageValue(PSTRG_MOUNTS_RANGE_START + (tmpMountId / 31));
-	if (value == -1) {
-		return false;
-	}
-
-	return ((1 << (tmpMountId % 31)) & value) != 0;
+	return tamedMounts.contains(mount->id);
 }
 
 void Player::dismount() {

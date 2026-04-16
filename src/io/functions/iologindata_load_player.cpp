@@ -312,6 +312,7 @@ void IOLoginDataLoad::loadPlayerDefaultOutfit(const std::shared_ptr<Player> &pla
 	player->defaultOutfit.lookMountLegs = static_cast<uint8_t>(result->getNumber<uint16_t>("lookmountlegs"));
 	player->defaultOutfit.lookMountFeet = static_cast<uint8_t>(result->getNumber<uint16_t>("lookmountfeet"));
 	player->defaultOutfit.lookFamiliarsType = result->getNumber<uint16_t>("lookfamiliarstype");
+	player->currentMount = static_cast<uint8_t>(result->getNumber<uint16_t>("currentmount"));
 
 	if (g_configManager().getBoolean(WARN_UNSAFE_SCRIPTS) && player->defaultOutfit.lookFamiliarsType != 0 && !g_game().isLookTypeRegistered(player->defaultOutfit.lookFamiliarsType)) {
 		g_logger().warn("[{}] An unregistered creature looktype type with id '{}' was blocked to prevent client crash.", __FUNCTION__, player->defaultOutfit.lookFamiliarsType);
@@ -767,6 +768,23 @@ void IOLoginDataLoad::loadPlayerStorageMap(const std::shared_ptr<Player> &player
 
 	auto rows = g_playerStorageRepository().load(player->getGUID());
 	player->storage().ingest(rows);
+}
+
+void IOLoginDataLoad::loadPlayerMounts(const std::shared_ptr<Player> &player) {
+	if (!player) {
+		g_logger().warn("[{}] - Player nullptr", __FUNCTION__);
+		return;
+	}
+
+	player->tamedMounts.clear();
+	player->tamedMountsDirty = false;
+
+	const auto query = fmt::format("SELECT `mount_id` FROM `player_mounts` WHERE `player_id` = {}", player->getGUID());
+	if (const auto &result = g_database().storeQuery(query)) {
+		do {
+			player->tamedMounts.insert(result->getNumber<uint16_t>("mount_id"));
+		} while (result->next());
+	}
 }
 
 void IOLoginDataLoad::loadPlayerVip(const std::shared_ptr<Player> &player, DBResult_ptr result) {

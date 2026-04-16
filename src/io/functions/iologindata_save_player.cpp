@@ -223,6 +223,7 @@ bool IOLoginDataSave::savePlayerFirst(const std::shared_ptr<Player> &player) {
 	query << "`forge_dusts` = " << player->getForgeDusts() << ",";
 	query << "`forge_dust_level` = " << player->getForgeDustLevel() << ",";
 	query << "`randomize_mount` = " << static_cast<uint16_t>(player->isRandomMounted()) << ",";
+	query << "`currentmount` = " << static_cast<uint16_t>(player->currentMount) << ",";
 
 	query << "`cap` = " << (player->capacity / 100) << ",";
 	query << "`sex` = " << static_cast<uint16_t>(player->sex) << ",";
@@ -395,6 +396,45 @@ bool IOLoginDataSave::savePlayerStash(const std::shared_ptr<Player> &player) {
 	if (!stashQuery.execute()) {
 		return false;
 	}
+	return true;
+}
+
+bool IOLoginDataSave::savePlayerMounts(const std::shared_ptr<Player> &player) {
+	if (!player) {
+		g_logger().warn("[IOLoginData::savePlayer] - Player nullptr: {}", __FUNCTION__);
+		return false;
+	}
+
+	if (!player->tamedMountsDirty) {
+		return true;
+	}
+
+	Database &db = Database::getInstance();
+	std::ostringstream query;
+	query << "DELETE FROM `player_mounts` WHERE `player_id` = " << player->getGUID();
+	if (!db.executeQuery(query.str())) {
+		return false;
+	}
+
+	if (player->tamedMounts.empty()) {
+		player->tamedMountsDirty = false;
+		return true;
+	}
+
+	DBInsert mountsQuery("INSERT INTO `player_mounts` (`player_id`, `mount_id`) VALUES ");
+	query.str("");
+	for (const auto mountId : player->tamedMounts) {
+		query << player->getGUID() << ',' << static_cast<uint16_t>(mountId);
+		if (!mountsQuery.addRow(query)) {
+			return false;
+		}
+	}
+
+	if (!mountsQuery.execute()) {
+		return false;
+	}
+
+	player->tamedMountsDirty = false;
 	return true;
 }
 

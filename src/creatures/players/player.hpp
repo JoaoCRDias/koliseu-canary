@@ -1655,6 +1655,12 @@ private:
 	std::vector<OutfitEntry> outfits;
 	std::vector<FamiliarEntry> familiars;
 
+	// Mounts unlocked by this player. Persisted in `player_mounts`.
+	phmap::flat_hash_set<uint8_t> tamedMounts;
+	bool tamedMountsDirty = false;
+	// Id of the mount the player is currently riding (or 0). Persisted in `players.currentmount`.
+	uint8_t currentMount = 0;
+
 	std::vector<std::unique_ptr<PreySlot>> preys;
 	std::vector<std::unique_ptr<TaskHuntingSlot>> taskHunting;
 
