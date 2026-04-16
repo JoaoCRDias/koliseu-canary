@@ -226,6 +226,14 @@ bool Monster::isAttackable() const {
 	return m_monsterType->info.isAttackable;
 }
 
+bool Monster::canWalk() const {
+	return m_monsterType->info.canWalk;
+}
+
+bool Monster::canTarget() const {
+	return m_monsterType->info.canTarget;
+}
+
 bool Monster::canPushItems() const {
 	return m_monsterType->info.canPushItems;
 }
@@ -906,8 +914,16 @@ BlockType_t Monster::blockHit(const std::shared_ptr<Creature> &attacker, const C
 
 		// Wheel of destiny
 		const auto &player = attacker ? attacker->getPlayer() : nullptr;
-		if (player && player->wheel().getInstant("Ballistic Mastery")) {
+		if (player && player->wheel().getConvictionPerkActived(WheelConvictionPerk_t::BALLISTIC_MASTERY)) {
 			elementMod -= player->wheel().checkElementSensitiveReduction(combatType);
+		}
+
+		// Winter Update 2025 - Proficiency Perk: Elemental Pierce
+		if (player && elementMod > 0 && combatType < COMBAT_COUNT) {
+			const float elePierce = player->getEquippedWeaponProficiency().elementalPierce[combatType];
+			if (elePierce > 0) {
+				elementMod = std::max<int32_t>(0, elementMod - static_cast<int32_t>(elementMod * elePierce));
+			}
 		}
 
 		if (elementMod != 0) {
@@ -950,6 +966,10 @@ bool Monster::isFleeing() const {
 
 bool Monster::selectTarget(const std::shared_ptr<Creature> &creature) {
 	if (!isTarget(creature)) {
+		return false;
+	}
+
+	if (!canTarget()) {
 		return false;
 	}
 
@@ -1555,6 +1575,8 @@ bool Monster::getNextStep(Direction &nextDirection, uint32_t &flags) {
 		doFollowCreature(flags, nextDirection, result);
 	} else if (isWalkingBack) {
 		doWalkBack(flags, nextDirection, result);
+	} else if (isWalkingTo && !randomStepping) {
+		doWalkTo(flags, nextDirection, result);
 	} else {
 		doRandomStep(nextDirection, result);
 	}
@@ -1583,10 +1605,20 @@ bool Monster::getNextStep(Direction &nextDirection, uint32_t &flags) {
 }
 
 void Monster::doRandomStep(Direction &nextDirection, bool &result) {
-	if (getTimeSinceLastMove() >= 1000) {
+	if (getTimeSinceLastMove() >= 1000 && canWalk()) {
 		randomStepping = true;
 		result = getRandomStep(getPosition(), nextDirection);
 	}
+}
+
+void Monster::walkTo(const Position &walkToPosition) {
+	randomStepping = false;
+	isWalkingTo = true;
+	std::vector<Direction> listDir;
+	if (!getPathTo(walkToPosition, listDir, 0, 0, true, true, 25)) {
+		return;
+	}
+	startAutoWalk(listDir, true);
 }
 
 void Monster::doWalkBack(uint32_t &flags, Direction &nextDirection, bool &result) {
@@ -1615,6 +1647,20 @@ void Monster::doWalkBack(uint32_t &flags, Direction &nextDirection, bool &result
 			return;
 		}
 		startAutoWalk(listDir);
+	}
+}
+
+void Monster::doWalkTo(uint32_t &flags, Direction &nextDirection, bool &result) {
+	result = Creature::getNextStep(nextDirection, flags);
+	if (result) {
+		flags |= FLAG_PATHFINDING;
+	} else {
+		if (ignoreFieldDamage) {
+			ignoreFieldDamage = false;
+		}
+
+		randomStepping = true;
+		isWalkingTo = false;
 	}
 }
 
@@ -2357,13 +2403,8 @@ void Monster::death(const std::shared_ptr<Creature> &lastHitCreature) {
 		return;
 	}
 
-	auto [activeCharm, _] = g_iobestiary().getCharmFromTarget(targetPlayer, m_monsterType);
-	if (activeCharm == CHARM_CARNAGE) {
-		const auto &charm = g_iobestiary().getBestiaryCharm(activeCharm);
-		const auto charmTier = targetPlayer->getCharmTier(activeCharm);
-		if (charm && charm->chance[charmTier] >= normal_random(1, 10000) / 100.0) {
-			g_iobestiary().parseCharmCombat(charm, targetPlayer, getMonster());
-		}
+	if (const auto &carnageCharm = targetPlayer->isApplyCharm(CHARM_MAJOR_CARNAGE, getName())) {
+		g_iobestiary().parseCharmCombat(carnageCharm, targetPlayer, getMonster());
 	}
 }
 
@@ -2680,7 +2721,7 @@ void Monster::configureForgeSystem() {
 		setIcon("forge", CreatureIcon(CreatureIconModifications_t::Fiendish, 0 /* don't show stacks on fiends */));
 		g_game().updateCreatureIcon(static_self_cast<Monster>());
 	} else if (monsterForgeClassification == ForgeClassifications_t::FORGE_INFLUENCED_MONSTER) {
-		auto stack = static_cast<uint16_t>(normal_random(1, 5));
+		auto stack = static_cast<uint16_t>(uniform_random(1, 5));
 		setForgeStack(stack);
 		setIcon("forge", CreatureIcon(CreatureIconModifications_t::Influenced, stack));
 		g_game().updateCreatureIcon(static_self_cast<Monster>());
@@ -2793,12 +2834,14 @@ bool Monster::checkCanApplyCharm(const std::shared_ptr<Player> &player, charmRun
 		return false;
 	}
 
-	uint16_t playerCharmRaceid = player->parseRacebyCharm(charmRune, false, 0);
-	if (playerCharmRaceid != 0) {
-		if (m_monsterType && playerCharmRaceid == m_monsterType->info.raceid) {
-			const auto &charm = g_iobestiary().getBestiaryCharm(charmRune);
-			if (charm) {
-				return true;
+	const uint16_t playerCharmRaceId = player->getRaceIdByCharmsArray(charmRune);
+	if (playerCharmRaceId != 0) {
+		if (m_monsterType && playerCharmRaceId == m_monsterType->info.raceid) {
+			if (const auto &charm = g_iobestiary().getBestiaryCharm(charmRune)) {
+				const auto charmTier = player->getTierByCharmsArray(charmRune);
+				if (charm->chance[charmTier] > (uniform_random(0, 100) / 1.0)) {
+					return true;
+				}
 			}
 		}
 	}

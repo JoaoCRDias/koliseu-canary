@@ -10,9 +10,11 @@
 #pragma once
 
 #include "server/network/protocol/protocol.hpp"
+#include "creatures/creatures_definitions.hpp"
 #include "game/movement/position.hpp"
 #include "utils/utils_definitions.hpp"
-#include "creatures/players/stash_definitions.hpp"
+#include "enums/disconnect_client.hpp"
+#include "enums/player_wheel.hpp"
 
 enum class PlayerIcon : uint8_t;
 enum class IconBakragore : uint8_t;
@@ -32,9 +34,8 @@ enum CombatType_t : uint8_t;
 enum SoundMusicEffect_t : uint8_t;
 enum SoundAmbientEffect_t : uint16_t;
 enum SoundEffect_t : uint16_t;
-enum class SourceEffect_t : uint8_t;
 enum class HouseAuctionType : uint8_t;
-enum class MonkData_t : uint8_t;
+enum class WheelGemQuality_t : uint8_t;
 
 class NetworkMessage;
 class Player;
@@ -48,6 +49,8 @@ class ProtocolGame;
 class PreySlot;
 class TaskHuntingSlot;
 class TaskHuntingOption;
+class BountyTaskData;
+class WeeklyTaskData;
 class Item;
 class Party;
 class Creature;
@@ -65,6 +68,7 @@ struct ShopBlock;
 struct MarketOfferEx;
 struct HistoryMarketOffer;
 struct LightInfo;
+struct NpcDialogOptions;
 
 using ProtocolGame_ptr = std::shared_ptr<ProtocolGame>;
 using ItemVector = std::vector<std::shared_ptr<Item>>;
@@ -72,6 +76,7 @@ using InvitedMap = std::map<uint32_t, std::shared_ptr<Player>>;
 using UsersMap = std::map<uint32_t, std::shared_ptr<Player>>;
 using MarketOfferList = std::list<MarketOffer>;
 using HistoryMarketOfferList = std::list<HistoryMarketOffer>;
+using ItemsTierCountList = std::map<uint16_t, std::map<uint8_t, uint32_t>>;
 using StashItemList = std::map<uint16_t, uint32_t>;
 using HouseMap = std::map<uint32_t, std::shared_ptr<House>>;
 
@@ -111,7 +116,7 @@ public:
 	void AddItem(NetworkMessage &msg, const std::shared_ptr<Item> &item);
 	void AddItem(NetworkMessage &msg, uint16_t id, uint8_t count, uint8_t tier) const;
 
-	[[nodiscard]] uint16_t getVersion() const {
+	uint16_t getVersion() const {
 		return version;
 	}
 
@@ -120,7 +125,7 @@ private:
 		return std::static_pointer_cast<ProtocolGame>(shared_from_this());
 	}
 	void connect(const std::string &playerName, OperatingSystem_t operatingSystem);
-	void disconnectClient(const std::string &message) const;
+	void disconnectClient(const std::string &message, DisconnectClient_t reason = DisconnectClient_t::Default) const;
 	void writeToOutputBuffer(NetworkMessage &msg);
 
 	void release() override;
@@ -166,7 +171,7 @@ private:
 
 	void sendSessionEndInformation(SessionEndInformations information);
 
-	void sendItemInspection(uint16_t itemId, uint8_t itemCount, const std::shared_ptr<Item> &item, bool cyclopedia);
+	void sendItemInspection(uint16_t itemId, uint8_t itemCount, const std::shared_ptr<Item> &item, InspectObjectType inspectionType);
 	void parseInspectionObject(NetworkMessage &msg);
 
 	void parseFriendSystemAction(NetworkMessage &msg);
@@ -174,7 +179,7 @@ private:
 	void parseCyclopediaCharacterInfo(NetworkMessage &msg);
 
 	void parseHighscores(NetworkMessage &msg);
-	void parseTaskHuntingAction(NetworkMessage &msg);
+	void parseSoulSeals(NetworkMessage &msg);
 	void sendHighscoresNoData();
 	void sendHighscores(const std::vector<HighscoreCharacter> &characters, uint8_t categoryId, uint32_t vocationId, uint16_t page, uint16_t pages, uint32_t updateTimer);
 
@@ -183,6 +188,7 @@ private:
 	void parseOfferDescription(NetworkMessage &msg);
 	void parsePreyAction(NetworkMessage &msg);
 	void parseSendResourceBalance();
+	void parseSendResourceBalance(NetworkMessage &msg);
 	void parseRuleViolationReport(NetworkMessage &msg);
 
 	void parseBestiarySendRaces();
@@ -200,6 +206,7 @@ private:
 	void parseBestiarysendMonsterData(NetworkMessage &msg);
 	void parseCyclopediaMonsterTracker(NetworkMessage &msg);
 
+	void parseTutorialChangeVocation(NetworkMessage &msg);
 	void parseTeleport(NetworkMessage &msg);
 	void parseThrow(NetworkMessage &msg);
 	void parseUseItemEx(NetworkMessage &msg);
@@ -265,7 +272,7 @@ private:
 	void parseCloseChannel(NetworkMessage &msg);
 
 	// Imbuement info
-	void addImbuementInfo(NetworkMessage &msg, uint16_t imbuementId) const;
+	void addImbuementInfo(NetworkMessage &msg, uint16_t imbuementId, bool isScroll) const;
 
 	// Send functions
 	void sendChannelMessage(const std::string &author, const std::string &text, SpeakClasses type, uint16_t channel);
@@ -282,7 +289,7 @@ private:
 	void sendIconBakragore(const IconBakragore icon);
 	void sendFYIBox(const std::string &message);
 
-	void openImbuementWindow(const std::shared_ptr<Item> &item);
+	void openImbuementWindow(const Imbuement_Window_t type, const std::shared_ptr<Item> &item = nullptr);
 	void sendImbuementResult(const std::string &message);
 	void closeImbuementWindow();
 
@@ -312,8 +319,8 @@ private:
 	void sendBosstiaryEntryChanged(uint32_t bossid);
 
 	void sendAllowBugReport();
-	void sendDistanceShoot(const Position &from, const Position &to, uint16_t type);
-	void sendMagicEffect(const Position &pos, uint16_t type);
+	void sendDistanceShoot(const Position &from, const Position &to, uint16_t type, SourceEffect_t source = SourceEffect_t::GLOBAL);
+	void sendMagicEffect(const Position &pos, uint16_t type, SourceEffect_t source = SourceEffect_t::GLOBAL);
 	void removeMagicEffect(const Position &pos, uint16_t type);
 	void sendRestingStatus(uint8_t protection);
 	void sendCreatureHealth(const std::shared_ptr<Creature> &creature);
@@ -376,10 +383,12 @@ private:
 
 	void sendShop(const std::shared_ptr<Npc> &npc);
 	void sendCloseShop();
+	void sendNpcDialogOptions(const NpcDialogOptions &dialogOptions);
 	void sendClientCheck();
 	void sendGameNews();
 	void sendResourcesBalance(uint64_t money = 0, uint64_t bank = 0, uint64_t preyCards = 0, uint64_t taskHunting = 0, uint64_t forgeDust = 0, uint64_t forgeSliver = 0, uint64_t forgeCores = 0);
 	void sendResourceBalance(Resource_t resourceType, uint64_t value);
+	void sendSoulSealsWindow();
 	void sendCharmResourcesBalance(uint32_t charm = 0, uint32_t minorCharm = 0, uint32_t maxCharm = 0, uint32_t maxMinorCharm = 0);
 	void sendCharmResourceBalance(CharmResource_t resourceType, uint32_t value);
 	void sendSaleItemList(const std::vector<ShopBlock> &shopVector, const std::map<uint16_t, uint16_t> &inventoryMap);
@@ -534,23 +543,29 @@ private:
 	void parseSaveWheel(NetworkMessage &msg);
 	void parseWheelGemAction(NetworkMessage &msg);
 
-	/**
-	 * @brief Sends monk-specific data to the client.
-	 *
-	 * This function is used to communicate changes related to monk gameplay elements, like Harmony, Serenity, or Virtue states.
-	 *
-	 * @param type The type of monk data to send (e.g., Harmony, Serenity).
-	 * @param value The value associated with the monk data type (e.g., on/off or specific level).
-	 */
-	void sendMonkData(MonkData_t type, uint8_t value);
-	/**
-	 * @brief Parses and updates the "Aim At Target" spell state sent by the client.
-	 *
-	 * This function processes a list of spells and whether the player wants them to aim at their current target.
-	 *
-	 * @param msg The network message containing the spell list and aim states.
-	 */
-	void parseAimAtTarget(NetworkMessage &msg);
+	// Update 15.00
+	void sendHarmonyProtocol(const uint8_t harmonyValue);
+	void sendSereneProtocol(const bool isSerene);
+	void sendVirtueProtocol(const uint8_t virtueValue);
+	void parseSelectSpellAimProtocol(NetworkMessage &msg);
+
+	/*******************************************************************************
+	* Summer Update 2025
+	******************************************************************************/
+	void parseImbuementWindow(NetworkMessage &msg);
+	void parseWeaponProficiency(NetworkMessage &msg);
+	void sendWeaponProficiencyExperience(const uint16_t itemId, const uint32_t experience);
+	void sendWeaponProficiencyInfo(const uint16_t itemId);
+	/*******************************************************************************/
+
+	/*******************************************************************************
+	* Winter Update 2025 - Task Board System
+	******************************************************************************/
+	void parseBountyTaskAction(NetworkMessage &msg);
+	void sendBountyTaskData(const BountyTaskData &bountyData);
+	void sendWeeklyTaskData(const WeeklyTaskData &weeklyData);
+	void sendHuntingTaskShopData();
+	/*******************************************************************************/
 
 	friend class Player;
 	friend class PlayerWheel;
@@ -571,6 +586,7 @@ private:
 	bool acceptPackets = false;
 
 	bool loggedIn = false;
+	bool shouldAddExivaRestrictions = false;
 
 	bool oldProtocol = false;
 	bool isOTC = false;
@@ -595,6 +611,16 @@ private:
 	void sendMusicSoundEffect(const SoundMusicEffect_t id);
 
 	void sendTakeScreenshot(Screenshot_t screenshotType);
+	void sendBannerType(Banner_t bannerType);
+	void sendScreenshotAndBannerUnlockedAchievement(const uint16_t achievementId);
+	void sendScreenshotAndBannerUnlockedTitle(const uint8_t titleId);
+	void sendScreenshotAndBannerUnlockedCosmetic(const std::string &skinName, uint16_t lookType, uint8_t skinType);
+	void sendScreenshotAndBannerUpLevel(const uint16_t levelUp);
+	void sendScreenshotAndBannerUpSkill(skills_t skill, const uint16_t skillLevel);
+	void sendScreenshotAndBannerProgressRace(uint16_t raceId, uint8_t progressLevel, bool isBoss);
+	void sendScreenshotAndBannerProgressQuest(const std::string &questName, bool isCompleted);
+	void sendScreenshotAndBannerProficiencyProgress(uint16_t itemId, const std::string &message);
+
 	void sendDisableLoginMusic();
 
 	uint8_t m_playerDeathTime = 0;
@@ -602,13 +628,4 @@ private:
 	void resetPlayerDeathTime() {
 		m_playerDeathTime = 0;
 	}
-
-	void parseExivaRestrictions(NetworkMessage &msg);
-	void sendExivaRestrictions(
-		bool isLogin = false,
-		const std::vector<std::string> &addedPlayerNames = {},
-		const std::vector<std::string> &removedPlayerNames = {},
-		const std::vector<std::string> &addedGuildNames = {},
-		const std::vector<std::string> &removedGuildNames = {}
-	);
 };

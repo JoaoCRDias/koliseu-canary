@@ -34,8 +34,8 @@ function playerLoginGlobal.onLogin(player)
 	end
 
 	-- Boosted
-	player:sendTextMessage(MESSAGE_BOOSTED_CREATURE, string.format("Today's boosted creature: %s.", Game.getBoostedCreature()))
-	player:sendTextMessage(MESSAGE_BOOSTED_CREATURE, string.format("Today's boosted boss: %s.", Game.getBoostedBoss()))
+	player:sendTextMessage(MESSAGE_BOOSTED_CREATURE, string.format("Today's boosted creature: %s.\nBoosted creatures yield more experience points, carry more loot than usual, and respawn at a faster rate.", Game.getBoostedCreature()))
+	player:sendTextMessage(MESSAGE_BOOSTED_CREATURE, string.format("Today's boosted boss: %s.\nBoosted bosses contain more loot and count more kills for your Bosstiary.", Game.getBoostedBoss()))
 
 	-- Rewards
 	local rewards = #player:getRewardList()
@@ -155,19 +155,30 @@ function playerLoginGlobal.onLogin(player)
 		player:setOutfit(playerOutfit)
 	end
 
+	-- Bounty Talisman: sync equipped state on login
+	local ammoItem = player:getSlotItem(CONST_SLOT_AMMO)
+	if ammoItem and ammoItem:getId() == 51978 then
+		player:setBountyTalismanEquipped(true)
+	end
+
 	player:initializeLoyaltySystem()
 	player:registerEvent("PlayerDeath")
 	player:registerEvent("DropLoot")
 	player:registerEvent("BossParticipation")
 	player:registerEvent("UpdatePlayerOnAdvancedLevel")
 
-	if vocation and vocation:getBaseId() == VOCATION.BASE_ID.MONK then
-		local kv = player:kv()
-		if (kv:get("monk-basic-atk-bonus") or 0) < 10 then
-			logger.info("Setting monk basic attack bonus 10 for player: {}.", player:getName())
-			kv:set("monk-basic-atk-bonus", 10)
-		end
+	-- Regeneration
+	local regenCondition = player:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
+	if not regenCondition then
+		local condition = Condition(CONDITION_REGENERATION, CONDITIONID_DEFAULT, 0, true)
+		local vocation = player:getVocation()
+		condition:setParameter(CONDITION_PARAM_HEALTHGAIN, vocation:getHealthGainAmount())
+		condition:setParameter(CONDITION_PARAM_MANAGAIN, vocation:getManaGainAmount())
+		condition:setParameter(CONDITION_PARAM_TICKS, -1)
+		condition:setParameter(CONDITION_PARAM_FOODTICKS, 0)
+		player:addCondition(condition)
 	end
+
 	return true
 end
 

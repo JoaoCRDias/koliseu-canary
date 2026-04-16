@@ -38,11 +38,7 @@ public:
 	uint32_t getManaGain() const;
 	uint32_t getCapGain() const;
 
-	uint32_t getManaGainTicks() const;
-
 	uint32_t getManaGainAmount() const;
-
-	uint32_t getHealthGainTicks() const;
 
 	uint32_t getHealthGainAmount() const;
 
@@ -92,9 +88,7 @@ private:
 	float skillMultipliers[SKILL_LAST + 1] = { 1.5f, 2.0f, 2.0f, 2.0f, 2.0f, 1.5f, 1.1f };
 	float manaMultiplier = 4.0f;
 
-	uint32_t gainHealthTicks = 6;
 	uint32_t gainHealthAmount = 1;
-	uint32_t gainManaTicks = 6;
 	uint32_t gainManaAmount = 1;
 	uint32_t gainCap = 500;
 	uint32_t gainMana = 5;

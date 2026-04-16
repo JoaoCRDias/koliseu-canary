@@ -313,19 +313,6 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			m_wheel.addRevelationBonus(WheelGemAffinity_t::Blue, 150 * gradeMultiplier);
 			break;
 
-		case WheelGemSupremeModifier_t::Monk_RevelationMastery_SpiritualBurst:
-			m_strategies.emplace_back(std::make_unique<GemModifierRevelationStrategy>(m_wheel, WheelGemAffinity_t::Red, 150 * gradeMultiplier));
-			m_wheel.addRevelationBonus(WheelGemAffinity_t::Red, 150 * gradeMultiplier);
-			break;
-		case WheelGemSupremeModifier_t::Monk_RevelationMastery_AvatarOfBalance:
-			m_strategies.emplace_back(std::make_unique<GemModifierRevelationStrategy>(m_wheel, WheelGemAffinity_t::Purple, 150 * gradeMultiplier));
-			m_wheel.addRevelationBonus(WheelGemAffinity_t::Purple, 150 * gradeMultiplier);
-			break;
-		case WheelGemSupremeModifier_t::Monk_RevelationMastery_Ascetic:
-			m_strategies.emplace_back(std::make_unique<GemModifierRevelationStrategy>(m_wheel, WheelGemAffinity_t::Blue, 150 * gradeMultiplier));
-			m_wheel.addRevelationBonus(WheelGemAffinity_t::Blue, 150 * gradeMultiplier);
-			break;
-
 		case WheelGemSupremeModifier_t::Knight_AvatarOfSteel_Cooldown:
 			bonus.decrease.cooldown = 900 * 1000;
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
@@ -571,129 +558,82 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			bonus.increase.heal = 5 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Mass Healing", bonus));
 			break;
-		/**
-		 * @brief Reduces the cooldown of Avatar of Balance by 900s and adds momentum bonus based on grade.
-		 */
+
+		// Monk
 		case WheelGemSupremeModifier_t::Monk_AvatarOfBalance_Cooldown:
 			bonus.decrease.cooldown = 900 * 1000;
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Avatar of Balance", bonus));
 			break;
-
-		/**
-		 * @brief Increases healing of Spirit Mend by a flat value.
-		 */
-		case WheelGemSupremeModifier_t::Monk_SpiritMend_HealingIncreased:
-			bonus.increase.heal = 6;
+		case WheelGemSupremeModifier_t::Monk_SpiritMend_HealingIncrease:
+			bonus.increase.heal = 6 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Spirit Mend", bonus));
 			break;
-
-		/**
-		 * @brief Increases damage of Spiritual Outburst based on grade multiplier.
-		 */
 		case WheelGemSupremeModifier_t::Monk_SpiritualOutburst_DamageIncrease:
 			bonus.increase.damage = 5 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Spiritual Outburst", bonus));
 			break;
-
-		/**
-		 * @brief Increases critical damage of Spiritual Outburst based on grade multiplier.
-		 */
 		case WheelGemSupremeModifier_t::Monk_SpiritualOutburst_CriticalExtraDamage:
 			bonus.increase.criticalDamage = 8 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Spiritual Outburst", bonus));
 			break;
-
-		/**
-		 * @brief Increases damage of Forceful Uppercut using grade multiplier.
-		 */
 		case WheelGemSupremeModifier_t::Monk_ForcefulUppercut_DamageIncrease:
 			bonus.increase.damage = 10 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Forceful Uppercut", bonus));
 			break;
-
-		/**
-		 * @brief Increases critical damage of Forceful Uppercut using grade multiplier.
-		 */
 		case WheelGemSupremeModifier_t::Monk_ForcefulUppercut_CriticalExtraDamage:
 			bonus.increase.criticalDamage = 8 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Forceful Uppercut", bonus));
 			break;
-
-		/**
-		 * @brief Increases damage of Flurry of Blows using grade multiplier.
-		 * (bonus.increase.damage = 6.5 * gradeMultiplier)
-		 */
-		case WheelGemSupremeModifier_t::Monk_FlurryOfBlows_DamageIncrease:
-			bonus.increase.damage = 6.5 * gradeMultiplier;
+		case WheelGemSupremeModifier_t::Monk_FurryofBlows_DamageIncrease:
+			bonus.increase.criticalDamage = 6.5 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Flurry of Blows", bonus));
 			break;
-
-		/**
-		 * @brief Increases critical damage of Flurry of Blows using grade multiplier.
-		 * (bonus.increase.criticalDamage = 8 * gradeMultiplier)
-		 */
-		case WheelGemSupremeModifier_t::Monk_FlurryOfBlows_CriticalExtraDamage:
-			bonus.increase.criticalDamage = 8 * gradeMultiplier;
+		case WheelGemSupremeModifier_t::Monk_FurryofBlows_CriticalExtraDamage:
+			bonus.increase.damage = 8 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Flurry of Blows", bonus));
 			break;
-
-		/**
-		 * @brief Increases damage of Greater Flurry of Blows using grade multiplier.
-		 */
-		case WheelGemSupremeModifier_t::Monk_GreaterFlurryOfBlows_DamageIncrease:
+		case WheelGemSupremeModifier_t::Monk_GreaterFurryofBlows_DamageIncrease:
 			bonus.increase.damage = 5 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Greater Flurry of Blows", bonus));
 			break;
-
-		/**
-		 * @brief Increases critical damage of Greater Flurry of Blows using grade multiplier.
-		 */
-		case WheelGemSupremeModifier_t::Monk_GreaterFlurryOfBlows_CriticalExtraDamage:
+		case WheelGemSupremeModifier_t::Monk_GreaterFurryofBlows_CriticalExtraDamage:
 			bonus.increase.criticalDamage = 8 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Greater Flurry of Blows", bonus));
 			break;
-
-		/**
-		 * @brief Increases damage of Sweeping Takedown using grade multiplier.
-		 */
 		case WheelGemSupremeModifier_t::Monk_SweepingTakedown_DamageIncrease:
-			bonus.increase.damage = 5 * gradeMultiplier;
+			bonus.increase.damage = 8 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Sweeping Takedown", bonus));
 			break;
-
-		/**
-		 * @brief Increases critical damage of Sweeping Takedown using grade multiplier.
-		 */
 		case WheelGemSupremeModifier_t::Monk_SweepingTakedown_CriticalExtraDamage:
 			bonus.increase.criticalDamage = 8 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Sweeping Takedown", bonus));
 			break;
-
-		/**
-		 * @brief Reduces cooldown of Focus Serenity by 300s and adds momentum based on grade.
-		 */
-		case WheelGemSupremeModifier_t::Monk_FocusSerenity_Cooldown:
-			bonus.decrease.cooldown = 300 * 1000;
+		case WheelGemSupremeModifier_t::Monk_FocusSerenety:
+			bonus.decrease.cooldown = 150 * 1000;
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Focus Serenity", bonus));
 			break;
-
-		/**
-		 * @brief Reduces cooldown of Focus Harmony by 30s and adds momentum based on grade.
-		 */
-		case WheelGemSupremeModifier_t::Monk_FocusHarmony_Cooldown:
+		case WheelGemSupremeModifier_t::Monk_FocusHarmony:
 			bonus.decrease.cooldown = 30 * 1000;
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Focus Harmony", bonus));
 			break;
-
-		/**
-		 * @brief Increases healing of Mass Spirit Mend based on grade multiplier.
-		 */
-		case WheelGemSupremeModifier_t::Monk_MassSpiritMend_HealingIncrease:
+		case WheelGemSupremeModifier_t::Monk_MassSpiritMand_HealingIncrease:
 			bonus.increase.heal = 5 * gradeMultiplier;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Mass Spirit Mend", bonus));
+			break;
+		case WheelGemSupremeModifier_t::Monk_RevelationMastery_AvatarOfBalance:
+			m_strategies.emplace_back(std::make_unique<GemModifierRevelationStrategy>(m_wheel, WheelGemAffinity_t::Purple, 150 * gradeMultiplier));
+			m_wheel.addRevelationBonus(WheelGemAffinity_t::Purple, 150 * gradeMultiplier);
+			break;
+		case WheelGemSupremeModifier_t::Monk_RevelationMastery_SpiritualOutburst:
+			m_strategies.emplace_back(std::make_unique<GemModifierRevelationStrategy>(m_wheel, WheelGemAffinity_t::Red, 150 * gradeMultiplier));
+			m_wheel.addRevelationBonus(WheelGemAffinity_t::Red, 150 * gradeMultiplier);
+			break;
+		case WheelGemSupremeModifier_t::Monk_RevelationMastery_Ascetic:
+			m_strategies.emplace_back(std::make_unique<GemModifierRevelationStrategy>(m_wheel, WheelGemAffinity_t::Blue, 150 * gradeMultiplier));
+			m_wheel.addRevelationBonus(WheelGemAffinity_t::Blue, 150 * gradeMultiplier);
 			break;
 
 		default:
@@ -714,9 +654,9 @@ int32_t WheelGemUtils::getHealthValue(Vocation_t vocation, WheelGemBasicModifier
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 300 },
 				{ Vocation_t::VOCATION_PALADIN, 200 },
+				{ Vocation_t::VOCATION_MONK, 200 },
 				{ Vocation_t::VOCATION_SORCERER, 100 },
 				{ Vocation_t::VOCATION_DRUID, 100 },
-				{ Vocation_t::VOCATION_MONK, 200 },
 			},
 		},
 		{
@@ -724,9 +664,9 @@ int32_t WheelGemUtils::getHealthValue(Vocation_t vocation, WheelGemBasicModifier
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 150 },
 				{ Vocation_t::VOCATION_PALADIN, 100 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 50 },
 				{ Vocation_t::VOCATION_DRUID, 50 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -734,9 +674,9 @@ int32_t WheelGemUtils::getHealthValue(Vocation_t vocation, WheelGemBasicModifier
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 150 },
 				{ Vocation_t::VOCATION_PALADIN, 100 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 50 },
 				{ Vocation_t::VOCATION_DRUID, 50 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -744,9 +684,9 @@ int32_t WheelGemUtils::getHealthValue(Vocation_t vocation, WheelGemBasicModifier
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 150 },
 				{ Vocation_t::VOCATION_PALADIN, 100 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 50 },
 				{ Vocation_t::VOCATION_DRUID, 50 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -754,9 +694,9 @@ int32_t WheelGemUtils::getHealthValue(Vocation_t vocation, WheelGemBasicModifier
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 150 },
 				{ Vocation_t::VOCATION_PALADIN, 100 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 50 },
 				{ Vocation_t::VOCATION_DRUID, 50 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -764,9 +704,9 @@ int32_t WheelGemUtils::getHealthValue(Vocation_t vocation, WheelGemBasicModifier
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 150 },
 				{ Vocation_t::VOCATION_PALADIN, 100 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 50 },
 				{ Vocation_t::VOCATION_DRUID, 50 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -774,9 +714,9 @@ int32_t WheelGemUtils::getHealthValue(Vocation_t vocation, WheelGemBasicModifier
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 150 },
 				{ Vocation_t::VOCATION_PALADIN, 100 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 50 },
 				{ Vocation_t::VOCATION_DRUID, 50 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 	};
@@ -798,9 +738,9 @@ int32_t WheelGemUtils::getManaValue(Vocation_t vocation, WheelGemBasicModifier_t
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 50 },
 				{ Vocation_t::VOCATION_PALADIN, 150 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 300 },
 				{ Vocation_t::VOCATION_DRUID, 300 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -808,9 +748,9 @@ int32_t WheelGemUtils::getManaValue(Vocation_t vocation, WheelGemBasicModifier_t
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 50 },
 				{ Vocation_t::VOCATION_PALADIN, 150 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 300 },
 				{ Vocation_t::VOCATION_DRUID, 300 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -818,9 +758,9 @@ int32_t WheelGemUtils::getManaValue(Vocation_t vocation, WheelGemBasicModifier_t
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 50 },
 				{ Vocation_t::VOCATION_PALADIN, 150 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 300 },
 				{ Vocation_t::VOCATION_DRUID, 300 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -828,9 +768,9 @@ int32_t WheelGemUtils::getManaValue(Vocation_t vocation, WheelGemBasicModifier_t
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 50 },
 				{ Vocation_t::VOCATION_PALADIN, 150 },
+				{ Vocation_t::VOCATION_MONK, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 300 },
 				{ Vocation_t::VOCATION_DRUID, 300 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -838,18 +778,18 @@ int32_t WheelGemUtils::getManaValue(Vocation_t vocation, WheelGemBasicModifier_t
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 100 },
 				{ Vocation_t::VOCATION_PALADIN, 300 },
+				{ Vocation_t::VOCATION_MONK, 200 },
 				{ Vocation_t::VOCATION_SORCERER, 600 },
 				{ Vocation_t::VOCATION_DRUID, 600 },
-				{ Vocation_t::VOCATION_MONK, 200 },
 			},
 		},
 		{
 			WheelGemBasicModifier_t::Vocation_Mixed,
 			{
+				{ Vocation_t::VOCATION_KNIGHT, 50 },
 				{ Vocation_t::VOCATION_PALADIN, 100 },
 				{ Vocation_t::VOCATION_SORCERER, 150 },
 				{ Vocation_t::VOCATION_DRUID, 150 },
-				{ Vocation_t::VOCATION_MONK, 100 },
 			},
 		},
 		{
@@ -879,6 +819,7 @@ int32_t WheelGemUtils::getCapacityValue(Vocation_t vocation, WheelGemBasicModifi
 			WheelGemBasicModifier_t::Vocation_Capacity_FireResistance,
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 250 },
+				{ Vocation_t::VOCATION_MONK, 250 },
 				{ Vocation_t::VOCATION_PALADIN, 200 },
 				{ Vocation_t::VOCATION_SORCERER, 100 },
 				{ Vocation_t::VOCATION_DRUID, 100 },
@@ -888,6 +829,7 @@ int32_t WheelGemUtils::getCapacityValue(Vocation_t vocation, WheelGemBasicModifi
 			WheelGemBasicModifier_t::Vocation_Capacity_EnergyResistance,
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 250 },
+				{ Vocation_t::VOCATION_MONK, 250 },
 				{ Vocation_t::VOCATION_PALADIN, 200 },
 				{ Vocation_t::VOCATION_SORCERER, 100 },
 				{ Vocation_t::VOCATION_DRUID, 100 },
@@ -897,6 +839,7 @@ int32_t WheelGemUtils::getCapacityValue(Vocation_t vocation, WheelGemBasicModifi
 			WheelGemBasicModifier_t::Vocation_Capacity_EarthResistance,
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 250 },
+				{ Vocation_t::VOCATION_MONK, 250 },
 				{ Vocation_t::VOCATION_PALADIN, 200 },
 				{ Vocation_t::VOCATION_SORCERER, 100 },
 				{ Vocation_t::VOCATION_DRUID, 100 },
@@ -906,6 +849,7 @@ int32_t WheelGemUtils::getCapacityValue(Vocation_t vocation, WheelGemBasicModifi
 			WheelGemBasicModifier_t::Vocation_Capacity_IceResistance,
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 250 },
+				{ Vocation_t::VOCATION_MONK, 250 },
 				{ Vocation_t::VOCATION_PALADIN, 200 },
 				{ Vocation_t::VOCATION_SORCERER, 100 },
 				{ Vocation_t::VOCATION_DRUID, 100 },
@@ -915,6 +859,7 @@ int32_t WheelGemUtils::getCapacityValue(Vocation_t vocation, WheelGemBasicModifi
 			WheelGemBasicModifier_t::Vocation_Capacity,
 			{
 				{ Vocation_t::VOCATION_KNIGHT, 500 },
+				{ Vocation_t::VOCATION_MONK, 500 },
 				{ Vocation_t::VOCATION_PALADIN, 400 },
 				{ Vocation_t::VOCATION_SORCERER, 200 },
 				{ Vocation_t::VOCATION_DRUID, 200 },

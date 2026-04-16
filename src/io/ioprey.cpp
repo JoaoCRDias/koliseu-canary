@@ -64,8 +64,8 @@ void PreySlot::reloadMonsterGrid(std::vector<uint16_t> blackList, uint32_t level
 	// Disabling prey system if the server have less then 36 registered monsters on bestiary because:
 	// - Impossible to generate random lists without duplications on slots.
 	// - Stress the server with unnecessary loops.
-	const std::map<uint16_t, std::string> &bestiary = g_game().getBestiaryList();
-	if (bestiary.size() < 36) {
+	const auto &bestiaryListMap = g_game().getBestiaryList();
+	if (bestiaryListMap.size() < 36) {
 		g_logger().error("[PreySlot::reloadMonsterGrid] - Bestiary size is less than 36, disabling prey system.");
 		return;
 	}
@@ -98,9 +98,9 @@ void PreySlot::reloadMonsterGrid(std::vector<uint16_t> blackList, uint32_t level
 	}
 
 	uint8_t tries = 0;
-	auto maxIndex = static_cast<int32_t>(bestiary.size() - 1);
+	auto maxIndex = static_cast<int32_t>(bestiaryListMap.size() - 1);
 	while (raceIdList.size() < 9) {
-		uint16_t raceId = (*(std::next(bestiary.begin(), uniform_random(0, maxIndex)))).first;
+		uint16_t raceId = (*(std::next(bestiaryListMap.begin(), uniform_random(0, maxIndex)))).first;
 		tries++;
 
 		if (std::count(blackList.begin(), blackList.end(), raceId) != 0) {

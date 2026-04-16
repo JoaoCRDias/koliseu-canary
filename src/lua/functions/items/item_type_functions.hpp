@@ -76,7 +76,10 @@ private:
 	static int luaItemTypeGetShowDuration(lua_State* L);
 	static int luaItemTypeGetWrapableTo(lua_State* L);
 	static int luaItemTypeGetVocationString(lua_State* L);
-	static int luaItemTypeGetElementalBond(lua_State* L);
 
 	static int luaItemTypeHasSubType(lua_State* L);
+
+	// Update 15.00
+	static int luaItemTypeGetElementalBond(lua_State* L);
+	static int luaItemTypeGetMantra(lua_State* L);
 };

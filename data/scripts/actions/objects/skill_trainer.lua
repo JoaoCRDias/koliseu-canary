@@ -11,7 +11,7 @@ local skillTrainer = Action()
 
 function skillTrainer.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 	local skill = setting[item:getId()]
-	if not player:isPremium() then
+	if not player:isPremium() and player:getSkillLevel(skill) > 50 then
 		player:sendCancelMessage(RETURNVALUE_YOUNEEDPREMIUMACCOUNT)
 		return true
 	end

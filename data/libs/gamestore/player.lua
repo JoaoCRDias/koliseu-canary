@@ -17,6 +17,7 @@ local function canBuyOffer(self, offer)
 		and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_EXPBOOST
 		and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_PREYSLOT
 		and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_HUNTINGSLOT
+		and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_WEEKLYTASKEXPANSION
 		and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_PREYBONUS
 		and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_TEMPLE
 		and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_SEXCHANGE
@@ -106,6 +107,11 @@ local function canBuyOffer(self, offer)
 			if self:taskHuntingThirdSlot() then
 				disabled = 1
 				disabledReason = "You already have 3 slots released."
+			end
+		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_WEEKLYTASKEXPANSION then
+			if self:weeklyTaskExpansion() then
+				disabled = 1
+				disabledReason = "You already have the Permanent Weekly Task Expansion."
 			end
 		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_PREYSLOT then
 			if self:preyThirdSlot() then

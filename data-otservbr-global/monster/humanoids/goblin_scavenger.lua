@@ -29,7 +29,7 @@ monster.Bestiary = {
 monster.health = 60
 monster.maxHealth = 60
 monster.race = "blood"
-monster.corpse = 6002
+monster.corpse = 52750
 monster.speed = 66
 monster.manaCost = 310
 

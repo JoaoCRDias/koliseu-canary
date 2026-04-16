@@ -231,12 +231,12 @@ int GameFunctions::luaGameGetBestiaryList(lua_State* L) {
 	const bool name = Lua::getBoolean(L, 2, false);
 
 	if (lua_gettop(L) <= 2) {
-		const std::map<uint16_t, std::string> &mtype_list = g_game().getBestiaryList();
-		for (const auto &ita : mtype_list) {
+		const auto &bestiaryListMap = g_game().getBestiaryList();
+		for (const auto &[monsterTypeRaceId, monsterTypeName] : bestiaryListMap) {
 			if (name) {
-				Lua::pushString(L, ita.second);
+				Lua::pushString(L, monsterTypeName);
 			} else {
-				lua_pushnumber(L, ita.first);
+				lua_pushnumber(L, monsterTypeRaceId);
 			}
 			lua_rawseti(L, -2, ++index);
 		}
@@ -661,11 +661,11 @@ int GameFunctions::luaGameCreateTile(lua_State* L) {
 
 int GameFunctions::luaGameGetBestiaryCharm(lua_State* L) {
 	// Game.getBestiaryCharm()
-	const auto c_list = g_game().getCharmList();
-	lua_createtable(L, c_list.size(), 0);
+	const auto charmList = g_game().getCharmList();
+	lua_createtable(L, charmList.size(), 0);
 
 	int index = 0;
-	for (const auto &charmPtr : c_list) {
+	for (const auto &charmPtr : charmList) {
 		Lua::pushUserdata<Charm>(L, charmPtr);
 		Lua::setMetatable(L, -1, "Charm");
 		lua_rawseti(L, -2, ++index);

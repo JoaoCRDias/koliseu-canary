@@ -153,6 +153,10 @@ void MonsterTypeFunctions::init(lua_State* L) {
 	Lua::registerMethod(L, "MonsterType", "variant", MonsterTypeFunctions::luaMonsterTypeVariant);
 	Lua::registerMethod(L, "MonsterType", "getMonstersByRace", MonsterTypeFunctions::luaMonsterTypeGetMonstersByRace);
 	Lua::registerMethod(L, "MonsterType", "getMonstersByBestiaryStars", MonsterTypeFunctions::luaMonsterTypeGetMonstersByBestiaryStars);
+
+	// Summer Update 2025
+	Lua::registerMethod(L, "MonsterType", "canWalk", MonsterTypeFunctions::luaMonsterTypeCanWalk);
+	Lua::registerMethod(L, "MonsterType", "canTarget", MonsterTypeFunctions::luaMonsterTypeCanTarget);
 }
 
 void MonsterTypeFunctions::createMonsterTypeLootLuaTable(lua_State* L, const std::vector<LootBlock> &lootList) {
@@ -1911,3 +1915,45 @@ int MonsterTypeFunctions::luaMonsterTypeGetMonstersByBestiaryStars(lua_State* L)
 	}
 	return 1;
 }
+
+/*******************************************************************************
+* Summer Update 2025
+******************************************************************************/
+
+int MonsterTypeFunctions::luaMonsterTypeCanWalk(lua_State* L) {
+	// get: monsterType:canWalk() set: monsterType:canWalk(bool)
+	const auto &monsterType = Lua::getUserdataShared<MonsterType>(L, 1, "MonsterType");
+	if (!monsterType) {
+		Lua::reportErrorFunc(Lua::getErrorDesc(LUA_ERROR_CREATURE_NOT_FOUND));
+		Lua::pushBoolean(L, false);
+		return 1;
+	}
+
+	if (lua_gettop(L) == 1) {
+		Lua::pushBoolean(L, monsterType->info.canWalk);
+	} else {
+		monsterType->info.canWalk = Lua::getBoolean(L, 2);
+		Lua::pushBoolean(L, true);
+	}
+	return 1;
+}
+
+int MonsterTypeFunctions::luaMonsterTypeCanTarget(lua_State* L) {
+	// get: monsterType:canTarget() set: monsterType:canTarget(bool)
+	const auto &monsterType = Lua::getUserdataShared<MonsterType>(L, 1, "MonsterType");
+	if (!monsterType) {
+		Lua::reportErrorFunc(Lua::getErrorDesc(LUA_ERROR_CREATURE_NOT_FOUND));
+		Lua::pushBoolean(L, false);
+		return 1;
+	}
+
+	if (lua_gettop(L) == 1) {
+		Lua::pushBoolean(L, monsterType->info.canTarget);
+	} else {
+		monsterType->info.canTarget = Lua::getBoolean(L, 2);
+		Lua::pushBoolean(L, true);
+	}
+	return 1;
+}
+
+/*******************************************************************************/

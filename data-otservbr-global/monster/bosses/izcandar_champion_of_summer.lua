@@ -96,7 +96,7 @@ monster.loot = {
 	{ name = "Crystal Coin", chance = 7690, maxCount = 2 },
 	{ name = "Ornate Locket", chance = 7690 },
 	{ name = "Pomegranate", chance = 7690 },
-	{ id = 26189, chance = 7690 }, -- Ring of Red Plasma
+	{ id = 23533, chance = 7690 }, -- Ring of Red Plasma
 	{ name = "Ring of the Sky", chance = 7690 },
 	{ name = "Izcandar's Snow Globe", chance = 1500 },
 }

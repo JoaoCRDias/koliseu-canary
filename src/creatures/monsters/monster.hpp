@@ -239,6 +239,10 @@ public:
 	uint16_t getCriticalDamage() const;
 	bool checkCanApplyCharm(const std::shared_ptr<Player> &player, charmRune_t charmRune) const;
 
+	// Summer Update 2025
+	bool canWalk() const;
+	bool canTarget() const;
+
 protected:
 	void onExecuteAsyncTasks() override;
 
@@ -389,4 +393,9 @@ private:
 	void doRandomStep(Direction &nextDirection, bool &result);
 
 	void onConditionStatusChange(ConditionType_t type);
+
+	// Summer Update 2025
+	bool isWalkingTo = false;
+	void walkTo(const Position &walkToPosition);
+	void doWalkTo(uint32_t &flags, Direction &nextDirection, bool &result);
 };

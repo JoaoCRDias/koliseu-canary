@@ -25,7 +25,7 @@ void Map::load(const std::string &identifier, const Position &pos) {
 		path = identifier;
 		IOMap::loadMap(this, pos);
 	} catch (const std::exception &e) {
-		g_logger().warn("[Map::load] - The map in folder {} is missing or corrupted", identifier);
+		g_logger().warn("[Map::load] - {} - map: {}", e.what(), identifier);
 	}
 }
 

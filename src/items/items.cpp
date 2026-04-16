@@ -108,12 +108,13 @@ std::string ItemType::getFormattedAugmentDescription(const std::shared_ptr<Augme
 		return fmt::format("{} -> {}{}s {}", augmentSpellNameCapitalized, signal, augmentInfo->value / 1000, augmentName);
 	} else if (augmentInfo->type == Augment_t::Base) {
 		const auto &spell = g_spells().getSpellByName(augmentInfo->spellName);
-		if (spell) {
-			return fmt::format("{} -> {:+}% {} {}", augmentSpellNameCapitalized, augmentInfo->value, augmentName, spell->getGroup() == SPELLGROUP_HEALING ? "healing" : "damage");
-		}
+		const double percent = augmentInfo->value / 100.0;
+		return fmt::format("{} -> {:+}% {} {}", augmentSpellNameCapitalized, percent, augmentName,
+			spell ? (spell->getGroup() == SPELLGROUP_HEALING ? "healing" : "damage") : "unknown");
 	}
 
-	return fmt::format("{} -> {:+}% {}", augmentSpellNameCapitalized, augmentInfo->value, augmentName);
+	const double percent = augmentInfo->value / 100.0;
+	return fmt::format("{} -> {:+}% {}", augmentSpellNameCapitalized, percent, augmentName);
 }
 
 void ItemType::addAugment(std::string spellName, Augment_t augmentType, int32_t value) {
@@ -142,6 +143,8 @@ bool Items::reload() {
 
 void Items::loadFromProtobuf() {
 	using namespace Canary::protobuf::appearances;
+
+	uint16_t countProficiencyItems = 0;
 
 	bool supportAnimation = g_configManager().getBoolean(OLD_PROTOCOL);
 	for (uint32_t it = 0; it < g_game().m_appearancesPtr->object_size(); ++it) {
@@ -219,6 +222,7 @@ void Items::loadFromProtobuf() {
 		iType.id = static_cast<uint16_t>(object.id());
 		iType.speed = object.flags().has_bank() ? static_cast<uint16_t>(object.flags().bank().waypoints()) : 0;
 		iType.wareId = object.flags().has_market() ? static_cast<uint16_t>(object.flags().market().trade_as_object_id()) : 0;
+		iType.showAs = object.flags().has_market() ? static_cast<uint16_t>(object.flags().market().show_as_object_id()) : 0;
 
 		iType.isCorpse = object.flags().corpse() || object.flags().player_corpse();
 		iType.forceUse = object.flags().forceuse();
@@ -248,12 +252,20 @@ void Items::loadFromProtobuf() {
 		iType.expire = object.flags().expire();
 		iType.expireStop = object.flags().expirestop();
 		iType.isWrapKit = object.flags().wrapkit();
-		iType.isDualWielding = object.flags().dual_wielding();
+		
+		if (object.flags().proficiency().has_proficiency_id()) {
+			iType.proficiencyId = static_cast<uint32_t>(object.flags().proficiency().proficiency_id());
+			countProficiencyItems++;
+		} else {
+			iType.proficiencyId = 0;
+		}
 
 		if (!iType.name.empty()) {
 			nameToItems.insert({ asLowerCaseString(iType.name), iType.id });
 		}
 	}
+
+	g_logger().info("[Weapon Proficiencies System] {} items with proficiency ID registered (from PROTOBUF).", countProficiencyItems);
 
 	items.shrink_to_fit();
 }

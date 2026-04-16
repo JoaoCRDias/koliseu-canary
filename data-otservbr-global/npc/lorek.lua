@@ -50,6 +50,8 @@ npcType.onCloseChannel = function(npc, creature)
 	npcHandler:onCloseChannel(npc, creature)
 end
 
+npcType:speechBubble(SPEECHBUBBLE_TRAVELER)
+
 -- Travel
 local function addTravelKeyword(keyword, text, cost, destination, condition)
 	local travelKeyword = keywordHandler:addKeyword({ keyword }, StdModule.say, { npcHandler = npcHandler, text = "Do you seek a passage to " .. (text or keyword:titleCase()) .. " for |TRAVELCOST|?", cost = cost }, condition and function(player)

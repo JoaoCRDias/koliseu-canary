@@ -16,25 +16,13 @@ combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
 local rune = Spell("rune")
 
 function rune.onCastSpell(creature, var, isHotkey)
-	local player = Player(creature)
-	if not player then
-		return false
-	end
-
-	local vocation = player:getVocation():getName():lower()
-	if vocation == "exalted monk" then
-		player:sendCancelMessage("Your vocation cannot use this rune.")
-		player:getPosition():sendMagicEffect(CONST_ME_POFF)
-		return false
-	end
-
 	if Monster(var:getNumber(1073762188)) then
-		player:sendCancelMessage("Sorry, not possible.")
-		player:getPosition():sendMagicEffect(CONST_ME_POFF)
+		creature:sendCancelMessage("Sorry, not possible.")
+		creature:getPosition():sendMagicEffect(CONST_ME_POFF)
 		return false
+	else
+		return combat:execute(creature, var)
 	end
-
-	return combat:execute(player, var)
 end
 
 rune:id(5)

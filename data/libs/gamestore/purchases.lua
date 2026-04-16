@@ -239,6 +239,13 @@ local function processTaskHuntingThirdSlot(player)
 	player:taskHuntingThirdSlot(true)
 end
 
+local function processWeeklyTaskExpansion(player)
+	if player:weeklyTaskExpansion() then
+		return error({ code = 1, message = "You already have the Permanent Weekly Task Expansion." })
+	end
+	player:weeklyTaskExpansion(true)
+end
+
 local function processPreyBonusReroll(player, offerCount)
 	local limit = GameStore.ItemLimit.PREY_WILDCARD
 	if player:getPreyCards() + offerCount >= limit + 1 then
@@ -463,6 +470,7 @@ purchases.processSexChangePurchase = processSexChangePurchase
 purchases.processExpBoostPurchase = processExpBoostPurchase
 purchases.processPreyThirdSlot = processPreyThirdSlot
 purchases.processTaskHuntingThirdSlot = processTaskHuntingThirdSlot
+purchases.processWeeklyTaskExpansion = processWeeklyTaskExpansion
 purchases.processPreyBonusReroll = processPreyBonusReroll
 purchases.processTempleTeleportPurchase = processTempleTeleportPurchase
 purchases.processHirelingPurchase = processHirelingPurchase

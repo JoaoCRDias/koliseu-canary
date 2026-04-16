@@ -24,8 +24,8 @@ struct CombatDamage;
 struct CombatParams;
 
 struct PlayerCharmsByMonster {
-	charmRune_t major = CHARM_NONE;
-	charmRune_t minor = CHARM_NONE;
+	charmRune_t majorCharm = CHARM_NONE;
+	charmRune_t minorCharm = CHARM_NONE;
 };
 
 class Charm {

@@ -78,16 +78,8 @@ bool Vocations::loadFromXml() {
 			voc->gainMana = pugi::cast<uint32_t>(attr.value());
 		}
 
-		if ((attr = vocationNode.attribute("gainhpticks"))) {
-			voc->gainHealthTicks = pugi::cast<uint32_t>(attr.value());
-		}
-
 		if ((attr = vocationNode.attribute("gainhpamount"))) {
 			voc->gainHealthAmount = pugi::cast<uint32_t>(attr.value());
-		}
-
-		if ((attr = vocationNode.attribute("gainmanaticks"))) {
-			voc->gainManaTicks = pugi::cast<uint32_t>(attr.value());
 		}
 
 		if ((attr = vocationNode.attribute("gainmanaamount"))) {
@@ -334,16 +326,8 @@ uint32_t Vocation::getCapGain() const {
 	return gainCap;
 }
 
-uint32_t Vocation::getManaGainTicks() const {
-	return gainManaTicks / g_configManager().getFloat(RATE_MANA_REGEN_SPEED);
-}
-
 uint32_t Vocation::getManaGainAmount() const {
 	return gainManaAmount * g_configManager().getFloat(RATE_MANA_REGEN);
-}
-
-uint32_t Vocation::getHealthGainTicks() const {
-	return gainHealthTicks / g_configManager().getFloat(RATE_HEALTH_REGEN_SPEED);
 }
 
 uint32_t Vocation::getHealthGainAmount() const {
@@ -386,7 +370,7 @@ std::vector<WheelGemSupremeModifier_t> Vocation::getSupremeGemModifiers() {
 	if (!m_supremeGemModifiers.empty()) {
 		return m_supremeGemModifiers;
 	}
-	const auto baseVocation = g_vocations().getVocation(getBaseId());
+	const auto baseVocation = g_vocations().getVocation(getFromVocation());
 	auto vocationName = asLowerCaseString(baseVocation->getVocName());
 	auto allModifiers = magic_enum::enum_entries<WheelGemSupremeModifier_t>();
 	g_logger().debug("Loading supreme gem modifiers for vocation: {}", vocationName);

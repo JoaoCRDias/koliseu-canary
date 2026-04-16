@@ -22,42 +22,6 @@
 #include "lua/scripts/scripts.hpp"
 #include "lib/di/container.hpp"
 
-namespace {
-	void applySanctuaryEffect(const std::shared_ptr<Player> &player, uint8_t harmonies) {
-		uint32_t sanctuarySubId = magic_enum::enum_integer(AttrSubId_t::Sanctuary);
-		if (!player->wheel().getInstant(WheelInstant_t::SANCTUARY) || harmonies == 0 || player->hasCondition(CONDITION_ATTRIBUTES, sanctuarySubId)) {
-			return;
-		}
-
-		const auto &item = Item::CreateItem(ITEM_SANCTUARY);
-		const auto &tile = player->getTile();
-		if (tile && item) {
-			g_game().internalAddItem(tile, item, INDEX_WHEREEVER, FLAG_NOLIMIT);
-			item->startDecaying();
-		}
-
-		int32_t bonus = 100 + 2 * harmonies;
-		const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_ATTRIBUTES, 5 * 1000, 0, false, sanctuarySubId, false);
-		condition->setParam(CONDITION_PARAM_BUFF_DAMAGEDEALT, bonus);
-		condition->setParam(CONDITION_PARAM_BUFF_HEALINGDEALT, bonus);
-		player->addCondition(condition);
-	}
-
-	void applyInstantSpellDirection(const std::shared_ptr<Player> &player, LuaVariant &variant, const Position &casterPos, uint16_t spellId) {
-		Direction direction = player->getDirection();
-		const auto &target = player->getAttackedCreature();
-		if (target) {
-			variant.type = VARIANT_TARGETPOSITION;
-			const auto &aimAtTargetSpellIds = player->getAimAtTargetSpells();
-			if (aimAtTargetSpellIds.find(spellId) != aimAtTargetSpellIds.end()) {
-				direction = getPrimaryDirection(casterPos, target->getPosition());
-			}
-		}
-
-		variant.pos = Spells::getCasterPosition(player, direction);
-	}
-}
-
 Spells::Spells() = default;
 Spells::~Spells() = default;
 
@@ -123,11 +87,6 @@ TalkActionResult_t Spells::playerSaySpell(const std::shared_ptr<Player> &player,
 				}
 			}
 		}
-	}
-
-	if (instantSpell->getName() == "Find Person" && !player->canExiva(param)) {
-		player->sendTextMessage(MESSAGE_TRADE, "The character you are trying to find with Exiva is currently protected from your spell.");
-		return TALKACTION_FAILED;
 	}
 
 	if (instantSpell->playerCastInstant(player, param)) {
@@ -201,11 +160,6 @@ bool Spells::registerRuneLuaEvent(const std::shared_ptr<RuneSpell> &rune) {
 	}
 
 	return false;
-}
-
-bool Spells::isMonkShrineSpell(const std::string &name) const {
-	// Compare against known Monk Shrine spell names
-	return name == "Mystic Repulse" || name == "Forceful Uppercut" || name == "Focus Harmony";
 }
 
 std::list<uint16_t> Spells::getSpellsByVocation(uint16_t vocationId) {
@@ -498,7 +452,7 @@ bool Spell::playerSpellCheck(const std::shared_ptr<Player> &player) const {
 
 	if (aggressive && player->hasCondition(CONDITION_PACIFIED)) {
 		player->sendCancelMessage(RETURNVALUE_YOUAREEXHAUSTED);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
@@ -511,7 +465,7 @@ bool Spell::playerSpellCheck(const std::shared_ptr<Player> &player) const {
 		player->sendCancelMessage(RETURNVALUE_YOUAREEXHAUSTED);
 
 		if (isInstant()) {
-			g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+			g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		}
 
 		return false;
@@ -519,51 +473,57 @@ bool Spell::playerSpellCheck(const std::shared_ptr<Player> &player) const {
 
 	if (player->getLevel() < level) {
 		player->sendCancelMessage(RETURNVALUE_NOTENOUGHLEVEL);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	if (player->getMagicLevel() < magLevel) {
 		player->sendCancelMessage(RETURNVALUE_NOTENOUGHMAGICLEVEL);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	if (player->getMana() < getManaCost(player) && !player->hasFlag(PlayerFlags_t::HasInfiniteMana)) {
 		player->sendCancelMessage(RETURNVALUE_NOTENOUGHMANA);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	if (player->getSoul() < soul && !player->hasFlag(PlayerFlags_t::HasInfiniteSoul)) {
 		player->sendCancelMessage(RETURNVALUE_NOTENOUGHSOUL);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
+		return false;
+	}
+
+	if (harmony && player->getHarmony() == 0 && !player->hasFlag(PlayerFlags_t::HasInfiniteHarmony)) {
+		player->sendCancelMessage(RETURNVALUE_NOTENOUGHHARMONY);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	if (isInstant() && getNeedLearn()) {
 		if (!player->hasLearnedInstantSpell(getName())) {
 			player->sendCancelMessage(RETURNVALUE_YOUNEEDTOLEARNTHISSPELL);
-			g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+			g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 			return false;
 		}
 	} else if (!vocSpellMap.empty() && !vocSpellMap.contains(player->getVocationId()) && player->getGroup()->id < GROUP_TYPE_GAMEMASTER) {
 		player->sendCancelMessage(RETURNVALUE_YOURVOCATIONCANNOTUSETHISSPELL);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	if (needWeapon) {
 		switch (player->getWeaponType()) {
-			case WEAPON_FIST:
 			case WEAPON_SWORD:
 			case WEAPON_CLUB:
 			case WEAPON_AXE:
+			case WEAPON_FIST:
 				break;
 
 			default: {
 				player->sendCancelMessage(RETURNVALUE_YOUNEEDAWEAPONTOUSETHISSPELL);
-				g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+				g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 				return false;
 			}
 		}
@@ -571,7 +531,7 @@ bool Spell::playerSpellCheck(const std::shared_ptr<Player> &player) const {
 
 	if (isPremium() && !player->isPremium()) {
 		player->sendCancelMessage(RETURNVALUE_YOUNEEDPREMIUMACCOUNT);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
@@ -594,31 +554,31 @@ bool Spell::playerInstantSpellCheck(const std::shared_ptr<Player> &player, const
 	const Position &playerPos = player->getPosition();
 	if (playerPos.z > toPos.z) {
 		player->sendCancelMessage(RETURNVALUE_FIRSTGOUPSTAIRS);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	} else if (playerPos.z < toPos.z) {
 		player->sendCancelMessage(RETURNVALUE_FIRSTGODOWNSTAIRS);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	const auto &tile = g_game().map.getOrCreateTile(toPos);
 	if (!tile) {
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		g_logger().error("[Spell::playerInstantSpellCheck] - Invalid tile at position: {}, player: {}", toPos.toString(), player->getName());
 		return false;
 	}
 
 	if (blockingCreature && tile->getBottomVisibleCreature(player) != nullptr) {
 		player->sendCancelMessage(RETURNVALUE_NOTENOUGHROOM);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	if (blockingSolid && tile->hasFlag(TILESTATE_BLOCKSOLID)) {
 		player->sendCancelMessage(RETURNVALUE_NOTENOUGHROOM);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
@@ -637,45 +597,45 @@ bool Spell::playerRuneSpellCheck(const std::shared_ptr<Player> &player, const Po
 	const Position &playerPos = player->getPosition();
 	if (playerPos.z > toPos.z) {
 		player->sendCancelMessage(RETURNVALUE_FIRSTGOUPSTAIRS);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	} else if (playerPos.z < toPos.z) {
 		player->sendCancelMessage(RETURNVALUE_FIRSTGODOWNSTAIRS);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	const auto &tile = g_game().map.getTile(toPos);
 	if (!tile) {
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		g_logger().error("[Spell::playerRuneSpellCheck] - Invalid tile at position: {}, player: {}", toPos.toString(), player->getName());
 		return false;
 	}
 
 	if (range != -1 && !g_game().canThrowObjectTo(playerPos, toPos, SightLine_CheckSightLineAndFloor, range, range)) {
 		player->sendCancelMessage(RETURNVALUE_DESTINATIONOUTOFREACH);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	ReturnValue ret = Combat::canDoCombat(player, tile, aggressive);
 	if (ret != RETURNVALUE_NOERROR) {
 		player->sendCancelMessage(ret);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	const auto &topVisibleCreature = tile->getBottomVisibleCreature(player);
 	if ((blockingCreature && topVisibleCreature) || (blockingSolid && tile->hasFlag(TILESTATE_BLOCKSOLID) && !topVisibleCreature)) {
 		player->sendCancelMessage(RETURNVALUE_NOTENOUGHROOM);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
 	if (needTarget && !topVisibleCreature) {
 		player->sendCancelMessage(RETURNVALUE_CANONLYUSETHISRUNEONCREATURES);
-		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 		return false;
 	}
 
@@ -683,7 +643,7 @@ bool Spell::playerRuneSpellCheck(const std::shared_ptr<Player> &player, const Po
 		const auto &targetPlayer = topVisibleCreature->getPlayer();
 		if (targetPlayer && targetPlayer != player && player->getSkullClient(targetPlayer) == SKULL_NONE && !Combat::isInPvpZone(player, targetPlayer)) {
 			player->sendCancelMessage(RETURNVALUE_TURNSECUREMODETOATTACKUNMARKEDPLAYERS);
-			g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+			g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 			return false;
 		}
 	}
@@ -755,19 +715,56 @@ void Spell::getCombatDataAugment(const std::shared_ptr<Player> &player, CombatDa
 				if (
 					augment->type == Augment_t::IncreasedDamage || augment->type == Augment_t::PowerfulImpact || augment->type == Augment_t::StrongImpact || augment->type == Augment_t::Base
 				) {
-					const float augmentPercent = augment->value / 100.0;
+					const float augmentPercent = augment->value / 10000.0f;
 					damage.primary.value += static_cast<int32_t>(damage.primary.value * augmentPercent);
 					damage.secondary.value += static_cast<int32_t>(damage.secondary.value * augmentPercent);
 				} else if (augment->type != Augment_t::Cooldown) {
-					const int32_t augmentValue = augment->value * 100;
-					damage.lifeLeech += augment->type == Augment_t::LifeLeech ? augmentValue : 0;
-					damage.manaLeech += augment->type == Augment_t::ManaLeech ? augmentValue : 0;
-					damage.criticalDamage += augment->type == Augment_t::CriticalExtraDamage ? augmentValue : 0;
+					damage.lifeLeech += augment->type == Augment_t::LifeLeech ? augment->value : 0;
+					damage.manaLeech += augment->type == Augment_t::ManaLeech ? augment->value : 0;
+					damage.criticalDamage += augment->type == Augment_t::CriticalExtraDamage ? augment->value : 0;
+					damage.criticalChance += augment->type == Augment_t::CriticalHitChance ? augment->value : 0;
+				}
+			}
+		}
+
+		for (const auto &playerProficiencyAugment : player->getEquippedWeaponProficiency().spellAugments) {
+			if (playerProficiencyAugment.spellId == getSpellId()) {
+				if (playerProficiencyAugment.value == 0) {
+					continue;
+				}
+
+				switch (playerProficiencyAugment.augmentType) {
+					case PROFICIENCY_AUGMENTTYPE_BASE_DAMAGE: {
+						const float augmentPercent = playerProficiencyAugment.value;
+						damage.primary.value += static_cast<int32_t>(damage.primary.value * augmentPercent);
+						damage.secondary.value += static_cast<int32_t>(damage.secondary.value * augmentPercent);
+						break;
+					}
+					case PROFICIENCY_AUGMENTTYPE_LIFE_LEECH: {
+						const int32_t augmentValueLifeLeech = playerProficiencyAugment.value * 1000;
+						damage.lifeLeech += augmentValueLifeLeech;
+						break;
+					}
+					case PROFICIENCY_AUGMENTTYPE_MANA_LEECH: {
+						const int32_t augmentValueManaLeech = playerProficiencyAugment.value * 1000;
+						damage.manaLeech += augmentValueManaLeech;
+						break;
+					}
+					case PROFICIENCY_AUGMENTTYPE_CRITICAL_EXTRA_DAMAGE: {
+						const int32_t augmentValueCriticalDamage = playerProficiencyAugment.value * 1000;
+						damage.criticalDamage += augmentValueCriticalDamage;
+						break;
+					}
+					case PROFICIENCY_AUGMENTTYPE_CRITICAL_HIT_CHANCE: {
+						const int32_t augmentValueCriticalChance = playerProficiencyAugment.value * 1000;
+						damage.criticalChance += augmentValueCriticalChance;
+						break;
+					}
 				}
 			}
 		}
 	}
-};
+}
 
 int32_t Spell::calculateAugmentSpellCooldownReduction(const std::shared_ptr<Player> &player) const {
 	int32_t spellCooldown = 0;
@@ -779,6 +776,15 @@ int32_t Spell::calculateAugmentSpellCooldownReduction(const std::shared_ptr<Play
 		}
 	}
 
+	for (const auto &playerProficiencyAugment : player->getEquippedWeaponProficiency().spellAugments) {
+		if (playerProficiencyAugment.spellId == getSpellId()) {
+			if (playerProficiencyAugment.augmentType == PROFICIENCY_AUGMENTTYPE_COOLDOWN) {
+				const int32_t augmentValue = playerProficiencyAugment.value * 1;
+				spellCooldown += augmentValue;
+			}
+		}
+	}
+	
 	return spellCooldown;
 }
 
@@ -852,17 +858,6 @@ void Spell::setSpellId(uint16_t id) {
 
 void Spell::postCastSpell(const std::shared_ptr<Player> &player, bool finishedCast /*= true*/, bool payCost /*= true*/) const {
 	if (finishedCast) {
-		if (isSpender()) {
-			uint8_t harmonies = player->getHarmony();
-			player->spendHarmony();
-			player->clearCooldowns(false, true, 2 * 1000 * harmonies);
-			applySanctuaryEffect(player, harmonies);
-		}
-
-		if (isBuilder()) {
-			player->buildHarmony();
-		}
-
 		if (!player->hasFlag(PlayerFlags_t::HasNoExhaustion)) {
 			applyCooldownConditions(player);
 		}
@@ -878,11 +873,11 @@ void Spell::postCastSpell(const std::shared_ptr<Player> &player, bool finishedCa
 	}
 
 	if (payCost) {
-		postCastSpell(player, getManaCost(player), getSoulCost());
+		postCastSpell(player, getManaCost(player), getSoulCost(), getHarmonyCost());
 	}
 }
 
-void Spell::postCastSpell(const std::shared_ptr<Player> &player, uint32_t manaCost, uint32_t soulCost) {
+void Spell::postCastSpell(const std::shared_ptr<Player> &player, uint32_t manaCost, uint32_t soulCost, uint8_t harmonyCost) {
 	if (manaCost > 0) {
 		player->addManaSpent(manaCost);
 		player->changeMana(-static_cast<int32_t>(manaCost));
@@ -892,6 +887,10 @@ void Spell::postCastSpell(const std::shared_ptr<Player> &player, uint32_t manaCo
 		if (soulCost > 0) {
 			player->changeSoul(-static_cast<int32_t>(soulCost));
 		}
+	}
+
+	if (harmonyCost) {
+		player->setHarmony(0);
 	}
 }
 
@@ -1116,7 +1115,32 @@ void Spell::setLockedPZ(bool b) {
 	pzLocked = b;
 }
 
+bool Spell::getHarmonyCost() const {
+	return harmony;
+}
+
+void Spell::setHarmonyCost(bool h) {
+	harmony = h;
+}
+
 InstantSpell::InstantSpell() = default;
+
+static Direction getStraightDirectionTo(const Position &from, const Position &to) {
+	if (from == to) {
+		return DIRECTION_NONE;
+	}
+
+	const int_fast32_t dx = Position::getOffsetX(from, to);
+	const int_fast32_t dy = Position::getOffsetY(from, to);
+
+	if (std::abs(dx) >= std::abs(dy)) {
+		return dx > 0 ? DIRECTION_WEST : DIRECTION_EAST;
+	} else {
+		return dy > 0 ? DIRECTION_NORTH : DIRECTION_SOUTH;
+	}
+
+	return DIRECTION_NONE;
+}
 
 bool InstantSpell::playerCastInstant(const std::shared_ptr<Player> &player, std::string &param) const {
 	if (!playerSpellCheck(player)) {
@@ -1151,7 +1175,7 @@ bool InstantSpell::playerCastInstant(const std::shared_ptr<Player> &player, std:
 					applyCooldownConditions(player);
 
 					player->sendCancelMessage(ret);
-					g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+					g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 					return false;
 				}
 
@@ -1166,7 +1190,7 @@ bool InstantSpell::playerCastInstant(const std::shared_ptr<Player> &player, std:
 			if (!target || target->isRemoved() || target->getHealth() <= 0) {
 				if (!casterTargetOrDirection) {
 					player->sendCancelMessage(RETURNVALUE_YOUCANONLYUSEITONCREATURES);
-					g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+					g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 					return false;
 				}
 
@@ -1177,7 +1201,7 @@ bool InstantSpell::playerCastInstant(const std::shared_ptr<Player> &player, std:
 		if (!useDirection) {
 			if (!canThrowSpell(player, target)) {
 				player->sendCancelMessage(RETURNVALUE_CREATUREISNOTREACHABLE);
-				g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+				g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 				return false;
 			}
 
@@ -1201,7 +1225,7 @@ bool InstantSpell::playerCastInstant(const std::shared_ptr<Player> &player, std:
 				applyCooldownConditions(player);
 
 				player->sendCancelMessage(ret);
-				g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF);
+				g_game().addMagicEffect(player->getPosition(), CONST_ME_POFF, player);
 				return false;
 			}
 
@@ -1213,11 +1237,22 @@ bool InstantSpell::playerCastInstant(const std::shared_ptr<Player> &player, std:
 		var.text = param;
 	} else {
 		var.type = VARIANT_POSITION;
-		auto variantPosition = player->getPosition();
-		var.pos = variantPosition;
 
-		if (needDirection) {
-			applyInstantSpellDirection(player, var, variantPosition, getSpellId());
+		if (needDirection) { // bool to aim at target
+			const std::shared_ptr<Creature> &target = player->getAttackedCreature();
+			if (target && !target->isRemoved() && target->getHealth() > 0) {
+				const auto it = player->spellActivedAimMap.find(getSpellId());
+				if (it != player->spellActivedAimMap.end() && it->second == 1) {
+					Direction dir = getStraightDirectionTo(player->getPosition(), target->getPosition());
+					var.pos = Spells::getCasterPosition(player, dir);
+				} else {
+					var.pos = Spells::getCasterPosition(player, player->getDirection());
+				}
+			} else {
+				var.pos = Spells::getCasterPosition(player, player->getDirection());
+			}
+		} else {
+			var.pos = player->getPosition();
 		}
 
 		if (!playerInstantSpellCheck(player, var.pos)) {
@@ -1571,24 +1606,4 @@ void RuneSpell::setCharges(uint32_t c) {
 		hasCharges = true;
 	}
 	charges = c;
-}
-
-// Returns true if the spell is classified as a "Builder" monk spell.
-bool Spell::isBuilder() const {
-	return monkSpellType == MonkSpell_t::Builder;
-}
-
-// Returns true if the spell is classified as a "Spender" monk spell.
-bool Spell::isSpender() const {
-	return monkSpellType == MonkSpell_t::Spender;
-}
-
-// Retrieves the current monk spell type assigned to this spell.
-MonkSpell_t Spell::getMonkSpellType() const {
-	return monkSpellType;
-}
-
-// Sets the monk spell type for this spell.
-void Spell::setMonkSpellType(MonkSpell_t type) {
-	monkSpellType = type;
 }

@@ -5,6 +5,7 @@ target_sources(
             io_wheel.cpp
             iobestiary.cpp
             io_bosstiary.cpp
+            iobountytasks.cpp
             ioguild.cpp
             iologindata.cpp
             functions/iologindata_load_player.cpp
@@ -13,5 +14,6 @@ target_sources(
             iomapserialize.cpp
             iomarket.cpp
             ioprey.cpp
+            ioweeklytasks.cpp
             player_storage_repository_db.cpp
 )

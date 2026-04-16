@@ -197,11 +197,11 @@ function skinning.onUse(player, item, fromPosition, target, toPosition, isHotkey
 		return true
 	end
 
-	local charmMType, chanceRange = player:getCharmMonsterType(CHARM_SCAVENGE), 100000
+	local charmMType, chanceRange = player:getCharmMonsterType(CHARM_MINOR_SCAVENGE), 100000
 	if charmMType then
 		local charmCorpse = charmMType:getCorpseId()
 		if charmCorpse == target.itemid or ItemType(charmCorpse):getDecayId() == target.itemid then
-			local charmChance = player:getCharmChance(CHARM_SCAVENGE)
+			local charmChance = player:getCharmChance(CHARM_MINOR_SCAVENGE)
 			charmChance = (charmChance == 0 and 1 or charmChance) -- Guarantee that the chance will neve be 0
 			chanceRange = chanceRange * charmChance / 100
 		end

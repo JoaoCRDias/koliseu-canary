@@ -211,7 +211,7 @@ local charms = {
 	-- Void's Call charm
 	[19] = {
 		name = "Void's Call",
-		description = "Adds 2% Mana Leech to attacks if wearing equipment that provides mana leech.",
+		description = "Adds Mana Leech to attacks if wearing equipment that provides mana leech.",
 		category = CHARM_MINOR,
 		type = CHARM_PASSIVE,
 		chance = { 0.8, 1.2, 1.6 },

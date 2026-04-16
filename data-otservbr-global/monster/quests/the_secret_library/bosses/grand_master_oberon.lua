@@ -78,11 +78,10 @@ monster.loot = {
 	{ name = "falcon mace", chance = 500, maxCount = 1 },
 	{ name = "grant of arms", chance = 500, maxCount = 1 },
 	{ name = "falcon bow", chance = 350, maxCount = 1 },
-	{ name = "falcon circlet", chance = 350, maxCount = 1 },
+	{ id = 28714, chance = 350, maxCount = 1 }, -- falcon circlet
 	{ name = "falcon coif", chance = 350, maxCount = 1 },
 	{ name = "falcon rod", chance = 350, maxCount = 1 },
 	{ name = "falcon wand", chance = 350, maxCount = 1 },
-	{ name = "falcon sai", chance = 300, maxCount = 1 },
 	{ name = "falcon shield", chance = 200, maxCount = 1 },
 	{ name = "falcon greaves", chance = 200, maxCount = 1 },
 	{ name = "falcon plate", chance = 200, maxCount = 1 },

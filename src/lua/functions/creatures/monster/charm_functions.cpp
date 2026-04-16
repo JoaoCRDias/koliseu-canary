@@ -99,7 +99,7 @@ int CharmFunctions::luaCharmType(lua_State* L) {
 }
 
 int CharmFunctions::luaCharmPoints(lua_State* L) {
-	// get: charm:points() set: charm:points(value)
+	// get: charm:points() set: charm:points(table)
 	const auto &charm = Lua::getUserdataShared<Charm>(L, 1, "Charm");
 	if (lua_gettop(L) == 1) {
 		lua_createtable(L, charm->points.size(), 0);
@@ -150,7 +150,7 @@ int CharmFunctions::luaCharmPercentage(lua_State* L) {
 }
 
 int CharmFunctions::luaCharmChance(lua_State* L) {
-	// get: charm:chance() set: charm:chance(value)
+	// get: charm:chance() set: charm:chance(table)
 	const auto &charm = Lua::getUserdataShared<Charm>(L, 1, "Charm");
 	if (lua_gettop(L) == 1) {
 		lua_createtable(L, charm->chance.size(), 0);
@@ -190,7 +190,7 @@ int CharmFunctions::luaCharmMessageCancel(lua_State* L) {
 }
 
 int CharmFunctions::luaCharmMessageServerLog(lua_State* L) {
-	// get: charm:messageServerLog() set: charm:messageServerLog(string)
+	// get: charm:messageServerLog() set: charm:messageServerLog(bool)
 	const auto &charm = Lua::getUserdataShared<Charm>(L, 1, "Charm");
 	if (lua_gettop(L) == 1) {
 		Lua::pushBoolean(L, charm->logMessage);

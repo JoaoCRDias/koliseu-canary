@@ -32,7 +32,7 @@ static const std::vector<ReplaceStringTestCase> kReplaceStringTestCases {
 	{ "all together", " ", "_", "all_together", "spaces" },
 	{ "beautiful", "u", "", "beatifl", "remove char" },
 	{ "empty_empty_empty_", "empty_", "", "", "remove substr" },
-	{ "I am someone", "someone", "Lucas", "I am Lucas", "replace word" },
+	{ "I am someone", "someone", "Gabriel", "I am Gabriel", "replace word" },
 	{ "[[123[[[[[[124[[asf[[ccc[[[", "[[", "\\[[", "\\[[123\\[[\\[[\\[[124\\[[asf\\[[ccc\\[[[", "escape" },
 };
 

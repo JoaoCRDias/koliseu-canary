@@ -70,6 +70,8 @@ local isles = {
 	[4] = { isMission = false, position = Position(32457, 32937, 7) },
 }
 
+npcType:speechBubble(SPEECHBUBBLE_TRAVELER)
+
 local function creatureSayCallback(npc, creature, type, message)
 	local player = Player(creature)
 	local playerId = player:getId()

@@ -15,7 +15,7 @@ function callback.monsterOnDropLoot(monster, corpse)
 		return
 	end
 
-	local mTypeCharm = player and player:getCharmMonsterType(CHARM_GUT)
+	local mTypeCharm = player and player:getCharmMonsterType(CHARM_MINOR_GUT)
 	local gut = mTypeCharm and mTypeCharm:raceId() == mType:raceId()
 
 	local lootTable = mType:generateLootRoll({ factor = factor, gut = gut }, {}, player)

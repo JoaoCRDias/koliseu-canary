@@ -49,6 +49,9 @@ end
 npcType.onCloseChannel = function(npc, creature)
 	npcHandler:onCloseChannel(npc, creature)
 end
+
+npcType:speechBubble(SPEECHBUBBLE_TRAVELER)
+
 -- Don't forget npcHandler = npcHandler in the parameters. It is required for all StdModule functions!
 local travelNode = keywordHandler:addKeyword({ "fibula" }, StdModule.say, { npcHandler = npcHandler, text = "You want me to transport you and your spouse back to {Fibula}?" })
 travelNode:addChildKeyword({ "yes" }, StdModule.travel, { npcHandler = npcHandler, premium = false, level = 0, cost = 0, destination = Position(32153, 32457, 7) })

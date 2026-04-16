@@ -164,7 +164,7 @@ local function parseRequestStoreOffers(playerId, msg)
 		local subAction = msg:getByte()
 		local offerId = subAction
 		local category
-		if subAction >= GameStore.SubActions.BLESSING_TWIST and subAction <= GameStore.SubActions.BLESSING_ALL_PVP then
+		if subAction >= GameStore.SubActions.BLESSING_SOLITUDE and subAction <= GameStore.SubActions.BLESSING_TWIST then
 			category = GameStore.getCategoryByName("Blessings")
 		else
 			category = GameStore.getCategoryByName("Useful Things")
@@ -172,6 +172,12 @@ local function parseRequestStoreOffers(playerId, msg)
 
 		if subAction == GameStore.SubActions.PREY_THIRDSLOT_REAL then
 			offerId = GameStore.SubActions.PREY_THIRDSLOT_REDIRECT
+		elseif subAction == GameStore.SubActions.CHARM_EXPANSION then
+			offerId = GameStore.SubActions.CHARM_EXPANSION
+		elseif subAction == GameStore.SubActions.TASKHUNTING_THIRDSLOT then
+			offerId = GameStore.SubActions.WEEKLY_TASK_EXPANSION
+		elseif subAction == GameStore.SubActions.WEEKLY_TASK_EXPANSION then
+			offerId = GameStore.SubActions.WEEKLY_TASK_EXPANSION
 		end
 		if category then
 			addPlayerEvent(sendShowStoreOffers, 50, playerId, category, offerId)
@@ -244,6 +250,7 @@ local function parseBuyStoreOffer(playerId, msg)
 			and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_PREYBONUS
 			and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_PREYSLOT
 			and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_HUNTINGSLOT
+			and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_WEEKLYTASKEXPANSION
 			and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_TEMPLE
 			and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_SEXCHANGE
 			and offer.type ~= GameStore.OfferTypes.OFFER_TYPE_INSTANT_REWARD_ACCESS
@@ -303,6 +310,8 @@ local function parseBuyStoreOffer(playerId, msg)
 			GameStore.processExpBoostPurchase(player)
 		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_HUNTINGSLOT then
 			GameStore.processTaskHuntingThirdSlot(player)
+		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_WEEKLYTASKEXPANSION then
+			GameStore.processWeeklyTaskExpansion(player)
 		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_PREYSLOT then
 			GameStore.processPreyThirdSlot(player)
 		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_PREYBONUS then

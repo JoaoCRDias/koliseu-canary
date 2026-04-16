@@ -67,6 +67,7 @@ public:
 	int32_t playerWeaponCheck(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, uint8_t shootRange) const;
 	static bool useFist(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target);
 	virtual bool useWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Creature> &target) const;
+	uint16_t getWeaponAttackEffect(const std::shared_ptr<Item> &item, const std::shared_ptr<Player> &player) const;
 
 	virtual int32_t getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item, bool maxDamage = false) const = 0;
 	virtual int32_t getElementDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item) const = 0;
@@ -213,6 +214,11 @@ public:
 	void setScriptId(int32_t newScriptId);
 	bool isLoadedScriptId() const;
 
+	// Update 15.00
+	virtual std::string getElementalBond() const {
+		return elementalBond;
+	}
+
 protected:
 	void internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Creature> &target, int32_t damageModifier, int32_t cleavePercent = 0) const;
 	void internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Tile> &tile) const;
@@ -245,6 +251,7 @@ private:
 	bool wieldUnproperly = false;
 	bool m_isDisabledChain = false;
 	std::string vocationString;
+	std::string elementalBond;
 
 	void onUsedWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Tile> &destTile) const;
 

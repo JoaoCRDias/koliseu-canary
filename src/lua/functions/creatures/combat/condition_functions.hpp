@@ -27,6 +27,7 @@ private:
 
 	static int luaConditionGetTicks(lua_State* L);
 	static int luaConditionSetTicks(lua_State* L);
+	static int luaConditionGetFoodTicks(lua_State* L);
 
 	static int luaConditionSetParameter(lua_State* L);
 	static int luaConditionSetFormula(lua_State* L);

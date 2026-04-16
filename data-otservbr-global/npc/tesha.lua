@@ -56,6 +56,10 @@ npcType.onCloseChannel = function(npc, creature)
 	npcHandler:onCloseChannel(npc, creature)
 end
 
+-- NPC dialog options
+npcType:addDialogOptions("withdraw", "deposit all", "balance")
+npcType:speechBubble(SPEECHBUBBLE_TRADE)
+
 local function creatureSayCallback(npc, creature, type, message)
 	local player = Player(creature)
 	local playerId = player:getId()
@@ -89,6 +93,7 @@ npcConfig.shop = {
 	{ itemName = "black pearl", clientId = 3027, buy = 560, sell = 280 },
 	{ itemName = "blue crystal shard", clientId = 16119, sell = 1500 },
 	{ itemName = "blue crystal splinter", clientId = 16124, sell = 400 },
+	{ itemName = "bounty talisman", clientId = 51978, buy = 5000 },
 	{ itemName = "bronze goblet", clientId = 5807, buy = 2000 },
 	{ itemName = "brown crystal splinter", clientId = 16123, sell = 400 },
 	{ itemName = "brown giant shimmering pearl", clientId = 282, sell = 3000 },

@@ -41,7 +41,7 @@ function MonsterType:generateLootRoll(config, resultTable, player)
 
 		local originalChance = chance
 		if config.gut and iType:getType() == ITEM_TYPE_CREATUREPRODUCT then
-			local charmChance = player:getCharmChance(CHARM_GUT)
+			local charmChance = player:getCharmChance(CHARM_MINOR_GUT)
 			adjustedChance = adjustedChance + math.ceil((adjustedChance * charmChance / 100))
 		end
 

@@ -169,6 +169,9 @@ bool IOLoginData::loadPlayer(const std::shared_ptr<Player> &player, const DBResu
 		// Load instant spells list
 		IOLoginDataLoad::loadPlayerInstantSpellList(player, result);
 
+		// load weapon proficiency
+		IOLoginDataLoad::loadPlayerWeaponProficiency(player, result); // Summer Update 2025
+
 		if (!disableIrrelevantInfo) {
 			// Load additional data only if the player is online (e.g., forge, bosstiary)
 			loadOnlyDataForOnlinePlayer(player, result);
@@ -189,7 +192,6 @@ void IOLoginData::loadOnlyDataForOnlinePlayer(const std::shared_ptr<Player> &pla
 	IOLoginDataLoad::loadPlayerBosstiary(player, result);
 	IOLoginDataLoad::loadPlayerInitializeSystem(player);
 	IOLoginDataLoad::loadPlayerUpdateSystem(player);
-	IOLoginDataLoad::loadPlayerExivaRestrictions(player);
 }
 
 bool IOLoginData::savePlayer(const std::shared_ptr<Player> &player) {
@@ -271,6 +273,15 @@ void IOLoginData::saveOnlyDataForOnlinePlayer(const std::shared_ptr<Player> &pla
 		return;
 	}
 
+	// Winter Update 2025 - Task Board (only save when online to prevent overwriting with empty data)
+	if (!IOLoginDataSave::savePlayerBountyTasks(player)) {
+		throw DatabaseException("[IOLoginDataSave::savePlayerBountyTasks] - Failed to save player bounty tasks: " + player->getName());
+	}
+
+	if (!IOLoginDataSave::savePlayerWeeklyTasks(player)) {
+		throw DatabaseException("[IOLoginDataSave::savePlayerWeeklyTasks] - Failed to save player weekly tasks: " + player->getName());
+	}
+
 	if (!player->forgeHistory().save()) {
 		throw DatabaseException("[IOLoginData::saveOnlyDataForOnlinePlayer] - Failed to save player forge history: " + player->getName());
 	}
@@ -286,7 +297,8 @@ void IOLoginData::saveOnlyDataForOnlinePlayer(const std::shared_ptr<Player> &pla
 	player->wheel().saveRevealedGems();
 	player->wheel().saveActiveGems();
 	player->wheel().saveKVModGrades();
-	player->wheel().saveKVScrolls();
+	player->wheel().saveKVPromotionScrolls();
+	player->wheel().saveKVHuntingTaskShopExtraPoints();
 
 	if (!IOLoginDataSave::savePlayerStorage(player)) {
 		throw DatabaseException("[IOLoginDataSave::savePlayerStorage] - Failed to save player storage: " + player->getName());

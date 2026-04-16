@@ -30,6 +30,7 @@ void ConditionFunctions::init(lua_State* L) {
 
 	Lua::registerMethod(L, "Condition", "getTicks", ConditionFunctions::luaConditionGetTicks);
 	Lua::registerMethod(L, "Condition", "setTicks", ConditionFunctions::luaConditionSetTicks);
+	Lua::registerMethod(L, "Condition", "getFoodTicks", ConditionFunctions::luaConditionGetFoodTicks);
 
 	Lua::registerMethod(L, "Condition", "setParameter", ConditionFunctions::luaConditionSetParameter);
 	Lua::registerMethod(L, "Condition", "setFormula", ConditionFunctions::luaConditionSetFormula);
@@ -160,6 +161,22 @@ int ConditionFunctions::luaConditionSetTicks(lua_State* L) {
 	if (condition) {
 		condition->setTicks(ticks);
 		Lua::pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int ConditionFunctions::luaConditionGetFoodTicks(lua_State* L) {
+	// condition:getFoodTicks()
+	const auto &condition = Lua::getUserdataShared<Condition>(L, 1, "Condition");
+	if (condition) {
+		const auto &conditionRegen = std::dynamic_pointer_cast<ConditionRegeneration>(condition);
+		if (conditionRegen) {
+			lua_pushnumber(L, conditionRegen->getFoodTicks());
+		} else {
+			lua_pushnumber(L, 0);
+		}
 	} else {
 		lua_pushnil(L);
 	}

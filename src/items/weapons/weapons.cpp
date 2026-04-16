@@ -19,21 +19,6 @@
 #include "lua/global/lua_variant.hpp"
 #include "creatures/players/player.hpp"
 
-namespace {
-	void sendWeaponSoundEffect(const std::shared_ptr<Player> &player, const CombatParams &params) {
-		if (!player) {
-			return;
-		}
-
-		if (params.soundCastEffect == SoundEffect_t::SILENCE) {
-			g_game().sendDoubleSoundEffect(player->getPosition(), player->getHitSoundEffect(), player->getAttackSoundEffect(), player);
-			return;
-		}
-
-		g_game().sendDoubleSoundEffect(player->getPosition(), params.soundCastEffect, params.soundImpactEffect, player);
-	}
-}
-
 Weapons::Weapons() = default;
 Weapons::~Weapons() = default;
 
@@ -139,6 +124,15 @@ int32_t Weapon::playerWeaponCheck(const std::shared_ptr<Player> &player, const s
 		return 0;
 	}
 
+	// Summer Update 2025 - Proficiency Perk: attackRange
+	const uint8_t attackRange = player->getEquippedWeaponProficiency().attackRange;
+	if (attackRange > 0) {
+#ifdef DEBUG_SUMMER_UPDATE_2025_LOG
+		g_logger().warn("[{}] shootRange antes {} e shootRange depois {}", __FUNCTION__, shootRange, shootRange + attackRange);
+#endif // DEBUG_SUMMER_UPDATE_2025_LOG
+		shootRange += attackRange;
+	}
+
 	if (std::max<uint32_t>(Position::getDistanceX(playerPos, targetPos), Position::getDistanceY(playerPos, targetPos)) > shootRange) {
 		return 0;
 	}
@@ -231,14 +225,10 @@ bool Weapon::useFist(const std::shared_ptr<Player> &player, const std::shared_pt
 	params.blockedByArmor = true;
 	params.blockedByShield = true;
 	params.soundImpactEffect = SoundEffect_t::HUMAN_CLOSE_ATK_FIST;
+	params.impactEffect = CONST_ME_FIST_ATTACK; // 15.12+ weapon attack effect
 
 	CombatDamage damage;
-	if (player->getPlayerVocationEnum() == VOCATION_MONK_CIP) {
-		damage.origin = ORIGIN_FIST;
-	} else {
-		damage.origin = ORIGIN_MELEE;
-	}
-
+	damage.origin = ORIGIN_MELEE;
 	damage.primary.type = params.combatType;
 	damage.primary.value = -normal_random(0, maxDamage);
 
@@ -250,8 +240,50 @@ bool Weapon::useFist(const std::shared_ptr<Player> &player, const std::shared_pt
 	return true;
 }
 
+uint16_t Weapon::getWeaponAttackEffect(const std::shared_ptr<Item> &item, const std::shared_ptr<Player> &player) const {
+	if (!item) {
+		return CONST_ME_FIST_ATTACK; // Fist attack when no weapon
+	}
+
+	const WeaponType_t weaponType = item->getWeaponType();
+	const int32_t slotPosition = item->getSlotPosition();
+	const bool isTwoHanded = (slotPosition & SLOTP_TWO_HAND) != 0;
+
+	// Determine attack effect based on weapon type
+	switch (weaponType) {
+		case WEAPON_SWORD:
+			return CONST_ME_SWORD_ATTACK;
+
+		case WEAPON_CLUB:
+			// Two-handed clubs can be monk staves
+			if (isTwoHanded) {
+				return CONST_ME_MONK_STAFF_ATTACK;
+			}
+			return CONST_ME_CLUB_ATTACK;
+
+		case WEAPON_AXE:
+			// One-handed axes can be monk daggers/kamas
+			if (!isTwoHanded) {
+				return CONST_ME_MONK_DAGGERS_ATTACK;
+			}
+			return CONST_ME_AXE_ATTACK;
+
+		case WEAPON_FIST:
+			return CONST_ME_FIST_ATTACK;
+
+		default:
+			return CONST_ME_NONE;
+	}
+}
+
 void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Creature> &target, int32_t damageModifier, int32_t cleavePercent) const {
-	sendWeaponSoundEffect(player, params);
+	if (player) {
+		if (params.soundCastEffect == SoundEffect_t::SILENCE) {
+			g_game().sendDoubleSoundEffect(player->getPosition(), player->getHitSoundEffect(), player->getAttackSoundEffect(), player);
+		} else {
+			g_game().sendDoubleSoundEffect(player->getPosition(), params.soundCastEffect, params.soundImpactEffect, player);
+		}
+	}
 
 	if (isLoadedScriptId()) {
 		if (cleavePercent != 0) {
@@ -273,12 +305,12 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 		damage.primary.type = params.combatType;
 		damage.secondary.type = getElementType();
 
-		if (item->getWeaponType() == WEAPON_FIST) {
-			damage.origin = ORIGIN_FIST;
-		}
-
 		const int32_t totalDamage = (getWeaponDamage(player, target, item) * damageModifier) / 100;
-		const int32_t physicalAttack = item->getAttack();
+		int32_t physicalAttack = item->getAttack();
+		const uint8_t extraProficiencyAttack = player->getEquippedWeaponProficiency().attack;
+		if (extraProficiencyAttack > 0) {
+			physicalAttack += extraProficiencyAttack;
+		}
 		const int32_t elementalAttack = getElementDamageValue();
 		const int32_t combinedAttack = physicalAttack + elementalAttack;
 		if (elementalAttack > 0) {
@@ -304,6 +336,13 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 			damage.secondary.value = (damage.secondary.value * damagePercent) / 100;
 		}
 
+		// Apply weapon attack visual effect (15.12+)
+		// Show effect even if attack misses or deals no damage
+		const uint16_t attackEffect = getWeaponAttackEffect(item, player);
+		if (attackEffect != CONST_ME_NONE && cleavePercent == 0) {
+			g_game().addMagicEffect(target->getPosition(), attackEffect, player);
+		}
+
 		// Handle chain system
 		if (g_configManager().getBoolean(TOGGLE_CHAIN_SYSTEM) && params.chainCallback) {
 			m_combat->doCombatChain(player, target, params.aggressive);
@@ -324,7 +363,7 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 		executeUseWeapon(player, var);
 	} else {
 		Combat::postCombatEffects(player, player->getPosition(), tile->getPosition(), params);
-		g_game().addMagicEffect(tile->getPosition(), CONST_ME_POFF);
+		g_game().addMagicEffect(tile->getPosition(), CONST_ME_POFF, player);
 		g_game().sendSingleSoundEffect(tile->getPosition(), SoundEffect_t::PHYSICAL_RANGE_MISS, player);
 	}
 	onUsedWeapon(player, item, tile);
@@ -595,10 +634,6 @@ bool WeaponMelee::getSkillType(const std::shared_ptr<Player> &player, const std:
 
 	const WeaponType_t weaponType = item->getWeaponType();
 	switch (weaponType) {
-		case WEAPON_FIST: {
-			skill = SKILL_FIST;
-			return true;
-		}
 		case WEAPON_SWORD: {
 			skill = SKILL_SWORD;
 			return true;
@@ -611,6 +646,11 @@ bool WeaponMelee::getSkillType(const std::shared_ptr<Player> &player, const std:
 
 		case WEAPON_AXE: {
 			skill = SKILL_AXE;
+			return true;
+		}
+
+		case WEAPON_FIST: {
+			skill = SKILL_FIST;
 			return true;
 		}
 
@@ -642,7 +682,11 @@ int16_t WeaponMelee::getElementDamageValue() const {
 
 int32_t WeaponMelee::getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &, const std::shared_ptr<Item> &item, bool maxDamage /*= false*/) const {
 	const int32_t attackSkill = player->getWeaponSkill(item);
-	const int32_t physicalAttack = std::max<int32_t>(0, item->getAttack());
+	int32_t physicalAttack = std::max<int32_t>(0, item->getAttack());
+	const uint8_t extraProficiencyAttack = player->getEquippedWeaponProficiency().attack;
+	if (extraProficiencyAttack > 0) {
+		physicalAttack += extraProficiencyAttack;
+	}
 	const int32_t elementalAttack = getElementDamageValue();
 	const int32_t combinedAttack = physicalAttack + elementalAttack;
 
@@ -828,6 +872,19 @@ bool WeaponDistance::useWeapon(const std::shared_ptr<Player> &player, const std:
 		}
 	}
 
+	if (player->getLevel() < 20) {
+		chance += 50;
+	}
+
+	// Summer Update 2025 - Proficiency Perk: rangedHitChance
+	const float rangedHitChance = player->getEquippedWeaponProficiency().rangedHitChance;
+	if (rangedHitChance > 0) {
+#ifdef DEBUG_SUMMER_UPDATE_2025_LOG
+		g_logger().warn("[{}] rangedHitChance chance antes {} e chance depois {}", __FUNCTION__, chance, static_cast<int32_t>(std::ceil(chance * rangedHitChance)));
+#endif // DEBUG_SUMMER_UPDATE_2025_LOG
+		chance += static_cast<int32_t>(std::ceil(chance * rangedHitChance));
+	}
+
 	if (chance >= uniform_random(1, 100)) {
 		Weapon::internalUseWeapon(player, item, target, damageModifier);
 	} else {
@@ -907,6 +964,11 @@ int32_t WeaponDistance::getWeaponDamage(const std::shared_ptr<Player> &player, c
 
 			attackValue += weapon->getAttack();
 		}
+	}
+
+	const uint8_t extraProficiencyAttack = player->getEquippedWeaponProficiency().attack;
+	if (extraProficiencyAttack > 0) {
+		attackValue += extraProficiencyAttack;
 	}
 
 	const int32_t attackSkill = player->getSkillLevel(SKILL_DISTANCE);

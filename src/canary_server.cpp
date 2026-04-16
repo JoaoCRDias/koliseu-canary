@@ -14,6 +14,7 @@
 #include "creatures/npcs/npcs.hpp"
 #include "creatures/players/grouping/familiars.hpp"
 #include "creatures/players/imbuements/imbuements.hpp"
+#include "creatures/players/proficiencies/proficiencies.hpp"
 #include "creatures/players/storages/storages.hpp"
 #include "database/databasemanager.hpp"
 #include "declarations.hpp"
@@ -24,6 +25,8 @@
 #include "io/io_bosstiary.hpp"
 #include "io/iomarket.hpp"
 #include "io/ioprey.hpp"
+#include "io/iobountytasks.hpp"
+#include "io/ioweeklytasks.hpp"
 #include "lib/thread/thread_pool.hpp"
 #include "lua/creature/events.hpp"
 #include "lua/modules/modules.hpp"
@@ -102,6 +105,10 @@ int CanaryServer::run() {
 #endif
 
 				g_game().start(&serviceManager);
+				g_ioweeklytasks().initializeShopOffers(); // Winter Update 2025 - Task Board Shop (after mounts/outfits are loaded)
+				g_ioweeklytasks().initializeDeliveryItems(); // Winter Update 2025 - Load delivery items from Lua
+				g_ioweeklytasks().initializeResetTimestamp(); // Winter Update 2025 - Calculate global weekly reset timestamp
+				g_ioweeklytasks().checkWeeklyResetOnStartup(); // Winter Update 2025 - Mark players for reward distribution if reset day
 				if (g_configManager().getBoolean(TOGGLE_MAINTAIN_MODE)) {
 					g_game().setGameState(GAME_STATE_CLOSED);
 					g_logger().warn("Initialized in maintain mode!");
@@ -143,12 +150,12 @@ int CanaryServer::run() {
 		auto now = std::chrono::steady_clock::now();
 
 		if (now - lastLog >= warnEvery) {
-			logger.warn("Startup still running ({} s)...", std::chrono::duration_cast<std::chrono::seconds>(now - start).count());
+			logger.warn("Startup still running ({} s)…", std::chrono::duration_cast<std::chrono::seconds>(now - start).count());
 			lastLog = now;
 		}
 
 		if (now - start > timeout) {
-			logger.error("Startup exceeded {} minutes - aborting.", std::chrono::duration_cast<std::chrono::minutes>(timeout).count());
+			logger.error("Startup exceeded {} minutes – aborting.", std::chrono::duration_cast<std::chrono::minutes>(timeout).count());
 			shutdown();
 			return EXIT_FAILURE;
 		}
@@ -340,9 +347,11 @@ void CanaryServer::validateDatapack() {
 	const auto datapackName = g_configManager().getString(DATA_DIRECTORY);
 
 	if (!useAnyDatapack && datapackName != "data-canary" && datapackName != "data-otservbr-global") {
-		throw FailedToInitializeCanary(fmt::format("The datapack folder name '{}' is wrong. Valid names: 'data-canary', "
-		                                           "'data-otservbr-global', or set USE_ANY_DATAPACK_FOLDER = true in config.lua.",
-		                                           datapackName));
+		throw FailedToInitializeCanary(fmt::format(
+			"The datapack folder name '{}' is wrong. Valid names: 'data-canary', "
+			"'data-otservbr-global', or set USE_ANY_DATAPACK_FOLDER = true in config.lua.",
+			datapackName
+		));
 	}
 }
 
@@ -355,7 +364,10 @@ void CanaryServer::initializeDatabase() {
 
 	logger.debug("Running database manager...");
 	if (!DatabaseManager::isDatabaseSetup()) {
-		throw FailedToInitializeCanary(fmt::format("The database you have specified in {} is empty, please import the schema.sql to your database.", g_configManager().getConfigFileLua()));
+		throw FailedToInitializeCanary(fmt::format(
+			"The database you have specified in {} is empty, please import the schema.sql to your database.",
+			g_configManager().getConfigFileLua()
+		));
 	}
 
 	DatabaseManager::updateDatabase();
@@ -384,6 +396,7 @@ void CanaryServer::loadModules() {
 	modulesLoadHelper(Outfits::getInstance().loadFromXml(), "XML/outfits.xml");
 	modulesLoadHelper(Familiars::getInstance().loadFromXml(), "XML/familiars.xml");
 	modulesLoadHelper(g_imbuements().loadFromXml(), "XML/imbuements.xml");
+	modulesLoadHelper(g_proficiencies().loadFromJson(), "json/proficiencies.json");
 	modulesLoadHelper(g_storages().loadFromXML(), "XML/storages.xml");
 
 	modulesLoadHelper(Item::items.loadFromXml(), "items.xml");
@@ -414,6 +427,7 @@ void CanaryServer::loadModules() {
 	g_game().loadBoostedCreature();
 	g_ioBosstiary().loadBoostedBoss();
 	g_ioprey().initializeTaskHuntOptions();
+
 	g_game().logCyclopediaStats();
 }
 

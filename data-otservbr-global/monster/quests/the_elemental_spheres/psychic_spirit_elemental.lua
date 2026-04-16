@@ -15,17 +15,21 @@ monster.outfit = {
 
 monster.health = 1400
 monster.maxHealth = 1400
-monster.race = "undead"
-monster.corpse = 6003
-monster.speed = 125
+monster.race = "blood"
+monster.corpse = 51279
+monster.speed = 135
+monster.manaCost = 0
 
 monster.changeTarget = {
-	interval = 4000,
-	chance = 0,
+	interval = 20000,
+	chance = 15,
 }
 
 monster.strategiesTarget = {
-	nearest = 100,
+	nearest = 70,
+	health = 10,
+	damage = 10,
+	random = 10,
 }
 
 monster.flags = {
@@ -35,12 +39,12 @@ monster.flags = {
 	convinceable = false,
 	pushable = false,
 	rewardBoss = false,
-	illusionable = false,
+	illusionable = true,
 	canPushItems = true,
 	canPushCreatures = false,
-	staticAttackChance = 90,
+	staticAttackChance = 85,
 	targetDistance = 1,
-	runHealth = 0,
+	runHealth = 1,
 	healthHidden = false,
 	isBlockable = false,
 	canWalkOnEnergy = false,
@@ -56,37 +60,36 @@ monster.light = {
 monster.voices = {
 	interval = 5000,
 	chance = 10,
-	--{ text = "Death to the Defilers!", yell = false },
-	--{ text = "You are not welcome here.", yell = false },
-	--{ text = "Flee as long as you can.", yell = false },
-	--{ text = "Bahaha aka!", yell = false },
-	--{ text = "Ulathil beia Thratha!", yell = false },
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 44000, maxCount = 120 },
-	{ name = "holy ash", chance = 10800 },
-	{ name = "small topaz", chance = 4500, maxCount = 2 },
-	{ name = "spirited soil", chance = 2100 },
-	{ name = "moonlight rod", chance = 1935 },
+    -- common
+	{ name = "gold coin", chance = 80000, maxCount = 130 },
+    { name = "holy ash", chance = 70000 },
+    -- uncommon
+	{ name = "small topaz", chance = 25000, maxCount = 2 },
+    -- Semi-rare
+	{ name = "moonlight rod", chance = 4000 },
+	{ name = "spirited soil", chance = 3800 },
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -15 },
-	{ name = "combat", interval = 2000, chance = 10, type = COMBAT_PHYSICALDAMAGE, minDamage = 0, maxDamage = -25, range = 7, shootEffect = CONST_ANI_ARROW, target = false },
+	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -350 },
+    { name = "combat", interval = 2000, chance = 40, type = COMBAT_EARTHDAMAGE, minDamage = -50, maxDamage = -200, radius = 4, effect = CONST_ME_GREEN_ENERGYSHOCK, target = false },
+	{ name = "spirit elemental ring", interval = 5000, chance = 10, minDamage = -65, maxDamage = -510 },
 }
 
 monster.defenses = {
-	defense = 10,
-	armor = 6,
-	mitigation = 0.30,
+	defense = 25,
+	armor = 25,
+	--	mitigation = ???,
 }
 
 monster.elements = {
 	{ type = COMBAT_PHYSICALDAMAGE, percent = 0 },
 	{ type = COMBAT_ENERGYDAMAGE, percent = 0 },
 	{ type = COMBAT_EARTHDAMAGE, percent = 0 },
-	{ type = COMBAT_FIREDAMAGE, percent = -100 },
+	{ type = COMBAT_FIREDAMAGE, percent = 100 },
 	{ type = COMBAT_LIFEDRAIN, percent = 0 },
 	{ type = COMBAT_MANADRAIN, percent = 0 },
 	{ type = COMBAT_DROWNDAMAGE, percent = 0 },

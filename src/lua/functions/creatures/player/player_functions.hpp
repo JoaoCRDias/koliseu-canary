@@ -44,11 +44,15 @@ class PlayerFunctions {
 	static int luaPlayerAddBestiaryKill(lua_State* L);
 	static int luaPlayerIsMonsterBestiaryUnlocked(lua_State* L);
 	static int luaPlayercharmExpansion(lua_State* L);
+	static int luaPlayerWeeklyTaskExpansion(lua_State* L);
+	static int luaPlayerResetWeeklyTasks(lua_State* L);
+	static int luaPlayerPerformWeeklyReset(lua_State* L);
 	static int luaPlayergetCharmMonsterType(lua_State* L);
 
 	static int luaPlayerisMonsterPrey(lua_State* L);
 	static int luaPlayerGetPreyCards(lua_State* L);
 	static int luaPlayerGetPreyLootPercentage(lua_State* L);
+	static int luaPlayerGetBountyTalismanLootBonus(lua_State* L);
 	static int luaPlayerPreyThirdSlot(lua_State* L);
 	static int luaPlayerTaskThirdSlot(lua_State* L);
 	static int luaPlayerRemovePreyStamina(lua_State* L);
@@ -57,6 +61,51 @@ class PlayerFunctions {
 	static int luaPlayerRemoveTaskHuntingPoints(lua_State* L);
 	static int luaPlayerGetTaskHuntingPoints(lua_State* L);
 	static int luaPlayerAddTaskHuntingPoints(lua_State* L);
+
+	static int luaPlayerGetBountyPoints(lua_State* L);
+	static int luaPlayerAddBountyPoints(lua_State* L);
+	static int luaPlayerRemoveBountyPoints(lua_State* L);
+	static int luaPlayerGetRerollTasks(lua_State* L);
+	static int luaPlayerAddRerollTasks(lua_State* L);
+	static int luaPlayerRemoveRerollTasks(lua_State* L);
+	static int luaPlayerGetSoulsealsPoints(lua_State* L);
+	static int luaPlayerAddSoulsealsPoints(lua_State* L);
+	static int luaPlayerRemoveSoulsealsPoints(lua_State* L);
+
+	// Task Board send functions (Lua → protocol)
+	static int luaPlayersendBountyTaskData(lua_State* L);
+	static int luaPlayersendWeeklyTaskData(lua_State* L);
+	static int luaPlayerSendHuntingTaskShop(lua_State* L);
+	static int luaPlayerSendTaskBoardResourceBalance(lua_State* L);
+
+	// Bounty Task data setters
+	static int luaPlayerSetBountyTaskState(lua_State* L);
+	static int luaPlayerSetBountyTaskDifficulty(lua_State* L);
+	static int luaPlayerSetBountyActiveTask(lua_State* L);
+	static int luaPlayerClearBountyCreatureList(lua_State* L);
+	static int luaPlayerAddBountyCreature(lua_State* L);
+	static int luaPlayerSetBountyTalismanLevel(lua_State* L);
+	static int luaPlayerGetBountyTalismanLevel(lua_State* L);
+	static int luaPlayerSetBountyRerollTimestamp(lua_State* L);
+	static int luaPlayerSetBountyRerollTokens(lua_State* L);
+	static int luaPlayerGenerateBountyCreatureList(lua_State* L);
+	static int luaPlayerSetBountyTalismanEquipped(lua_State* L);
+	static int luaPlayerIsBountyTalismanEquipped(lua_State* L);
+
+	// Weekly Task data setters
+	static int luaPlayerSetWeeklyDifficulty(lua_State* L);
+	static int luaPlayerSetWeeklyKillTaskProgress(lua_State* L);
+	static int luaPlayerSetWeeklyDeliveryTaskProgress(lua_State* L);
+	static int luaPlayerSetWeeklyAnyCreatureProgress(lua_State* L);
+	static int luaPlayerSetWeeklyCompletedTasks(lua_State* L);
+	static int luaPlayerGenerateWeeklyTasks(lua_State* L);
+	static int luaPlayerSetWeeklyProgressFinished(lua_State* L);
+	static int luaPlayerSetWeeklyResetTimestamp(lua_State* L);
+	static int luaPlayerSetWeeklyUnknownByte(lua_State* L);
+	static int luaPlayerSetWeeklyRewards(lua_State* L);
+	static int luaPlayerSetWeeklyRewardExp(lua_State* L);
+	static int luaPlayerSetWeeklyDifficultyMultiplier(lua_State* L);
+	static int luaPlayerSetWeeklyDeliveryUnknowns(lua_State* L);
 
 	static int luaPlayerGetCapacity(lua_State* L);
 	static int luaPlayerSetCapacity(lua_State* L);
@@ -303,7 +352,6 @@ class PlayerFunctions {
 	static int luaPlayerGetWheelSpellAdditionalArea(lua_State* L);
 	static int luaPlayerGetWheelSpellAdditionalTarget(lua_State* L);
 	static int luaPlayerGetWheelSpellAdditionalDuration(lua_State* L);
-	static int luaPlayerGetWheelSpellAdditionalDamage(lua_State* L);
 	static int luaPlayerWheelUnlockScroll(lua_State* L);
 
 	static int luaPlayerOpenForge(lua_State* L);
@@ -335,6 +383,7 @@ class PlayerFunctions {
 	static int luaPlayerGetSlotBossId(lua_State* L);
 	static int luaPlayerGetBossBonus(lua_State* L);
 	static int luaPlayerBosstiaryCooldownTimer(lua_State* L);
+	static int luaPlayerSendSoulSealsWindow(lua_State* L);
 
 	static int luaPlayerSendSingleSoundEffect(lua_State* L);
 	static int luaPlayerSendDoubleSoundEffect(lua_State* L);
@@ -361,10 +410,6 @@ class PlayerFunctions {
 
 	// Concoction system
 	static int luaPlayerUpdateConcoction(lua_State* L);
-
-	// Food system
-	static int luaPlayerUpdateFood(lua_State* L);
-
 	static int luaPlayerClearSpellCooldowns(lua_State* L);
 
 	static int luaPlayerIsVip(lua_State* L);
@@ -389,6 +434,9 @@ class PlayerFunctions {
 
 	static int luaPlayerCreateTransactionSummary(lua_State* L);
 
+	static int luaPlayersendBannerType(lua_State* L);
+	static int luaPlayerSendQuestStatusUpdate(lua_State* L);
+
 	static int luaPlayerTakeScreenshot(lua_State* L);
 	static int luaPlayerSendIconBakragore(lua_State* L);
 	static int luaPlayerRemoveIconBakragore(lua_State* L);
@@ -404,13 +452,21 @@ class PlayerFunctions {
 	static int luaPlayerAddCustomOutfit(lua_State* L);
 	static int luaPlayerRemoveCustomOutfit(lua_State* L);
 
-	static int luaPlayerSetSerene(lua_State* L);
-	static int luaPlayerSetVirtue(lua_State* L);
-	static int luaPlayerGetVirtue(lua_State* L);
-	static int luaPlayerFillHarmony(lua_State* L);
+	// Update 15.00
 	static int luaPlayerGetHarmony(lua_State* L);
-	static int luaPlayerGetHarmonyDamage(lua_State* L);
-	static int luaCalculateFlatDamageHealing(lua_State* L);
+	static int luaPlayerSetHarmony(lua_State* L);
+	static int luaPlayerAddHarmony(lua_State* L);
+	static int luaPlayerRemoveHarmony(lua_State* L);
+	static int luaPlayerIsSerene(lua_State* L);
+	static int luaPlayerSetSerene(lua_State* L);
+	static int luaPlayerSetSereneCooldown(lua_State* L);
+	static int luaPlayerGetVirtue(lua_State* L);
+	static int luaPlayerSetVirtue(lua_State* L);
+
+	// Summer Update 2025
+	static int luaPlayerApplyImbuementScrollToItem(lua_State* L);
+	static int luaPlayerOnClearAllImbuementsOnEtcher(lua_State* L);
+	static int luaPlayerSendWeaponProficiencyExperience(lua_State* L);
 
 	friend class CreatureFunctions;
 };

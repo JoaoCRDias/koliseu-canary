@@ -28,7 +28,6 @@ void ItemParse::initParse(const std::string &stringValue, pugi::xml_node attribu
 	ItemParse::parseDefense(stringValue, valueAttribute, itemType);
 	ItemParse::parseExtraDefense(stringValue, valueAttribute, itemType);
 	ItemParse::parseAttack(stringValue, valueAttribute, itemType);
-	ItemParse::parseMantra(stringValue, valueAttribute, itemType);
 	ItemParse::parseRotateTo(stringValue, valueAttribute, itemType);
 	ItemParse::parseWrapContainer(stringValue, valueAttribute, itemType);
 	ItemParse::parseWrapableTo(stringValue, valueAttribute, itemType);
@@ -68,7 +67,6 @@ void ItemParse::initParse(const std::string &stringValue, pugi::xml_node attribu
 	ItemParse::parseLevelDoor(stringValue, valueAttribute, itemType);
 	ItemParse::parseBeds(stringValue, valueAttribute, itemType);
 	ItemParse::parseElement(stringValue, valueAttribute, itemType);
-	ItemParse::parseElementalBond(stringValue, valueAttribute, itemType);
 	ItemParse::parseWalk(stringValue, valueAttribute, itemType);
 	ItemParse::parseAllowDistanceRead(stringValue, valueAttribute, itemType);
 	ItemParse::parseImbuement(stringValue, attributeNode, valueAttribute, itemType);
@@ -83,6 +81,8 @@ void ItemParse::initParse(const std::string &stringValue, pugi::xml_node attribu
 	ItemParse::parsePrimaryType(stringValue, valueAttribute, itemType);
 	ItemParse::parseHouseRelated(stringValue, valueAttribute, itemType);
 	ItemParse::parseUnscriptedItems(stringValue, attributeNode, valueAttribute, itemType);
+	ItemParse::parseElementalBond(stringValue, valueAttribute, itemType);
+	ItemParse::parseMantra(stringValue, valueAttribute, itemType);
 }
 
 void ItemParse::parseDummyRate(pugi::xml_node attributeNode, ItemType &itemType) {
@@ -179,12 +179,6 @@ void ItemParse::parseExtraDefense(const std::string &stringValue, pugi::xml_attr
 void ItemParse::parseAttack(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
 	if (stringValue == "attack") {
 		itemType.attack = pugi::cast<int32_t>(valueAttribute.value());
-	}
-}
-
-void ItemParse::parseMantra(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
-	if (stringValue == "mantra") {
-		itemType.mantra = pugi::cast<int32_t>(valueAttribute.value());
 	}
 }
 
@@ -297,7 +291,7 @@ void ItemParse::parseSlotType(const std::string &stringValue, pugi::xml_attribut
 			itemType.slotPosition |= SLOTP_FEET;
 		} else if (subStringValue == "backpack") {
 			itemType.slotPosition |= SLOTP_BACKPACK;
-		} else if (subStringValue == "two-handed" || subStringValue == "dualwielding") {
+		} else if (subStringValue == "two-handed") {
 			itemType.slotPosition |= SLOTP_TWO_HAND;
 		} else if (subStringValue == "right-hand") {
 			itemType.slotPosition &= ~SLOTP_LEFT;
@@ -759,22 +753,6 @@ void ItemParse::parseBeds(const std::string &stringValue, pugi::xml_attribute va
 	}
 }
 
-void ItemParse::parseElementalBond(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
-	// Only proceed if the stringValue is "elementalbond"
-	if (stringValue == "elementalbond") {
-		const std::string_view elementType = valueAttribute.as_string();
-
-		// Assign the corresponding combat type based on the attribute's value
-		if (elementType == "energy") {
-			itemType.elementalBond = COMBAT_ENERGYDAMAGE;
-		} else if (elementType == "earth") {
-			itemType.elementalBond = COMBAT_EARTHDAMAGE;
-		} else if (elementType == "physical") {
-			itemType.elementalBond = COMBAT_PHYSICALDAMAGE;
-		}
-	}
-}
-
 void ItemParse::parseElement(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
 	if (stringValue == "elementice") {
 		Abilities &abilities = itemType.getAbilities();
@@ -1028,6 +1006,7 @@ void ItemParse::createAndRegisterScript(ItemType &itemType, pugi::xml_node attri
 		}
 
 		weapon->weaponType = weaponType;
+		weapon->elementalBond = itemType.elementalBond;
 		itemType.weaponType = weapon->weaponType;
 		weapon->configureWeapon(itemType);
 		g_logger().trace("Created weapon with type '{}'", getWeaponName(weaponType));
@@ -1071,7 +1050,7 @@ void ItemParse::createAndRegisterScript(ItemType &itemType, pugi::xml_node attri
 					moveevent->setSlot(SLOTP_RING);
 				} else if (slotName == "ammo") {
 					moveevent->setSlot(SLOTP_AMMO);
-				} else if (slotName == "two-handed" || slotName == "dualwielding") {
+				} else if (slotName == "two-handed") {
 					moveevent->setSlot(SLOTP_TWO_HAND);
 				} else {
 					g_logger().warn("[{}] unknown slot type '{}'", __FUNCTION__, slotName);
@@ -1291,5 +1270,32 @@ void ItemParse::parseUnscriptedItems(std::string_view stringValue, pugi::xml_nod
 				createAndRegisterScript(itemType, attributeNode, MOVE_EVENT_NONE, weaponType);
 			}
 		}
+	}
+}
+
+void ItemParse::parseElementalBond(const std::string& stringValue, pugi::xml_attribute valueAttribute, ItemType& itemType) {
+    if (stringValue == "elementalbond") {
+		Abilities &abilities = itemType.getAbilities();
+		const std::string &elementalBond = valueAttribute.value();
+		if (elementalBond == "energy") {
+			abilities.elementType = COMBAT_ENERGYDAMAGE;
+		} else if (elementalBond == "earth") {
+			abilities.elementType = COMBAT_EARTHDAMAGE;
+		} else if (elementalBond == "physical") {
+			abilities.elementType = COMBAT_PHYSICALDAMAGE;
+		}
+		itemType.elementalBond = elementalBond;
+	}
+}
+
+void ItemParse::parseMantra(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
+	if (stringValue == "mantra") {
+		const auto value = pugi::cast<int16_t>(valueAttribute.value());
+		Abilities &abilities = itemType.getAbilities();
+		abilities.mantraAbsorbValue[combatTypeToIndex(COMBAT_ENERGYDAMAGE)] += value;
+		abilities.mantraAbsorbValue[combatTypeToIndex(COMBAT_FIREDAMAGE)] += value;
+		abilities.mantraAbsorbValue[combatTypeToIndex(COMBAT_EARTHDAMAGE)] += value;
+		abilities.mantraAbsorbValue[combatTypeToIndex(COMBAT_ICEDAMAGE)] += value;
+		itemType.mantra = value;
 	}
 }

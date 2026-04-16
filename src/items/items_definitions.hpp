@@ -124,6 +124,7 @@ enum ReturnValue : uint16_t {
 	RETURNVALUE_CONTACTADMINISTRATOR,
 	RETURNVALUE_ITEMISNOTYOURS,
 	RETURNVALUE_ITEMUNTRADEABLE,
+	RETURNVALUE_NOTENOUGHHARMONY,
 };
 
 enum ItemGroup_t {
@@ -245,7 +246,6 @@ enum AttrTypes_t {
 	ATTR_STORE_INBOX_CATEGORY = 42,
 	ATTR_OWNER = 43,
 	ATTR_OBTAINCONTAINER = 44,
-	ATTR_MANTRA = 45,
 
 	// Always the last
 	ATTR_NONE = 0
@@ -271,7 +271,7 @@ enum ImbuementTypes_t : int64_t {
 	IMBUEMENT_SKILLBOOST_DISTANCE = 15,
 	IMBUEMENT_SKILLBOOST_MAGIC_LEVEL = 16,
 	IMBUEMENT_INCREASE_CAPACITY = 17,
-	IMBUEMENT_SKILLBOOST_FIST = 18,
+	IMBUEMENT_SKILLBOOST_FIST = 18
 };
 
 enum class Augment_t : uint8_t {
@@ -282,6 +282,7 @@ enum class Augment_t : uint8_t {
 	IncreasedDamage,
 	Cooldown,
 	CriticalExtraDamage,
+	CriticalHitChance,
 	LifeLeech,
 	ManaLeech
 };
@@ -480,7 +481,6 @@ enum CylinderFlags_t {
 	FLAG_IGNOREFIELDDAMAGE = 1 << 5, // Bypass field damage checks
 	FLAG_IGNORENOTMOVABLE = 1 << 6, // Bypass check for mobility
 	FLAG_IGNOREAUTOSTACK = 1 << 7, // queryDestination will not try to stack items together
-	FLAG_DROPONMAP = 1 << 8, // Drop item on map
 };
 
 enum CylinderLink_t {
@@ -500,7 +500,6 @@ enum ItemParseAttributes_t {
 	ITEM_PARSE_DEFENSE,
 	ITEM_PARSE_EXTRADEF,
 	ITEM_PARSE_ATTACK,
-	ITEM_PARSE_MANTRA,
 	ITEM_PARSE_ROTATETO,
 	ITEM_PARSE_WRAPCONTAINER,
 	ITEM_PARSE_IMBUEMENT,
@@ -626,6 +625,7 @@ enum ItemParseAttributes_t {
 	ITEM_PARSE_SCRIPT,
 	ITEM_PARSE_AUGMENT,
 	ITEM_PARSE_ELEMENTALBOND,
+	ITEM_PARSE_MANTRA,
 };
 
 struct ImbuementInfo {

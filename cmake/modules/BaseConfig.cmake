@@ -419,3 +419,6 @@ function(setup_target TARGET_NAME)
         PUBLIC project_options
     )
 endfunction()
+
+# === DEBUG_SUMMER_UPDATE_2025_LOG ===
+#add_definitions(-DDEBUG_SUMMER_UPDATE_2025_LOG)

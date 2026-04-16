@@ -13,7 +13,7 @@ INSERT INTO `server_config` (`config`, `value`) VALUES ('db_version', '56'), ('m
 CREATE TABLE IF NOT EXISTS `accounts` (
     `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` varchar(32) NOT NULL,
-    `password` VARCHAR(255) NOT NULL,
+    `password` TEXT NOT NULL,
     `email` varchar(255) NOT NULL DEFAULT '',
     `premdays` int(11) NOT NULL DEFAULT '0',
     `premdays_purchased` int(11) NOT NULL DEFAULT '0',
@@ -26,9 +26,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
     `recruiter` INT(6) DEFAULT 0,
     `house_bid_id` int(11) NOT NULL DEFAULT '0',
     CONSTRAINT `accounts_pk` PRIMARY KEY (`id`),
-    CONSTRAINT `accounts_unique` UNIQUE (`name`),
-    INDEX `accounts_email` (`email`),
-    INDEX `accounts_password` (`password`)
+    CONSTRAINT `accounts_unique` UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table structure `coins_transactions`
@@ -152,6 +150,9 @@ CREATE TABLE IF NOT EXISTS `players` (
     `randomize_mount` tinyint(1) NOT NULL DEFAULT '0',
     `boss_points` int NOT NULL DEFAULT '0',
     `animus_mastery` mediumblob DEFAULT NULL,
+    `virtue` int(10) UNSIGNED NOT NULL DEFAULT '0',
+    `harmony` int(10) UNSIGNED NOT NULL DEFAULT '0',
+    `weapon_proficiencies` mediumblob DEFAULT NULL,
     INDEX `account_id` (`account_id`),
     INDEX `vocation` (`vocation`),
     CONSTRAINT `players_pk` PRIMARY KEY (`id`),
@@ -738,6 +739,57 @@ CREATE TABLE IF NOT EXISTS `player_taskhunt` (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Table structure `player_bounty_tasks` (Winter Update 2025)
+CREATE TABLE IF NOT EXISTS `player_bounty_tasks` (
+    `player_id` int NOT NULL,
+    `state` tinyint NOT NULL DEFAULT 0,
+    `difficulty` tinyint NOT NULL DEFAULT 0,
+    `bounty_points` int NOT NULL DEFAULT 0,
+    `reroll_tokens` tinyint NOT NULL DEFAULT 0,
+    `free_reroll` bigint NOT NULL DEFAULT 0,
+    `active_raceid` int NOT NULL DEFAULT 0,
+    `active_kills` int NOT NULL DEFAULT 0,
+    `active_required_kills` int NOT NULL DEFAULT 0,
+    `active_reward_exp` int NOT NULL DEFAULT 0,
+    `active_reward_points` tinyint NOT NULL DEFAULT 0,
+    `active_task_grade` tinyint NOT NULL DEFAULT 0,
+    `active_task_difficulty` tinyint NOT NULL DEFAULT 0,
+    `talisman_damage_level` tinyint NOT NULL DEFAULT 0,
+    `talisman_lifeleech_level` tinyint NOT NULL DEFAULT 0,
+    `talisman_loot_level` tinyint NOT NULL DEFAULT 0,
+    `talisman_bestiary_level` tinyint NOT NULL DEFAULT 0,
+    `preferred_lists` BLOB NULL,
+    `current_creatures_list` BLOB NULL,
+    CONSTRAINT `player_bounty_tasks_pk` PRIMARY KEY (`player_id`),
+    CONSTRAINT `player_bounty_tasks_players_fk`
+        FOREIGN KEY (`player_id`) REFERENCES `players` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table structure `player_weekly_tasks` (Winter Update 2025)
+CREATE TABLE IF NOT EXISTS `player_weekly_tasks` (
+    `player_id` int NOT NULL,
+    `has_expansion` BOOLEAN NOT NULL DEFAULT FALSE,
+    `difficulty` tinyint NOT NULL DEFAULT 0,
+    `any_creature_total_kills` int NOT NULL DEFAULT 0,
+    `any_creature_current_kills` int NOT NULL DEFAULT 0,
+    `completed_kill_tasks` tinyint NOT NULL DEFAULT 0,
+    `completed_delivery_tasks` tinyint NOT NULL DEFAULT 0,
+    `kill_task_reward_exp` int NOT NULL DEFAULT 0,
+    `delivery_task_reward_exp` int NOT NULL DEFAULT 0,
+    `reward_hunting_points` int NOT NULL DEFAULT 0,
+    `reward_soulseals` int NOT NULL DEFAULT 0,
+    `soulseals_points` int NOT NULL DEFAULT 0,
+    `needs_reward` tinyint NOT NULL DEFAULT 0,
+    `weekly_progress_finished` tinyint NOT NULL DEFAULT 0,
+    `kill_tasks` BLOB NULL,
+    `delivery_tasks` BLOB NULL,
+    CONSTRAINT `player_weekly_tasks_pk` PRIMARY KEY (`player_id`),
+    CONSTRAINT `player_weekly_tasks_players_fk`
+        FOREIGN KEY (`player_id`) REFERENCES `players` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Table structure `player_bosstiary`
 CREATE TABLE IF NOT EXISTS `player_bosstiary` (
     `player_id` int NOT NULL,
@@ -862,10 +914,10 @@ INSERT INTO `accounts`
 -- Create sample characters
 INSERT INTO `players`
 (`id`, `name`, `group_id`, `account_id`, `level`, `vocation`, `health`, `healthmax`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `maglevel`, `mana`, `manamax`, `manaspent`, `town_id`, `conditions`, `cap`, `sex`, `skill_club`, `skill_club_tries`, `skill_sword`, `skill_sword_tries`, `skill_axe`, `skill_axe_tries`, `skill_dist`, `skill_dist_tries`) VALUES
-(1, 'Rook Sample', 1, 1, 2, 0, 155, 155, 100, 113, 115, 95, 39, 129, 2, 60, 60, 5936, 1, '', 410, 1, 12, 155, 12, 155, 12, 155, 12, 93),
-(2, 'Sorcerer Sample', 1, 1, 8, 1, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 470, 1, 10, 0, 10, 0, 10, 0, 10, 0),
-(3, 'Druid Sample', 1, 1, 8, 2, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 470, 1, 10, 0, 10, 0, 10, 0, 10, 0),
-(4, 'Paladin Sample', 1, 1, 8, 3, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 470, 1, 10, 0, 10, 0, 10, 0, 10, 0),
-(5, 'Knight Sample', 1, 1, 8, 4, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 470, 1, 10, 0, 10, 0, 10, 0, 10, 0),
-(6, 'Monk Sample', 1, 1, 8, 9, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 470, 1, 10, 0, 10, 0, 10, 0, 10, 0),
-(7, 'GOD', 6, 1, 2, 0, 155, 155, 100, 113, 115, 95, 39, 75, 0, 60, 60, 0, 8, '', 410, 1, 10, 0, 10, 0, 10, 0, 10, 0);
+(1, 'Rook Sample', 1, 1, 2, 0, 155, 155, 100, 113, 115, 95, 39, 129, 2, 60, 60, 5936, 1, '', 610, 1, 12, 155, 12, 155, 12, 155, 12, 93),
+(2, 'Sorcerer Sample', 1, 1, 8, 1, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 670, 1, 10, 0, 10, 0, 10, 0, 10, 0),
+(3, 'Druid Sample', 1, 1, 8, 2, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 670, 1, 10, 0, 10, 0, 10, 0, 10, 0),
+(4, 'Paladin Sample', 1, 1, 8, 3, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 670, 1, 10, 0, 10, 0, 10, 0, 10, 0),
+(5, 'Knight Sample', 1, 1, 8, 4, 185, 185, 4200, 113, 115, 95, 39, 129, 0, 90, 90, 0, 8, '', 670, 1, 10, 0, 10, 0, 10, 0, 10, 0),
+(6, 'Monk Sample', 1, 1, 8, 9, 185, 185, 4200, 113, 115, 95, 39, 1824, 0, 90, 90, 0, 8, '', 670, 1, 10, 0, 10, 0, 10, 0, 10, 0),
+(7, 'GOD', 6, 1, 2, 0, 155, 155, 100, 113, 115, 95, 39, 75, 0, 60, 60, 0, 8, '', 610, 1, 10, 0, 10, 0, 10, 0, 10, 0);

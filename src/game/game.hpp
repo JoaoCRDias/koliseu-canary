@@ -248,7 +248,25 @@ public:
 	void playerReportBug(uint32_t playerId, const std::string &message, const Position &position, uint8_t category);
 	void playerDebugAssert(uint32_t playerId, const std::string &assertLine, const std::string &date, const std::string &description, const std::string &comment);
 	void playerPreyAction(uint32_t playerId, uint8_t slot, uint8_t action, uint8_t option, int8_t index, uint16_t raceId);
-	void playerTaskHuntingAction(uint32_t playerId, uint8_t slot, uint8_t action, bool upgrade, uint16_t raceId);
+	void playerSoulSealsFight(uint32_t playerId, uint16_t raceId);
+
+	// Winter Update 2025 - Task Board
+	void playerOpenBountyTask(uint32_t playerId);
+	void playerOpenWeeklyTask(uint32_t playerId);
+	void playerOpenHuntingTaskShop(uint32_t playerId);
+	void playerBountyTaskChangeDifficulty(uint32_t playerId, uint8_t difficulty);
+	void playerBountyTaskClaimReroll(uint32_t playerId);
+	void playerBountyTaskReroll(uint32_t playerId);
+	void playerBountyTaskSelectTask(uint32_t playerId, uint8_t taskIndex);
+	void playerBountyTaskSetPreferred(uint32_t playerId, uint8_t listType, uint8_t slot, uint16_t raceId);
+	void playerBountyTaskSetUnwanted(uint32_t playerId, uint8_t listType, uint8_t slot, uint16_t raceId);
+	void playerBountyTaskClaimReward(uint32_t playerId);
+	void playerBountyTaskUpgradeTalisman(uint32_t playerId, uint8_t pathIndex);
+	void playerBountyTaskBuyShopOffer(uint32_t playerId, uint8_t offerIndex);
+	void playerBountyTaskUnlockListSlot(uint32_t playerId, uint8_t slot);
+	void playerWeeklyTasksRegenerate(uint32_t playerId, uint8_t difficulty);
+	void playerWeeklyTaskDeliver(uint32_t playerId, uint8_t taskIndex);
+
 	void playerNpcGreet(uint32_t playerId, uint32_t npcId);
 	void playerAnswerModalWindow(uint32_t playerId, uint32_t modalWindowId, uint8_t button, uint8_t choice);
 	void playerForgeFuseItems(
@@ -310,6 +328,7 @@ public:
 	void broadcastMessage(const std::string &text, MessageClasses type) const;
 
 	// Implementation of player invoked events
+	void playerChangeVocation(uint32_t playerId, const uint8_t newVocation);
 	void playerTeleport(uint32_t playerId, const Position &pos);
 	void playerMoveThing(uint32_t playerId, const Position &fromPos, uint16_t itemId, uint8_t fromStackPos, const Position &toPos, uint8_t count);
 	void playerMoveCreatureByID(uint32_t playerId, uint32_t movingCreatureId, const Position &movingCreatureOrigPos, const Position &toPos);
@@ -380,7 +399,7 @@ public:
 	void playerRequestAddVip(uint32_t playerId, const std::string &name);
 	void playerRequestRemoveVip(uint32_t playerId, uint32_t guid);
 	void playerRequestEditVip(uint32_t playerId, uint32_t guid, const std::string &description, uint32_t icon, bool notify, std::vector<uint8_t> vipGroupsId);
-	void playerApplyImbuement(uint32_t playerId, uint16_t imbuementid, uint8_t slot, bool protectionCharm);
+	void playerApplyImbuement(uint32_t playerId, uint16_t imbuementid, uint8_t slot);
 	void playerClearImbuement(uint32_t playerid, uint8_t slot);
 	void playerCloseImbuementWindow(uint32_t playerid);
 	void playerTurn(uint32_t playerId, Direction dir);
@@ -451,7 +470,7 @@ public:
 	void checkCreatures();
 	void checkLight();
 
-	bool combatBlockHit(CombatDamage &damage, const std::shared_ptr<Creature> &attacker, const std::shared_ptr<Creature> &target, bool checkDefense, bool checkArmor, bool field, bool condition = false);
+	bool combatBlockHit(CombatDamage &damage, const std::shared_ptr<Creature> &attacker, const std::shared_ptr<Creature> &target, bool checkDefense, bool checkArmor, bool field);
 
 	void combatGetTypeInfo(CombatType_t combatType, const std::shared_ptr<Creature> &target, TextColor_t &color, uint16_t &effect);
 
@@ -469,7 +488,7 @@ public:
 	int32_t applyHealthChange(const CombatDamage &damage, const std::shared_ptr<Creature> &target) const;
 
 	bool combatChangeHealth(const std::shared_ptr<Creature> &attacker, const std::shared_ptr<Creature> &target, CombatDamage &damage, bool isEvent = false);
-	void applyCharmRune(const std::shared_ptr<Monster> &targetMonster, const std::shared_ptr<Player> &attackerPlayer, const std::shared_ptr<Creature> &target, const int32_t &realDamage) const;
+	void applyOffensiveCharmRune(const std::shared_ptr<Monster> &targetMonster, const std::shared_ptr<Player> &attackerPlayer, const std::shared_ptr<Creature> &target, const int32_t &realDamage) const;
 	void applyManaLeech(
 		const std::shared_ptr<Player> &attackerPlayer, const std::shared_ptr<Monster> &targetMonster,
 		const std::shared_ptr<Creature> &target, const CombatDamage &damage, const int32_t &realDamage
@@ -487,11 +506,15 @@ public:
 	void addPlayerMana(const std::shared_ptr<Player> &target);
 	void addPlayerVocation(const std::shared_ptr<Player> &target);
 	void addMagicEffect(const Position &pos, uint16_t effect);
+	void addMagicEffect(const Position &pos, uint16_t effect, const std::shared_ptr<Creature> &actor);
 	static void addMagicEffect(const CreatureVector &spectators, const Position &pos, uint16_t effect);
+	static void addMagicEffect(const CreatureVector &spectators, const Position &pos, uint16_t effect, const std::shared_ptr<Creature> &actor);
 	void removeMagicEffect(const Position &pos, uint16_t effect);
 	static void removeMagicEffect(const CreatureVector &spectators, const Position &pos, uint16_t effect);
 	void addDistanceEffect(const Position &fromPos, const Position &toPos, uint16_t effect);
+	void addDistanceEffect(const Position &fromPos, const Position &toPos, uint16_t effect, const std::shared_ptr<Creature> &actor);
 	static void addDistanceEffect(const CreatureVector &spectators, const Position &fromPos, const Position &toPos, uint16_t effect);
+	static void addDistanceEffect(const CreatureVector &spectators, const Position &fromPos, const Position &toPos, uint16_t effect, const std::shared_ptr<Creature> &actor);
 
 	int32_t getLightHour() const {
 		return lightHour;
@@ -589,7 +612,7 @@ public:
 	}
 
 	void playerInspectItem(const std::shared_ptr<Player> &player, const Position &pos);
-	void playerInspectItem(const std::shared_ptr<Player> &player, uint16_t itemId, uint8_t itemCount, bool cyclopedia);
+	void playerInspectItem(const std::shared_ptr<Player> &player, uint16_t itemId, uint8_t itemCount, InspectObjectType inspectionType);
 
 	void addCharmRune(const std::shared_ptr<Charm> &charm) {
 		CharmList.push_back(charm);
@@ -696,17 +719,16 @@ public:
 	void refreshItem(const std::shared_ptr<Item> &item);
 
 	/**
-	 * @brief Returns the appropriate managed container for storing items.
+	 * @brief Finds the managed container for loot or obtain based on the given parameters.
 	 *
-	 * @param player The player to check containers for.
-	 * @param fallbackConsumed Will be set to true if the system had to fallback to a default container.
-	 * @param category Category of the object (e.g., loot, obtain).
-	 * @param isLootContainer Whether the container is specifically for loot.
+	 * @param player Pointer to the player object.
+	 * @param fallbackConsumed Reference to a boolean flag indicating whether a fallback has been consumed.
+	 * @param category The category of the object.
 	 *
-	 * @details If `storeAnyItemInGoldPouch = true` in config.lua, and the player has a loot pouch,
-	 * that pouch will be preferred over other managed containers.
+	 * @note If it's enabled in config.lua to use the gold pouch to store any item, then the system will check whether the player has a loot pouch.
+	 * @note If the player does have one, the loot pouch will be used instead of the managed containers.
 	 *
-	 * @return The selected container, or nullptr if none found.
+	 * @return Pointer to the managed container or nullptr if not found.
 	 */
 	std::shared_ptr<Container> findManagedContainer(const std::shared_ptr<Player> &player, bool &fallbackConsumed, ObjectCategory_t category, bool isLootContainer);
 
@@ -727,6 +749,7 @@ private:
 	std::map<uint32_t, int32_t> forgeMonsterEventIds;
 	std::unordered_set<uint32_t> fiendishMonsters;
 	std::unordered_set<uint32_t> influencedMonsters;
+	void checkSereneStatus();
 	bool playerSaySpell(const std::shared_ptr<Player> &player, SpeakClasses type, const std::string &text);
 	void playerWhisper(const std::shared_ptr<Player> &player, const std::string &text);
 	bool playerYell(const std::shared_ptr<Player> &player, const std::string &text);
@@ -894,7 +917,7 @@ private:
 	void updatePlayerPartyHuntAnalyzer(const CombatDamage &damage, const std::shared_ptr<Player> &player) const;
 
 	void sendEffects(
-		const std::shared_ptr<Creature> &target, const CombatDamage &damage, const Position &targetPos,
+		const std::shared_ptr<Creature> &attacker, const std::shared_ptr<Creature> &target, const CombatDamage &damage, const Position &targetPos,
 		TextMessage &message, const CreatureVector &spectators
 	);
 
@@ -933,7 +956,7 @@ private:
 	void cacheQueryHighscore(const std::string &key, const std::string &query, uint32_t page, uint8_t entriesPerPage);
 	void processHighscoreResults(const DBResult_ptr &result, uint32_t playerID, uint8_t category, uint32_t vocation, uint8_t entriesPerPage);
 
-	std::string generateVocationConditionHighscore(uint32_t vocation);
+	std::string generateVocationConditionHighscore(uint32_t searchVocationBaseId);
 	std::string generateHighscoreQuery(
 		const std::string &categoryName,
 		uint32_t page,
@@ -945,6 +968,9 @@ private:
 	std::string generateHighscoreOrGetCachedQueryForOurRank(const std::string &categoryName, uint8_t entriesPerPage, uint32_t playerGUID, uint32_t vocation);
 
 	void updatePlayersOnline() const;
+
+	// Update 15.00
+	bool isPlayerNoBoxed(const std::shared_ptr<Player> &player);
 };
 
 constexpr auto g_game = Game::getInstance;

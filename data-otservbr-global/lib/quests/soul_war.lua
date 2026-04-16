@@ -51,6 +51,7 @@ SoulWarQuest = {
 		"Infernal Demon",
 		"Infernal Phantom",
 		"Knight's Apparition",
+		"Monk's Apparition",
 		"Many Faces",
 		"Mould Phantom",
 		"Paladin's Apparition",

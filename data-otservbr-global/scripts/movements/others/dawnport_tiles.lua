@@ -107,7 +107,7 @@ function tutorialTile.onStepIn(creature, item, position, fromPosition)
 end
 
 tutorialTile:position({ x = 32069, y = 31901, z = 6 })
-tutorialTile:register()
+--tutorialTile:register()
 
 -- Before up stair on the first dawnport town
 local tutorialTile1 = MoveEvent()

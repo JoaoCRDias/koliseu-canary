@@ -56,6 +56,7 @@ npcConfig.shop = {
 	{ itemName = "camouflage backpack", clientId = 2872, buy = 30 },
 	{ itemName = "camouflage bag", clientId = 2864, buy = 10 },
 	{ itemName = "fishing rod", clientId = 3483, buy = 300 },
+	{ itemName = "folded artefact carpet VIII", clientId = 52589, buy = 10000 },
 	{ itemName = "pick", clientId = 3456, buy = 100 },
 	{ itemName = "rope", clientId = 3003, buy = 100 },
 	{ itemName = "shovel", clientId = 3457, buy = 100 },

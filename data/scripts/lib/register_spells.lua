@@ -237,129 +237,6 @@ AREADIAGONAL_SQUAREWAVE5_NAGA = {
 	{ 0, 0, 0, 0, 3 },
 }
 
--- Monk
-AREA_BALANCED_BRAWL = {
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0 },
-	{ 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
-	{ 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
-	{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-	{ 0, 1, 1, 1, 1, 0, 2, 0, 1, 1, 1, 1, 0 },
-	{ 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1 },
-}
-
-AREA_FLURRY_OF_BLOWS = {
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 1, 0, 0 },
-	{ 0, 1, 1, 1, 0 },
-	{ 0, 1, 3, 1, 0 },
-	{ 0, 1, 0, 1, 0 },
-	{ 0, 0, 0, 0, 0 },
-}
-
-AREA_GREATER_FLURRY_OF_BLOWS = {
-	{ 0, 0, 1, 0, 0 },
-	{ 0, 1, 1, 1, 0 },
-	{ 0, 1, 1, 1, 0 },
-	{ 1, 1, 3, 1, 1 },
-	{ 0, 1, 0, 1, 0 },
-	{ 0, 0, 0, 0, 0 },
-}
-
--- Monk Virtue: central area with more damage
-AREA_SWEEPING_CENTER = {
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 1, 1, 1, 0 },
-	{ 1, 1, 3, 1, 1 },
-	{ 1, 1, 0, 1, 1 },
-	{ 0, 0, 0, 0, 0 },
-}
-
--- Monk Virtue: outer area with less damage
-AREA_SWEEPING_OUTER = {
-	{ 0, 1, 1, 1, 0 },
-	{ 1, 1, 1, 1, 1 },
-	{ 1, 0, 0, 0, 1 },
-	{ 0, 0, 2, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-}
-
-AREA_GREATER_SWEEPING_TAKEDOWN = {
-	{ 0, 1, 1, 1, 0 },
-	{ 1, 1, 1, 1, 1 },
-	{ 1, 1, 1, 1, 1 },
-	{ 1, 1, 3, 1, 1 },
-	{ 1, 1, 0, 1, 1 },
-	{ 0, 0, 0, 0, 0 },
-}
-
-AREA_SPIRITUAL_OUTBURST_NORTH = {
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 1, 1, 1, 0 },
-	{ 1, 1, 1, 1, 1 },
-	{ 1, 1, 1, 1, 1 },
-	{ 0, 1, 2, 1, 0 },
-	{ 0, 0, 0, 0, 0 },
-}
-
-AREA_SPIRITUAL_OUTBURST_EAST = {
-	{ 0, 1, 1, 0, 0 },
-	{ 1, 1, 1, 1, 0 },
-	{ 2, 1, 1, 1, 0 },
-	{ 1, 1, 1, 1, 0 },
-	{ 0, 1, 1, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-}
-
-AREA_SPIRITUAL_OUTBURST_WEST = {
-	{ 0, 0, 1, 1, 0 },
-	{ 0, 1, 1, 1, 1 },
-	{ 0, 1, 1, 1, 2 },
-	{ 0, 1, 1, 1, 1 },
-	{ 0, 0, 1, 1, 0 },
-	{ 0, 0, 0, 0, 0 },
-}
-
-AREA_SPIRITUAL_OUTBURST_SOUTH = {
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 1, 2, 1, 0 },
-	{ 1, 1, 1, 1, 1 },
-	{ 1, 1, 1, 1, 1 },
-	{ 0, 1, 1, 1, 0 },
-	{ 0, 0, 0, 0, 0 },
-}
-
-AREA_MASS_SPIRIT_MEND = {
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 },
-	{ 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
-	{ 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
-	{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-	{ 0, 1, 1, 1, 1, 3, 1, 1, 1, 1, 0 },
-	{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-	{ 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
-	{ 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
-	{ 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-}
-
-AREA_MASS_SPIRIT_MEND_WOD = {
-	{ 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 },
-	{ 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
-	{ 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
-	{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-	{ 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1 },
-	{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-	{ 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-	{ 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
-	{ 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 },
-	{ 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 },
-}
-
 --Circles
 AREA_CIRCLE2X2 = {
 	{ 0, 1, 1, 1, 0 },
@@ -406,16 +283,6 @@ AREA_CIRCLE3X4 = {
 	{ 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 	{ 1, 1, 1, 1, 3, 1, 1, 1, 1 },
 	{ 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-	{ 0, 1, 1, 1, 1, 1, 1, 1, 0 },
-	{ 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 },
-}
-
-AREA_CIRCLE3X3X3 = {
-	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 },
-	{ 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-	{ 0, 1, 1, 1, 1, 1, 1, 1, 0 },
-	{ 0, 1, 1, 1, 3, 1, 1, 1, 0 },
 	{ 0, 1, 1, 1, 1, 1, 1, 1, 0 },
 	{ 0, 0, 1, 1, 1, 1, 1, 0, 0 },
 	{ 0, 0, 0, 1, 1, 1, 0, 0, 0 },
@@ -716,4 +583,25 @@ function Player:conjureItem(reagentId, conjureId, conjureCount, effect)
 
 	self:getPosition():sendMagicEffect(item:getType():isRune() and CONST_ME_MAGIC_RED or effect)
 	return true
+end
+
+function calculateAttackValue(player, attackSkill, weaponDamage)
+    local level = player:getLevel()
+    local flatBonus
+    if level < 500 then
+        flatBonus = level * 0.2
+    elseif level <= 1100 then
+        flatBonus = 100 + (level - 500) * 0.1667
+    elseif level <= 1800 then
+        flatBonus = 200 + (level - 1101) * 0.1429
+    elseif level <= 2600 then
+        flatBonus = 300 + (level - 1800) * 0.125
+    else
+        flatBonus = 400 + (level - 2600) * 0.111
+    end
+
+    local fightModeMultiplier = 1.2
+    local fightFactor = math.floor(fightModeMultiplier * weaponDamage)
+    local skillFactor = (attackSkill + 4) / 28
+    return flatBonus + (fightFactor * skillFactor)
 end

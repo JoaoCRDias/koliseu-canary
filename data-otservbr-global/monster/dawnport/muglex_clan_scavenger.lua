@@ -13,6 +13,10 @@ monster.outfit = {
 	lookMount = 0,
 }
 
+monster.events = {
+	"MuglexKillCount",
+}
+
 monster.health = 60
 monster.maxHealth = 60
 monster.race = "blood"

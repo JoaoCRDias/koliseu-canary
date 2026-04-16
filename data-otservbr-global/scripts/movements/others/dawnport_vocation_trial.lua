@@ -5,7 +5,7 @@ local tutorialEffects = {
 
 local vocationTrials = {
 	-- Sorcerer trial
-	[44640] = {
+	[25005] = {
 		tutorialId = 5,
 		effectPosition = { x = 32064, y = 31905, z = 5 },
 		storage = Storage.Dawnport.Sorcerer,
@@ -35,7 +35,7 @@ local vocationTrials = {
 		},
 	},
 	-- Druid trial
-	[44641] = {
+	[25006] = {
 		tutorialId = 6,
 		effectPosition = { x = 32064, y = 31876, z = 5 },
 		storage = Storage.Dawnport.Druid,
@@ -65,7 +65,7 @@ local vocationTrials = {
 		},
 	},
 	-- Paladin trial
-	[44639] = {
+	[25007] = {
 		tutorialId = 4,
 		effectPosition = { x = 32050, y = 31891, z = 5 },
 		storage = Storage.Dawnport.Paladin,
@@ -96,7 +96,7 @@ local vocationTrials = {
 		},
 	},
 	-- Knight trial
-	[44638] = {
+	[25008] = {
 		tutorialId = 3,
 		effectPosition = { x = 32078, y = 31891, z = 5 },
 		storage = Storage.Dawnport.Knight,
@@ -123,33 +123,6 @@ local vocationTrials = {
 			{ id = 3577, amount = 1, storage = Storage.Dawnport.KnightMeat, limit = 1 }, -- Meat
 		},
 	},
-	[50308] = {
-		tutorialId = 11,
-		storage = Storage.Dawnport.Monk,
-		message = "As a monk, you can use the following spells: Magic Patch, Swift Jab, Tiger Clash.",
-		vocation = {
-			id = VOCATION.ID.MONK,
-			name = "monk",
-			outfit = {
-				lookType = {
-					[PLAYERSEX_FEMALE] = 1825,
-					[PLAYERSEX_MALE] = 1824,
-				},
-				lookHead = 95,
-				lookBody = 38,
-				lookLegs = 94,
-				lookFeet = 115,
-			},
-		},
-		items = {
-			{ id = 50166, amount = 1, slot = CONST_SLOT_LEFT }, -- light jo staff
-			{ id = 7876, amount = 7, storage = Storage.Dawnport.MonkHealthPotion, limit = 1 }, -- Health potion
-			{ id = 268, amount = 5, storage = Storage.Dawnport.MonkManaPotion, limit = 1 }, -- Mana potion
-			{ id = 21352, amount = 2, storage = Storage.Dawnport.MonkLightestMissile, limit = 1 }, -- Lightest missile rune
-			{ id = 21351, amount = 2, storage = Storage.Dawnport.MonkLightStoneShower, limit = 1 }, -- Light stone shower rune
-			{ id = 3577, amount = 1, storage = Storage.Dawnport.MonkMeat, limit = 1 }, -- Meat
-		},
-	},
 }
 
 -- First items, added only in first step and having no vocation
@@ -163,7 +136,7 @@ local function addFirstItems(player)
 		},
 	}
 	for slot, item in pairs(firstItems.slots) do
-		local ret = player:addItemEx(item, false, slot)
+		local ret = player:addItemEx(item, false, sot)
 		if not ret then
 			player:addItemEx(item, false, INDEX_WHEREEVER, 0)
 		end
@@ -176,9 +149,7 @@ local function tileStep(player, trial)
 	local vocationId = player:getVocation():getId()
 	if vocationId == VOCATION.ID.NONE then
 		for i = 1, #tutorialEffects do
-			if trial.effectPosition then
-				Position(trial.effectPosition):sendMagicEffect(tutorialEffects[i])
-			end
+			Position(trial.effectPosition):sendMagicEffect(tutorialEffects[i])
 		end
 		player:sendTutorial(trial.tutorialId)
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "As this is the first time you try out a vocation, the Guild has kitted you out. " .. trial.message)
@@ -213,7 +184,6 @@ local function removeItems(player)
 		3267, -- Dagger
 		3412, -- Wooden shield
 		35562, -- Quiver
-		50166, -- light jo staff
 	}
 	for i = 1, #equipmentItemIds do
 		local equipmentItemAmount = player:getItemCount(equipmentItemIds[i])
@@ -286,37 +256,34 @@ function dawnportVocationTrial.onStepIn(creature, item, position, fromPosition)
 	if not player then
 		return true
 	end
-
-	local trial = vocationTrials[item:getId()]
-	if not trial then
-		return true
-	end
-
-	-- Center room position
-	local centerPosition = Position(32063, 31889, 5)
-	if centerPosition:getDistance(fromPosition) >= centerPosition:getDistance(position) then
-		-- Blocks the vocation trial if same vocation or after level 20
-		if player:getVocation():getId() == trial.vocation.id or player:getLevel() >= 20 then
+	local trial = vocationTrials[item.actionid]
+	if trial then
+		-- Center room position
+		local centerPosition = Position(32063, 31889, 5)
+		if centerPosition:getDistance(fromPosition) >= centerPosition:getDistance(position) then
+			-- Blocks the vocation trial if same vocation or after level 20
+			if player:getVocation():getId() == trial.vocation.id or player:getLevel() >= 20 then
+				return true
+			end
+			-- On step in the tile
+			tileStep(player, trial)
+			-- Change to new vocation, convert magic level and skills and set proper stats
+			player:changeVocation(trial.vocation.id)
+			-- Remove vocation trial equipment items
+			removeItems(player)
+			-- Add player item
+			addItems(player, trial.items)
+			-- Change outfit
+			setOutfit(player, trial.vocation.outfit)
+			player:getPosition():sendMagicEffect(CONST_ME_BLOCKHIT)
 			return true
 		end
-		-- On step in the tile
-		tileStep(player, trial)
-		-- Change to new vocation, convert magic level and skills and set proper stats
-		player:changeVocation(trial.vocation.id)
-		-- Remove vocation trial equipment items
-		removeItems(player)
-		-- Add player item
-		addItems(player, trial.items)
-		-- Change outfit
-		setOutfit(player, trial.vocation.outfit)
-		player:getPosition():sendMagicEffect(CONST_ME_BLOCKHIT)
-		return true
 	end
 	return true
 end
 
-for itemId, value in pairs(vocationTrials) do
-	dawnportVocationTrial:id(itemId)
+for index, value in pairs(vocationTrials) do
+	dawnportVocationTrial:aid(index)
 end
 
 dawnportVocationTrial:register()

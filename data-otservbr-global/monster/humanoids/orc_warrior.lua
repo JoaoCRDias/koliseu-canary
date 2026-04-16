@@ -86,7 +86,6 @@ monster.loot = {
 	{ name = "orc tooth", chance = 700 },
 	{ name = "broken helmet", chance = 10800 },
 	{ name = "orc leather", chance = 4000 },
-	{ name = "light bandana", chance = 950 },
 	{ name = "skull belt", chance = 980 },
 	{ id = 23986, chance = 1000 }, -- heavy old tome
 }

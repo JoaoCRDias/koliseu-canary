@@ -151,6 +151,10 @@ class MonsterType {
 		bool isPreyExclusive = false;
 
 		MonstersEvent_t eventType = MONSTERS_EVENT_NONE;
+	
+		// Summer Update 2025
+		bool canWalk = true;
+		bool canTarget = true;
 	};
 
 public:

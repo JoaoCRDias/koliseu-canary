@@ -232,7 +232,7 @@ std::shared_ptr<Condition> Condition::createCondition(ConditionId_t id, Conditio
 			return ObjectPool<ConditionLight, 1024>::allocateShared(id, type, ticks, buff, subId, param & 0xFF, (param & 0xFF00) >> 8);
 
 		case CONDITION_REGENERATION:
-			return ObjectPool<ConditionRegeneration, 1024>::allocateShared(id, type, ticks, buff, subId);
+			return ObjectPool<ConditionRegeneration, 1024>::allocateShared(id, type, ticks, buff, subId, isPersistent);
 
 		case CONDITION_SOUL:
 			return ObjectPool<ConditionSoul, 1024>::allocateShared(id, type, ticks, buff, subId);
@@ -240,7 +240,6 @@ std::shared_ptr<Condition> Condition::createCondition(ConditionId_t id, Conditio
 		case CONDITION_LESSERHEX:
 		case CONDITION_INTENSEHEX:
 		case CONDITION_GREATERHEX:
-		case CONDITION_MENTOROTHER:
 		case CONDITION_ATTRIBUTES:
 			return ObjectPool<ConditionAttributes, 1024>::allocateShared(id, type, ticks, buff, subId);
 
@@ -255,9 +254,6 @@ std::shared_ptr<Condition> Condition::createCondition(ConditionId_t id, Conditio
 
 		case CONDITION_FEARED:
 			return ObjectPool<ConditionFeared, 1024>::allocateShared(id, type, ticks, buff, subId);
-
-		case CONDITION_SERENE:
-			return ObjectPool<ConditionSerene, 1024>::allocateShared(id, type, ticks, buff, subId);
 
 		case CONDITION_ROOTED:
 		case CONDITION_INFIGHT:
@@ -489,10 +485,6 @@ std::unordered_set<PlayerIcon> ConditionGeneric::getIcons() const {
 			icons.insert(PlayerIcon::Powerless);
 			break;
 
-		case CONDITION_MENTOROTHER:
-			icons.insert(PlayerIcon::MentorOther);
-			break;
-
 		case CONDITION_GOSHNARTAINT:
 			switch (subId) {
 				case 1:
@@ -522,49 +514,6 @@ std::unordered_set<PlayerIcon> ConditionGeneric::getIcons() const {
 
 std::shared_ptr<Condition> ConditionGeneric::clone() const {
 	return std::make_shared<ConditionGeneric>(*this);
-}
-
-/**
- * @class ConditionSerene
- * @brief Represents the "Serene" condition used by Monk vocation players.
- *
- * Applies a visual serenity effect to the player when active.
- * - On start: sends serenity state ON to client.
- * - On end: sends serenity state OFF.
- * - On add: updates duration and optionally plays a sound.
- */
-ConditionSerene::ConditionSerene(ConditionId_t initId, ConditionType_t initType, int32_t initTicks, bool initBuff, uint32_t initSubId, bool isPersistent) :
-	Condition(initId, initType, initTicks, initBuff, initSubId, isPersistent) { }
-
-bool ConditionSerene::startCondition(std::shared_ptr<Creature> creature) {
-	if (const auto &player = creature->getPlayer()) {
-		player->sendMonkData(MonkData_t::Serenity, 0x01);
-	}
-	return Condition::startCondition(creature);
-}
-
-bool ConditionSerene::executeCondition(const std::shared_ptr<Creature> &creature, int32_t interval) {
-	return Condition::executeCondition(creature, interval);
-}
-
-void ConditionSerene::endCondition(std::shared_ptr<Creature> creature) {
-	if (const auto &player = creature->getPlayer()) {
-		player->sendMonkData(MonkData_t::Serenity, 0x00);
-	}
-}
-
-void ConditionSerene::addCondition(std::shared_ptr<Creature> creature, const std::shared_ptr<Condition> addCondition) {
-	if (updateCondition(addCondition)) {
-		setTicks(addCondition->getTicks());
-
-		if (creature && addSound != SoundEffect_t::SILENCE) {
-			g_game().sendSingleSoundEffect(creature->getPosition(), addSound, creature);
-		}
-	}
-}
-
-std::shared_ptr<Condition> ConditionSerene::clone() const {
-	return std::make_shared<ConditionSerene>(*this);
 }
 
 /**
@@ -1076,23 +1025,8 @@ bool ConditionAttributes::setParam(ConditionParam_t param, int32_t value) {
 			return true;
 		}
 
-		case CONDITION_PARAM_BUFF_HARMONYBONUS: {
-			buffsPercent[BUFF_HARMONYBONUS] = std::max<int32_t>(0, value);
-			return true;
-		}
-
-		case CONDITION_PARAM_BUFF_HEALINGDEALT: {
-			buffsPercent[BUFF_HEALINGDEALT] = std::max<int32_t>(0, value);
-			return true;
-		}
-
 		case CONDITION_PARAM_BUFF_HEALINGRECEIVED: {
 			buffsPercent[BUFF_HEALINGRECEIVED] = std::max<int32_t>(0, value);
-			return true;
-		}
-
-		case CONDITION_PARAM_BUFF_AUTOATTACKDEALT: {
-			buffsPercent[BUFF_AUTOATTACKDEALT] = std::max<int32_t>(0, value);
 			return true;
 		}
 
@@ -1292,8 +1226,8 @@ void ConditionAttributes::setIncreasePercent(uint8_t index, int32_t value) {
  *  ConditionRegeneration
  */
 
-ConditionRegeneration::ConditionRegeneration(ConditionId_t initId, ConditionType_t initType, int32_t iniTicks, bool initBuff, uint32_t initSubId) :
-	ConditionGeneric(initId, initType, iniTicks, initBuff, initSubId) { }
+ConditionRegeneration::ConditionRegeneration(ConditionId_t initId, ConditionType_t initType, int32_t iniTicks, bool initBuff, uint32_t initSubId, bool isPersistent) :
+	ConditionGeneric(initId, initType, iniTicks, initBuff, initSubId, isPersistent) { }
 
 bool ConditionRegeneration::startCondition(std::shared_ptr<Creature> creature) {
 	if (!Condition::startCondition(creature)) {
@@ -1318,11 +1252,17 @@ void ConditionRegeneration::addCondition(std::shared_ptr<Creature> creature, con
 
 		const auto &conditionRegen = addCondition->static_self_cast<ConditionRegeneration>();
 
-		healthTicks = conditionRegen->healthTicks;
-		manaTicks = conditionRegen->manaTicks;
+		if (conditionRegen->healthGain > 0) {
+			healthGain = conditionRegen->healthGain;
+		}
+		if (conditionRegen->manaGain > 0) {
+			manaGain = conditionRegen->manaGain;
+		}
 
-		healthGain = conditionRegen->healthGain;
-		manaGain = conditionRegen->manaGain;
+		foodTicks += conditionRegen->foodTicks;
+		if (foodTicks > 1200000) {
+			foodTicks = 1200000; // max foodTicks
+		}
 	}
 
 	if (const auto &player = creature->getPlayer()) {
@@ -1339,6 +1279,8 @@ bool ConditionRegeneration::unserializeProp(ConditionAttr_t attr, PropStream &pr
 		return propStream.read<uint32_t>(manaTicks);
 	} else if (attr == CONDITIONATTR_MANAGAIN) {
 		return propStream.read<uint32_t>(manaGain);
+	} else if (attr == CONDITIONATTR_FOODTICKS) {
+		return propStream.read<uint32_t>(foodTicks);
 	}
 	return Condition::unserializeProp(attr, propStream);
 }
@@ -1357,11 +1299,23 @@ void ConditionRegeneration::serialize(PropWriteStream &propWriteStream) {
 
 	propWriteStream.write<uint8_t>(CONDITIONATTR_MANAGAIN);
 	propWriteStream.write<uint32_t>(manaGain);
+
+	propWriteStream.write<uint8_t>(CONDITIONATTR_FOODTICKS);
+	propWriteStream.write<uint32_t>(foodTicks);
 }
 
 bool ConditionRegeneration::executeCondition(const std::shared_ptr<Creature> &creature, int32_t interval) {
 	internalHealthTicks += interval;
 	internalManaTicks += interval;
+
+	if (foodTicks > 0) {
+		internalFoodTicks += interval;
+		if (internalFoodTicks >= foodTicks) {
+			foodTicks = 0;
+			internalFoodTicks = 0;
+		}
+	}
+
 	const auto &player = creature->getPlayer();
 	int32_t dailyStreak = 0;
 	if (player) {
@@ -1370,16 +1324,18 @@ bool ConditionRegeneration::executeCondition(const std::shared_ptr<Creature> &cr
 			dailyStreak = static_cast<int32_t>(optStreak->getNumber());
 		}
 	}
-	if (creature->getZoneType() != ZONE_PROTECTION || dailyStreak >= DAILY_REWARD_HP_REGENERATION) {
+
+	bool inProtectionZone = creature->getZoneType() == ZONE_PROTECTION;
+	if (!inProtectionZone || dailyStreak >= DAILY_REWARD_HP_REGENERATION) {
 		if (internalHealthTicks >= getHealthTicks(creature)) {
 			internalHealthTicks = 0;
-
 			int32_t realHealthGain = creature->getHealth();
-			if (creature->getZoneType() == ZONE_PROTECTION && dailyStreak >= DAILY_REWARD_DOUBLE_HP_REGENERATION) {
+			if (inProtectionZone && dailyStreak >= DAILY_REWARD_DOUBLE_HP_REGENERATION) {
 				creature->changeHealth(healthGain * 2); // Double regen from daily reward
 			} else {
 				creature->changeHealth(healthGain);
 			}
+
 			realHealthGain = creature->getHealth() - realHealthGain;
 
 			if (isBuff && realHealthGain > 0) {
@@ -1406,10 +1362,10 @@ bool ConditionRegeneration::executeCondition(const std::shared_ptr<Creature> &cr
 		}
 	}
 
-	if (creature->getZoneType() != ZONE_PROTECTION || dailyStreak >= DAILY_REWARD_MP_REGENERATION) {
+	if (!inProtectionZone || dailyStreak >= DAILY_REWARD_MP_REGENERATION) {
 		if (internalManaTicks >= getManaTicks(creature)) {
 			internalManaTicks = 0;
-			if (creature->getZoneType() == ZONE_PROTECTION && dailyStreak >= DAILY_REWARD_DOUBLE_MP_REGENERATION) {
+			if (inProtectionZone && dailyStreak >= DAILY_REWARD_DOUBLE_MP_REGENERATION) {
 				creature->changeMana(manaGain * 2); // Double regen from daily reward
 			} else {
 				creature->changeMana(manaGain);
@@ -1440,6 +1396,11 @@ bool ConditionRegeneration::setParam(ConditionParam_t param, int32_t value) {
 			manaTicks = value;
 			return true;
 
+		case CONDITION_PARAM_FOODTICKS:
+			foodTicks = value;
+			internalFoodTicks = 0;
+			return true;
+
 		default:
 			return ret;
 	}
@@ -1448,8 +1409,17 @@ bool ConditionRegeneration::setParam(ConditionParam_t param, int32_t value) {
 uint32_t ConditionRegeneration::getHealthTicks(const std::shared_ptr<Creature> &creature) const {
 	const auto &player = creature->getPlayer();
 
-	if (player != nullptr && isBuff) {
-		return healthTicks / g_configManager().getFloat(RATE_SPELL_COOLDOWN);
+	if (player) {
+		uint32_t playerHealthTicks = g_configManager().getNumber(BASE_HEALTH_REGEN_INTERVAL);
+		if (foodTicks > 0) {
+			playerHealthTicks = g_configManager().getNumber(FOOD_HEALTH_REGEN_INTERVAL);
+		}
+
+		if (isBuff) {
+			playerHealthTicks = playerHealthTicks / g_configManager().getFloat(RATE_SPELL_COOLDOWN);
+		}
+
+		return playerHealthTicks - healthTicks;
 	}
 
 	return healthTicks;
@@ -1458,11 +1428,24 @@ uint32_t ConditionRegeneration::getHealthTicks(const std::shared_ptr<Creature> &
 uint32_t ConditionRegeneration::getManaTicks(const std::shared_ptr<Creature> &creature) const {
 	const auto &player = creature->getPlayer();
 
-	if (player != nullptr && isBuff) {
-		return manaTicks / g_configManager().getFloat(RATE_SPELL_COOLDOWN);
+	if (player) {
+		uint32_t playerManaTicks = g_configManager().getNumber(BASE_MANA_REGEN_INTERVAL);
+		if (foodTicks > 0) {
+			playerManaTicks = g_configManager().getNumber(FOOD_MANA_REGEN_INTERVAL);
+		}
+
+		if (isBuff) {
+			playerManaTicks = playerManaTicks / g_configManager().getFloat(RATE_SPELL_COOLDOWN);
+		}
+
+		return playerManaTicks - manaTicks;
 	}
 
 	return manaTicks;
+}
+
+uint32_t ConditionRegeneration::getFoodTicks() const {
+	return foodTicks;
 }
 
 std::shared_ptr<Condition> ConditionRegeneration::clone() const {
@@ -1806,7 +1789,7 @@ bool ConditionDamage::startCondition(std::shared_ptr<Creature> creature) {
 	if (!delayed) {
 		int32_t damage;
 		if (getNextDamage(damage)) {
-			return doDamage(creature, damage, true);
+			return doDamage(creature, damage);
 		}
 	}
 	return true;
@@ -1866,7 +1849,7 @@ bool ConditionDamage::getNextDamage(int32_t &damage) {
 	return false;
 }
 
-bool ConditionDamage::doDamage(const std::shared_ptr<Creature> &creature, int32_t healthChange, bool start) const {
+bool ConditionDamage::doDamage(const std::shared_ptr<Creature> &creature, int32_t healthChange) const {
 	// Only perform checks and assign attacker if owner is not 0, keeping a const reference to the shared_ptr
 	const auto &attacker = (owner != 0) ? (g_game().getPlayerByGUID(owner) ? g_game().getPlayerByGUID(owner)->getCreature() : g_game().getCreatureByID(owner)) : nullptr;
 	const auto &attackerPlayer = attacker ? attacker->getPlayer() : nullptr;
@@ -1890,7 +1873,7 @@ bool ConditionDamage::doDamage(const std::shared_ptr<Creature> &creature, int32_
 		return false;
 	}
 
-	if (g_game().combatBlockHit(damage, attacker, creature, false, false, field, !start)) {
+	if (g_game().combatBlockHit(damage, attacker, creature, false, false, field)) {
 		return false;
 	}
 
@@ -1944,7 +1927,7 @@ void ConditionDamage::addCondition(std::shared_ptr<Creature> creature, const std
 		if (!delayed) {
 			int32_t damage;
 			if (getNextDamage(damage)) {
-				doDamage(creature, damage, true);
+				doDamage(creature, damage);
 			}
 		}
 	}

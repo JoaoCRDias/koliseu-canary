@@ -133,6 +133,7 @@ npcConfig.shop = {
 	{ itemName = "black pearl", clientId = 3027, buy = 560, sell = 280 },
 	{ itemName = "blue crystal shard", clientId = 16119, sell = 1500 },
 	{ itemName = "blue crystal splinter", clientId = 16124, sell = 400 },
+	{ itemName = "bounty talisman", clientId = 51978, buy = 5000 },
 	{ itemName = "bronze goblet", clientId = 5807, buy = 2000 },
 	{ itemName = "brown crystal splinter", clientId = 16123, sell = 400 },
 	{ itemName = "coral brooch", clientId = 24391, sell = 750 },

@@ -34,6 +34,9 @@ struct Abilities {
 	// damage abilities modifiers
 	int16_t absorbPercent[COMBAT_COUNT] = { 0 };
 
+	// mantra abilities modifiers
+	int16_t mantraAbsorbValue[COMBAT_COUNT] = { 0 };
+
 	// relfect abilities modifires
 	int16_t reflectPercent[COMBAT_COUNT] = { 0 };
 
@@ -286,14 +289,12 @@ public:
 	int32_t defense = 0;
 	int32_t extraDefense = 0;
 	int32_t armor = 0;
-	int32_t mantra = 0;
 	int32_t rotateTo = 0;
 	int32_t runeMagLevel = 0;
 	int32_t runeLevel = 0;
 	int32_t wrapableTo = 0;
 
 	CombatType_t combatType = COMBAT_NONE;
-	CombatType_t elementalBond = COMBAT_NONE;
 
 	ItemAnimation_t animationType = ANIMATION_NONE;
 
@@ -308,6 +309,7 @@ public:
 	uint16_t slotPosition = SLOTP_HAND;
 	uint16_t speed = 0;
 	uint16_t wareId = 0;
+	uint16_t showAs = 0;
 	uint16_t bedPartOf = 0;
 	uint16_t m_transformOnUse = 0;
 
@@ -373,10 +375,14 @@ public:
 	bool spellbook = false;
 	bool isWrapKit = false;
 	bool m_canBeUsedByGuests = false;
-
-	// Monk
-	bool isDualWielding = false;
 	bool m_isMagicShieldPotion = false;
+
+	// Update 15.00
+	std::string elementalBond;
+	int16_t mantra = 0;
+
+	// Summer Update 2025
+	uint32_t proficiencyId = 0;
 };
 
 class Items {

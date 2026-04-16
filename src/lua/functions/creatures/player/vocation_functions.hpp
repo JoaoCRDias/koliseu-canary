@@ -28,11 +28,9 @@ private:
 	static int luaVocationGetCapacityGain(lua_State* L);
 
 	static int luaVocationGetHealthGain(lua_State* L);
-	static int luaVocationGetHealthGainTicks(lua_State* L);
 	static int luaVocationGetHealthGainAmount(lua_State* L);
 
 	static int luaVocationGetManaGain(lua_State* L);
-	static int luaVocationGetManaGainTicks(lua_State* L);
 	static int luaVocationGetManaGainAmount(lua_State* L);
 
 	static int luaVocationGetMaxSoul(lua_State* L);

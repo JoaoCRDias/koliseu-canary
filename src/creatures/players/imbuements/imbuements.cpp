@@ -59,10 +59,8 @@ bool Imbuements::loadFromXml(bool /* reloading */) {
 				pugi::cast<uint16_t>(id.value()),
 				baseNode.attribute("name").as_string(),
 				pugi::cast<uint32_t>(baseNode.attribute("price").value()),
-				pugi::cast<uint32_t>(baseNode.attribute("protectionPrice").value()),
 				pugi::cast<uint32_t>(baseNode.attribute("removecost").value()),
-				pugi::cast<uint32_t>(baseNode.attribute("duration").value()),
-				pugi::cast<uint16_t>(baseNode.attribute("percent").value())
+				pugi::cast<uint32_t>(baseNode.attribute("duration").value())
 			);
 
 			// Category/Group
@@ -121,6 +119,10 @@ bool Imbuements::loadFromXml(bool /* reloading */) {
 
 			if (pugi::xml_attribute storageBase = baseNode.attribute("storage")) {
 				imbuement.storage = pugi::cast<uint32_t>(storageBase.value());
+			}
+
+			if (pugi::xml_attribute scrollId = baseNode.attribute("scrollid")) {
+				imbuement.scrollid = pugi::cast<uint16_t>(scrollId.value());
 			}
 
 			pugi::xml_attribute subgroupBase = baseNode.attribute("subgroup");
@@ -381,6 +383,25 @@ std::vector<Imbuement*> Imbuements::getImbuements(const std::shared_ptr<Player> 
 	return imbuements;
 }
 
+std::vector<Imbuement*> Imbuements::getAllImbuementsIntricateAndPowerful(const std::shared_ptr<Player> &player) {
+	std::vector<Imbuement*> imbuements;
+
+	for (auto &[key, value] : imbuementMap) {
+		Imbuement* imbuement = &value;
+		if (!imbuement) {
+			continue;
+		}
+
+		if (imbuement->getBaseID() < 2) {
+			continue;
+		}
+
+		imbuements.emplace_back(imbuement);
+	}
+
+	return imbuements;
+}
+
 uint16_t Imbuement::getID() const {
 	return id;
 }
@@ -391,6 +412,10 @@ uint16_t Imbuement::getBaseID() const {
 
 uint32_t Imbuement::getStorage() const {
 	return storage;
+}
+
+uint16_t Imbuement::getScrollId() const {
+	return scrollid;
 }
 
 bool Imbuement::isPremium() const {
@@ -418,7 +443,7 @@ const std::vector<std::pair<uint16_t, uint16_t>> &Imbuement::getItems() const {
 }
 
 uint16_t Imbuement::getIconID() const {
-	return icon + (baseid - 1);
+	return icon;
 }
 
 ImbuementDecay &ImbuementDecay::getInstance() {

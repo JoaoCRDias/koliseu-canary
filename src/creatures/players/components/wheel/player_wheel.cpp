@@ -12,7 +12,6 @@
 
 #include "map/spectators.hpp"
 #include "creatures/monsters/monster.hpp"
-#include "creatures/players/grouping/party.hpp"
 #include "config/configmanager.hpp"
 #include "creatures/combat/condition.hpp"
 #include "creatures/combat/spells.hpp"
@@ -25,6 +24,7 @@
 #include "server/network/message/networkmessage.hpp"
 #include "server/network/protocol/protocolgame.hpp"
 #include "creatures/players/components/wheel/wheel_definitions.hpp"
+#include "creatures/players/components/wheel/player_wheel.hpp"
 
 static PlayerWheelGem emptyGem = {};
 
@@ -247,21 +247,6 @@ const static std::vector<WheelGemSupremeModifier_t> modsSupremeDruidPosition = {
 	WheelGemSupremeModifier_t::Druid_RevelationMastery_TwinBursts,
 };
 
-/**
- * @brief List of Supreme Wheel Gem Modifiers relevant to the Monk vocation.
- *
- * This list defines all possible supreme-level enhancements from the Wheel of Destiny
- * that apply to the Monk class. It includes both general modifiers and Monk-specific
- * spell/skill improvements.
- *
- * The modifiers cover various categories such as:
- * - General bonuses (e.g., dodge, life leech)
- * - Cooldown reductions
- * - Damage increases
- * - Critical damage bonuses
- * - Healing boosts
- * - Revelation Mastery passives
- */
 const static std::vector<WheelGemSupremeModifier_t> modsSupremeMonkPosition = {
 	WheelGemSupremeModifier_t::General_Dodge,
 	WheelGemSupremeModifier_t::General_CriticalDamage,
@@ -270,22 +255,22 @@ const static std::vector<WheelGemSupremeModifier_t> modsSupremeMonkPosition = {
 	WheelGemSupremeModifier_t::General_RevelationMastery_GiftOfLife,
 
 	WheelGemSupremeModifier_t::Monk_AvatarOfBalance_Cooldown,
-	WheelGemSupremeModifier_t::Monk_SpiritMend_HealingIncreased,
+	WheelGemSupremeModifier_t::Monk_SpiritMend_HealingIncrease,
 	WheelGemSupremeModifier_t::Monk_SpiritualOutburst_DamageIncrease,
 	WheelGemSupremeModifier_t::Monk_SpiritualOutburst_CriticalExtraDamage,
 	WheelGemSupremeModifier_t::Monk_ForcefulUppercut_DamageIncrease,
 	WheelGemSupremeModifier_t::Monk_ForcefulUppercut_CriticalExtraDamage,
-	WheelGemSupremeModifier_t::Monk_FlurryOfBlows_DamageIncrease,
-	WheelGemSupremeModifier_t::Monk_FlurryOfBlows_CriticalExtraDamage,
-	WheelGemSupremeModifier_t::Monk_GreaterFlurryOfBlows_DamageIncrease,
-	WheelGemSupremeModifier_t::Monk_GreaterFlurryOfBlows_CriticalExtraDamage,
+	WheelGemSupremeModifier_t::Monk_FurryofBlows_DamageIncrease,
+	WheelGemSupremeModifier_t::Monk_FurryofBlows_CriticalExtraDamage,
+	WheelGemSupremeModifier_t::Monk_GreaterFurryofBlows_DamageIncrease,
+	WheelGemSupremeModifier_t::Monk_GreaterFurryofBlows_CriticalExtraDamage,
 	WheelGemSupremeModifier_t::Monk_SweepingTakedown_DamageIncrease,
 	WheelGemSupremeModifier_t::Monk_SweepingTakedown_CriticalExtraDamage,
-	WheelGemSupremeModifier_t::Monk_FocusSerenity_Cooldown,
-	WheelGemSupremeModifier_t::Monk_FocusHarmony_Cooldown,
-	WheelGemSupremeModifier_t::Monk_MassSpiritMend_HealingIncrease,
+	WheelGemSupremeModifier_t::Monk_FocusSerenety,
+	WheelGemSupremeModifier_t::Monk_FocusHarmony,
+	WheelGemSupremeModifier_t::Monk_MassSpiritMand_HealingIncrease,
 	WheelGemSupremeModifier_t::Monk_RevelationMastery_AvatarOfBalance,
-	WheelGemSupremeModifier_t::Monk_RevelationMastery_SpiritualBurst,
+	WheelGemSupremeModifier_t::Monk_RevelationMastery_SpiritualOutburst,
 	WheelGemSupremeModifier_t::Monk_RevelationMastery_Ascetic,
 };
 
@@ -295,7 +280,7 @@ const static std::unordered_map<uint8_t, std::reference_wrapper<const std::vecto
 	{ 2, std::cref(modsSupremeDruidPosition) },
 	{ 3, std::cref(modsSupremePaladinPosition) },
 	{ 4, std::cref(modsSupremeKnightPosition) },
-	{ 9, std::cref(modsSupremeMonkPosition) }
+	{ 5, std::cref(modsSupremeMonkPosition) }
 };
 
 // To avoid conflict in other files that might use a function with the same name
@@ -912,19 +897,15 @@ bool PlayerWheel::getSpellAdditionalArea(const std::string &spellName) const {
 
 	const auto vocationEnum = m_player.getPlayerVocationEnum();
 	if (vocationEnum == Vocation_t::VOCATION_KNIGHT_CIP) {
-		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().spells.knight, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_PALADIN_CIP) {
-		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().spells.paladin, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_DRUID_CIP) {
-		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().spells.druid, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_SORCERER_CIP) {
-		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().spells.sorcerer, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_MONK_CIP) {
-		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().spells.monk, spellName, stage);
+		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.knight, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_PALADIN_CIP) {
+		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.paladin, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_DRUID_CIP) {
+		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.druid, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_SORCERER_CIP) {
+		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.sorcerer, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_MONK_CIP) {
+		return checkSpellArea(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.monk, spellName, stage);
 	}
 
 	return false;
@@ -938,21 +919,16 @@ int PlayerWheel::getSpellAdditionalTarget(const std::string &spellName) const {
 
 	const auto vocationEnum = m_player.getPlayerVocationEnum();
 	if (vocationEnum == Vocation_t::VOCATION_KNIGHT_CIP) {
-		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().spells.knight, spellName, stage);
+		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.knight, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_PALADIN_CIP) {
+		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.paladin, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_DRUID_CIP) {
+		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.druid, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_SORCERER_CIP) {
+		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.sorcerer, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_MONK_CIP) {
+		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.monk, spellName, stage);
 	}
-	if (vocationEnum == Vocation_t::VOCATION_PALADIN_CIP) {
-		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().spells.paladin, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_DRUID_CIP) {
-		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().spells.druid, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_SORCERER_CIP) {
-		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().spells.sorcerer, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_MONK_CIP) {
-		return checkSpellAdditionalTarget(g_game().getIOWheel()->getWheelBonusData().spells.monk, spellName, stage);
-	}
-
 	return 0;
 }
 
@@ -964,18 +940,16 @@ int PlayerWheel::getSpellAdditionalDuration(const std::string &spellName) const 
 
 	const auto vocationEnum = m_player.getPlayerVocationEnum();
 	if (vocationEnum == Vocation_t::VOCATION_KNIGHT_CIP) {
-		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().spells.knight, spellName, stage);
+		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.knight, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_PALADIN_CIP) {
+		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.paladin, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_DRUID_CIP) {
+		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.druid, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_SORCERER_CIP) {
+		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.sorcerer, spellName, stage);
+	} else if (vocationEnum == Vocation_t::VOCATION_MONK_CIP) {
+		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().convictionPerkAugmented.monk, spellName, stage);
 	}
-	if (vocationEnum == Vocation_t::VOCATION_PALADIN_CIP) {
-		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().spells.paladin, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_DRUID_CIP) {
-		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().spells.druid, spellName, stage);
-	}
-	if (vocationEnum == Vocation_t::VOCATION_SORCERER_CIP) {
-		return checkSpellAdditionalDuration(g_game().getIOWheel()->getWheelBonusData().spells.sorcerer, spellName, stage);
-	}
-
 	return 0;
 }
 
@@ -1019,8 +993,8 @@ bool PlayerWheel::handleBeamMasteryCooldown(const std::shared_ptr<Player> &playe
 }
 
 void PlayerWheel::addPromotionScrolls(NetworkMessage &msg) const {
-	msg.add<uint16_t>(m_unlockedScrolls.size());
-	for (const auto &[itemId, name, extraPoints] : m_unlockedScrolls) {
+	msg.add<uint16_t>(m_unlockedPromotionScrolls.size());
+	for (const auto &[itemId, name, extraPoints] : m_unlockedPromotionScrolls) {
 		msg.add<uint16_t>(itemId);
 		msg.addByte(extraPoints);
 	}
@@ -1209,13 +1183,13 @@ void PlayerWheel::destroyGem(uint16_t index) {
 
 	switch (gem.quality) {
 		case WheelGemQuality_t::Lesser:
-			lesserFragments = normal_random(1, 5);
+			lesserFragments = uniform_random(1, 5);
 			break;
 		case WheelGemQuality_t::Regular:
-			lesserFragments = normal_random(2, 10);
+			lesserFragments = uniform_random(2, 10);
 			break;
 		case WheelGemQuality_t::Greater:
-			greaterFragments = normal_random(1, 5);
+			greaterFragments = uniform_random(1, 5);
 			break;
 	}
 
@@ -1390,7 +1364,7 @@ void PlayerWheel::addGems(NetworkMessage &msg) const {
 }
 
 void PlayerWheel::addGradeModifiers(NetworkMessage &msg) const {
-	msg.addByte(0x2E); // Modifiers for all Vocations
+	msg.addByte(46); // Modifiers for all Vocations
 
 	for (const auto &modPosition : modsBasicPosition) {
 		const auto pos = static_cast<uint8_t>(modPosition);
@@ -1398,7 +1372,7 @@ void PlayerWheel::addGradeModifiers(NetworkMessage &msg) const {
 		msg.addByte(m_basicGrades[pos]);
 	}
 
-	msg.addByte(0x17); // Modifiers for specific per Vocations
+	msg.addByte(23); // Modifiers for specific per Vocations
 
 	const auto vocationBaseId = m_player.getVocation()->getBaseId();
 	const auto modsSupremeIt = modsSupremePositionByVocation.find(vocationBaseId);
@@ -1523,7 +1497,8 @@ void PlayerWheel::sendOpenWheelWindow(NetworkMessage &msg, uint32_t ownerId) {
 		msg.add<uint16_t>(getPointsBySlotType(slot));
 	}
 	addPromotionScrolls(msg);
-	msg.addByte(0x00); // Unknown
+	msg.addByte(hasMonkQuest() ? 10 : 0); // The Way of The Monk Quest
+	msg.add<uint16_t>(getExtraPointsFromHuntingTaskShop());
 	addGems(msg);
 	addGradeModifiers(msg);
 
@@ -1757,11 +1732,11 @@ void PlayerWheel::saveRevealedGems() const {
 }
 
 bool PlayerWheel::scrollAcquired(const std::string &scrollName) {
-	auto it = std::ranges::find_if(m_unlockedScrolls, [&scrollName](const PromotionScroll &promotionScroll) {
+	auto it = std::ranges::find_if(m_unlockedPromotionScrolls, [&scrollName](const PromotionScroll &promotionScroll) {
 		return scrollName == promotionScroll.name;
 	});
 
-	return it != m_unlockedScrolls.end();
+	return it != m_unlockedPromotionScrolls.end();
 }
 
 bool PlayerWheel::unlockScroll(const std::string &scrollName) {
@@ -1774,14 +1749,14 @@ bool PlayerWheel::unlockScroll(const std::string &scrollName) {
 	});
 
 	if (it != WheelOfDestinyPromotionScrolls.end()) {
-		m_unlockedScrolls.emplace_back(*it);
+		m_unlockedPromotionScrolls.emplace_back(*it);
 		return true;
 	}
 
 	return false;
 }
 
-void PlayerWheel::loadKVScrolls() {
+void PlayerWheel::loadKVPromotionScrolls() {
 	const auto &scrollKv = m_player.kv()->scoped("wheel-of-destiny")->scoped("scrolls");
 	if (!scrollKv) {
 		return;
@@ -1790,20 +1765,42 @@ void PlayerWheel::loadKVScrolls() {
 	for (const auto &[itemId, name, extraPoints] : WheelOfDestinyPromotionScrolls) {
 		const auto scrollValue = scrollKv->get(name);
 		if (scrollValue && scrollValue->get<bool>()) {
-			m_unlockedScrolls.emplace_back(itemId, name, extraPoints);
+			m_unlockedPromotionScrolls.emplace_back(itemId, name, extraPoints);
 		}
 	}
 }
 
-void PlayerWheel::saveKVScrolls() const {
+void PlayerWheel::saveKVPromotionScrolls() const {
 	const auto &scrollKv = m_player.kv()->scoped("wheel-of-destiny")->scoped("scrolls");
 	if (!scrollKv) {
 		return;
 	}
 
-	for (const auto &[itemId, name, extraPoints] : m_unlockedScrolls) {
+	for (const auto &[itemId, name, extraPoints] : m_unlockedPromotionScrolls) {
 		scrollKv->set(name, true);
 	}
+}
+
+void PlayerWheel::loadKVHuntingTaskShopExtraPoints() {
+	const auto &pointsKv = m_player.kv()->scoped("wheel-of-destiny");
+	if (!pointsKv) {
+		return;
+	}
+
+	const auto value = pointsKv->get("hunting-task-shop-extra-points");
+	if (value && value.has_value()) {
+		auto extraPoints = value->getNumber();
+		m_extraPointsFromHuntingTaskShop = extraPoints > 0 ? static_cast<uint16_t>(extraPoints) : 0;
+	}
+}
+
+void PlayerWheel::saveKVHuntingTaskShopExtraPoints() const {
+	const auto &pointsKv = m_player.kv()->scoped("wheel-of-destiny");
+	if (!pointsKv) {
+		return;
+	}
+
+	pointsKv->set("hunting-task-shop-extra-points", m_extraPointsFromHuntingTaskShop);
 }
 
 void PlayerWheel::loadKVModGrades() {
@@ -1918,7 +1915,7 @@ uint16_t PlayerWheel::getExtraPoints() const {
 	}
 
 	uint16_t totalBonus = 0;
-	for (const auto &[itemId, name, extraPoints] : m_unlockedScrolls) {
+	for (const auto &[itemId, name, extraPoints] : m_unlockedPromotionScrolls) {
 		if (itemId == 0) {
 			continue;
 		}
@@ -1926,7 +1923,29 @@ uint16_t PlayerWheel::getExtraPoints() const {
 		totalBonus += extraPoints;
 	}
 
+	// The Way of The Monk Quest
+	if (hasMonkQuest()) {
+		totalBonus += 10;
+	}
+
 	return totalBonus;
+}
+
+uint16_t PlayerWheel::getExtraPointsFromHuntingTaskShop() const {
+	if (m_player.getLevel() < 51) {
+		return 0;
+	}
+
+	return m_extraPointsFromHuntingTaskShop;
+}
+
+void PlayerWheel::addExtraPointsFromHuntingTaskShop(uint16_t amount) {
+	if (amount == 0) {
+		return;
+	}
+
+	const uint32_t total = static_cast<uint32_t>(m_extraPointsFromHuntingTaskShop) + amount;
+	m_extraPointsFromHuntingTaskShop = static_cast<uint16_t>(std::min<uint32_t>(total, std::numeric_limits<uint16_t>::max()));
 }
 
 uint16_t PlayerWheel::getWheelPoints(bool includeExtraPoints /* = true*/) const {
@@ -1934,8 +1953,8 @@ uint16_t PlayerWheel::getWheelPoints(bool includeExtraPoints /* = true*/) const 
 	auto totalPoints = std::max(0u, (level - m_minLevelToStartCountPoints)) * m_pointsPerLevel;
 
 	if (includeExtraPoints) {
-		const auto extraPoints = getExtraPoints();
-		totalPoints += extraPoints;
+		totalPoints += getExtraPoints();
+		totalPoints += getExtraPointsFromHuntingTaskShop();
 	}
 
 	return totalPoints;
@@ -2103,54 +2122,54 @@ void PlayerWheel::registerPlayerBonusData() {
 	addStat(WheelStat_t::HEALING, m_playerBonusData.stats.healing);
 
 	// Skills
-	addStat(WheelStat_t::FIST, m_playerBonusData.skills.fist);
 	addStat(WheelStat_t::MELEE, m_playerBonusData.skills.melee);
 	addStat(WheelStat_t::DISTANCE, m_playerBonusData.skills.distance);
 	addStat(WheelStat_t::MAGIC, m_playerBonusData.skills.magic);
+	addStat(WheelStat_t::FIST, m_playerBonusData.skills.fist);
 
 	// Leech
 	setPlayerCombatStats(COMBAT_LIFEDRAIN, m_playerBonusData.leech.lifeLeech * 100);
 	setPlayerCombatStats(COMBAT_MANADRAIN, m_playerBonusData.leech.manaLeech * 100);
 
-	// Instant
-	setSpellInstant("Battle Instinct", m_playerBonusData.instant.battleInstinct);
-	setSpellInstant("Battle Healing", m_playerBonusData.instant.battleHealing);
-	setSpellInstant("Positional Tactics", m_playerBonusData.instant.positionalTactics);
-	setSpellInstant("Ballistic Mastery", m_playerBonusData.instant.ballisticMastery);
-	setSpellInstant("Healing Link", m_playerBonusData.instant.healingLink);
-	setSpellInstant("Runic Mastery", m_playerBonusData.instant.runicMastery);
-	setSpellInstant("Focus Mastery", m_playerBonusData.instant.focusMastery);
-	setSpellInstant("Sanctuary", m_playerBonusData.instant.sanctuary);
-	setSpellInstant("Guiding Presence", m_playerBonusData.instant.guidingPresence);
+	// Conviction Perks
+	setConvictionOrRevelationPerk("Battle Instinct", m_playerBonusData.convictionPerkSpell.battleInstinct);
+	setConvictionOrRevelationPerk("Battle Healing", m_playerBonusData.convictionPerkSpell.battleHealing);
+	setConvictionOrRevelationPerk("Positional Tactics", m_playerBonusData.convictionPerkSpell.positionalTactics);
+	setConvictionOrRevelationPerk("Ballistic Mastery", m_playerBonusData.convictionPerkSpell.ballisticMastery);
+	setConvictionOrRevelationPerk("Healing Link", m_playerBonusData.convictionPerkSpell.healingLink);
+	setConvictionOrRevelationPerk("Runic Mastery", m_playerBonusData.convictionPerkSpell.runicMastery);
+	setConvictionOrRevelationPerk("Focus Mastery", m_playerBonusData.convictionPerkSpell.focusMastery);
+	setConvictionOrRevelationPerk("Guiding Presence", m_playerBonusData.convictionPerkSpell.guidingPresence);
+	setConvictionOrRevelationPerk("Sanctuary", m_playerBonusData.convictionPerkSpell.sanctuary);
 
-	// Stages (Revelation)
+	// Revelation Perks
 	if (m_playerBonusData.stages.combatMastery > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.combatMastery; ++i) {
-			setSpellInstant("Combat Mastery", true);
+			setConvictionOrRevelationPerk("Combat Mastery", true);
 		}
 	} else {
-		setSpellInstant("Combat Mastery", false);
+		setConvictionOrRevelationPerk("Combat Mastery", false);
 	}
 
 	if (m_playerBonusData.stages.giftOfLife > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.giftOfLife; ++i) {
-			setSpellInstant("Gift of Life", true);
+			setConvictionOrRevelationPerk("Gift of Life", true);
 		}
 	} else {
-		setSpellInstant("Gift of Life", false);
+		setConvictionOrRevelationPerk("Gift of Life", false);
 	}
 
 	if (m_playerBonusData.stages.blessingOfTheGrove > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.blessingOfTheGrove; ++i) {
-			setSpellInstant("Blessing of the Grove", true);
+			setConvictionOrRevelationPerk("Blessing of the Grove", true);
 		}
 	} else {
-		setSpellInstant("Blessing of the Grove", false);
+		setConvictionOrRevelationPerk("Blessing of the Grove", false);
 	}
 
 	if (m_playerBonusData.stages.divineEmpowerment > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.divineEmpowerment; ++i) {
-			setSpellInstant("Divine Empowerment", true);
+			setConvictionOrRevelationPerk("Divine Empowerment", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 4 * 1000;
@@ -2162,12 +2181,12 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Divine Empowerment", bonus);
 		}
 	} else {
-		setSpellInstant("Divine Empowerment", false);
+		setConvictionOrRevelationPerk("Divine Empowerment", false);
 	}
 
 	if (m_playerBonusData.stages.divineGrenade > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.divineGrenade; ++i) {
-			setSpellInstant("Divine Grenade", true);
+			setConvictionOrRevelationPerk("Divine Grenade", true);
 		}
 		if (m_playerBonusData.stages.divineGrenade >= 2) {
 			WheelSpells::Bonus bonus;
@@ -2180,22 +2199,22 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Divine Grenade", bonus);
 		}
 	} else {
-		setSpellInstant("Divine Grenade", false);
+		setConvictionOrRevelationPerk("Divine Grenade", false);
 	}
 
 	if (m_playerBonusData.stages.drainBody > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.drainBody; ++i) {
-			setSpellInstant("Drain Body", true);
+			setConvictionOrRevelationPerk("Drain Body", true);
 		}
 	} else {
-		setSpellInstant("Drain Body", false);
+		setConvictionOrRevelationPerk("Drain Body", false);
 	}
 	if (m_playerBonusData.stages.beamMastery > 0) {
 		m_beamMasterySpells.emplace("Energy Beam");
 		m_beamMasterySpells.emplace("Great Death Beam");
 		m_beamMasterySpells.emplace("Great Energy Beam");
 		for (int i = 0; i < m_playerBonusData.stages.beamMastery; ++i) {
-			setSpellInstant("Beam Mastery", true);
+			setConvictionOrRevelationPerk("Beam Mastery", true);
 		}
 		WheelSpells::Bonus deathBeamBonus;
 		deathBeamBonus.decrease.cooldown = 2 * 1000;
@@ -2207,12 +2226,12 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Great Death Beam", deathBeamBonus);
 		}
 	} else {
-		setSpellInstant("Beam Mastery", false);
+		setConvictionOrRevelationPerk("Beam Mastery", false);
 	}
 
 	if (m_playerBonusData.stages.twinBurst > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.twinBurst; ++i) {
-			setSpellInstant("Twin Burst", true);
+			setConvictionOrRevelationPerk("Twin Burst", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 4 * 1000;
@@ -2226,12 +2245,12 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Terra Burst", bonus);
 		}
 	} else {
-		setSpellInstant("Twin Burst", false);
+		setConvictionOrRevelationPerk("Twin Burst", false);
 	}
 
 	if (m_playerBonusData.stages.executionersThrow > 0) {
 		for (int i = 0; i < m_playerBonusData.stages.executionersThrow; ++i) {
-			setSpellInstant("Executioner's Throw", true);
+			setConvictionOrRevelationPerk("Executioner's Throw", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 4 * 1000;
@@ -2242,13 +2261,37 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Executioner's Throw", bonus);
 		}
 	} else {
-		setSpellInstant("Executioner's Throw", false);
+		setConvictionOrRevelationPerk("Executioner's Throw", false);
+	}
+
+	if (m_playerBonusData.stages.spiritualOutburst > 0) {
+		for (int i = 0; i < m_playerBonusData.stages.spiritualOutburst; ++i) {
+			setConvictionOrRevelationPerk("Spiritual Outburst", true);
+		}
+		WheelSpells::Bonus bonus;
+		bonus.decrease.cooldown = 4 * 1000;
+		if (m_playerBonusData.stages.spiritualOutburst >= 2) {
+			addSpellBonus("Spiritual Outburst", bonus);
+		}
+		if (m_playerBonusData.stages.spiritualOutburst >= 3) {
+			addSpellBonus("Spiritual Outburst", bonus);
+		}
+	} else {
+		setConvictionOrRevelationPerk("Spiritual Outburst", false);
+	}
+
+	if (m_playerBonusData.stages.ascetic > 0) {
+		for (int i = 0; i < m_playerBonusData.stages.ascetic; ++i) {
+			setConvictionOrRevelationPerk("Ascetic", true);
+		}
+	} else {
+		setConvictionOrRevelationPerk("Ascetic", false);
 	}
 
 	// Avatar
 	if (m_playerBonusData.avatar.light > 0) {
 		for (int i = 0; i < m_playerBonusData.avatar.light; ++i) {
-			setSpellInstant("Avatar of Light", true);
+			setConvictionOrRevelationPerk("Avatar of Light", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
@@ -2260,12 +2303,12 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Avatar of Light", bonus);
 		}
 	} else {
-		setSpellInstant("Avatar of Light", false);
+		setConvictionOrRevelationPerk("Avatar of Light", false);
 	}
 
 	if (m_playerBonusData.avatar.nature > 0) {
 		for (int i = 0; i < m_playerBonusData.avatar.nature; ++i) {
-			setSpellInstant("Avatar of Nature", true);
+			setConvictionOrRevelationPerk("Avatar of Nature", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
@@ -2277,12 +2320,12 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Avatar of Nature", bonus);
 		}
 	} else {
-		setSpellInstant("Avatar of Nature", false);
+		setConvictionOrRevelationPerk("Avatar of Nature", false);
 	}
 
 	if (m_playerBonusData.avatar.steel > 0) {
 		for (int i = 0; i < m_playerBonusData.avatar.steel; ++i) {
-			setSpellInstant("Avatar of Steel", true);
+			setConvictionOrRevelationPerk("Avatar of Steel", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
@@ -2293,12 +2336,12 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Avatar of Steel", bonus);
 		}
 	} else {
-		setSpellInstant("Avatar of Steel", false);
+		setConvictionOrRevelationPerk("Avatar of Steel", false);
 	}
 
 	if (m_playerBonusData.avatar.storm > 0) {
 		for (int i = 0; i < m_playerBonusData.avatar.storm; ++i) {
-			setSpellInstant("Avatar of Storm", true);
+			setConvictionOrRevelationPerk("Avatar of Storm", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
@@ -2309,12 +2352,12 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Avatar of Storm", bonus);
 		}
 	} else {
-		setSpellInstant("Avatar of Storm", false);
+		setConvictionOrRevelationPerk("Avatar of Storm", false);
 	}
 
 	if (m_playerBonusData.avatar.balance > 0) {
 		for (int i = 0; i < m_playerBonusData.avatar.balance; ++i) {
-			setSpellInstant("Avatar of Balance", true);
+			setConvictionOrRevelationPerk("Avatar of Balance", true);
 		}
 		WheelSpells::Bonus bonus;
 		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
@@ -2325,40 +2368,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			addSpellBonus("Avatar of Balance", bonus);
 		}
 	} else {
-		setSpellInstant("Avatar of Balance", false);
-	}
-
-	if (m_playerBonusData.stages.spiritualOutburst > 0) {
-		for (int i = 0; i < m_playerBonusData.stages.spiritualOutburst; ++i) {
-			setSpellInstant("Spiritual Outburst", true);
-		}
-		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 4 * 1000;
-		if (m_playerBonusData.stages.spiritualOutburst >= 2) {
-			addSpellBonus("Spiritual Outburst", bonus);
-		}
-		if (m_playerBonusData.stages.spiritualOutburst >= 3) {
-			addSpellBonus("Spiritual Outburst", bonus);
-		}
-	} else {
-		setSpellInstant("Spiritual Outburst", false);
-	}
-
-	// Stages (Revelation)
-	if (m_playerBonusData.stages.combatMastery > 0) {
-		for (int i = 0; i < m_playerBonusData.stages.combatMastery; ++i) {
-			setSpellInstant("Combat Mastery", true);
-		}
-	} else {
-		setSpellInstant("Combat Mastery", false);
-	}
-
-	if (m_playerBonusData.stages.ascetic > 0) {
-		for (int i = 0; i < m_playerBonusData.stages.ascetic; ++i) {
-			setSpellInstant("Ascetic", true);
-		}
-	} else {
-		setSpellInstant("Ascetic", false);
+		setConvictionOrRevelationPerk("Avatar of Balance", false);
 	}
 
 	for (const auto &spell : m_playerBonusData.spells) {
@@ -2392,11 +2402,6 @@ void PlayerWheel::loadPlayerBonusData() {
 	loadRevelationPerks();
 
 	registerPlayerBonusData();
-
-	const auto &party = m_player.getParty();
-	if (party) {
-		party->updateMantraHolder();
-	}
 
 	printPlayerWheelMethodsBonusData(m_playerBonusData);
 }
@@ -2443,6 +2448,9 @@ void PlayerWheel::printPlayerWheelMethodsBonusData(const PlayerWheelMethodsBonus
 	if (bonusData.skills.magic > 0) {
 		g_logger().debug("  magic: {}", bonusData.skills.magic);
 	}
+	if (bonusData.skills.fist > 0) {
+		g_logger().debug("  fist: {}", bonusData.skills.fist);
+	}
 
 	g_logger().debug("Leech:");
 	if (bonusData.leech.manaLeech > 0) {
@@ -2452,30 +2460,36 @@ void PlayerWheel::printPlayerWheelMethodsBonusData(const PlayerWheelMethodsBonus
 		g_logger().debug("  lifeLeech: {}", bonusData.leech.lifeLeech);
 	}
 
-	g_logger().debug("Instant:");
-	if (bonusData.instant.battleInstinct) {
-		g_logger().debug("  battleInstinct: {}", bonusData.instant.battleInstinct);
+	g_logger().debug("Conviction Perk Spell:");
+	if (bonusData.convictionPerkSpell.battleInstinct) {
+		g_logger().debug("  battleInstinct: {}", bonusData.convictionPerkSpell.battleInstinct);
 	}
-	if (bonusData.instant.battleHealing) {
-		g_logger().debug("  battleHealing: {}", bonusData.instant.battleHealing);
+	if (bonusData.convictionPerkSpell.battleHealing) {
+		g_logger().debug("  battleHealing: {}", bonusData.convictionPerkSpell.battleHealing);
 	}
-	if (bonusData.instant.positionalTactics) {
-		g_logger().debug("  positionalTactics: {}", bonusData.instant.positionalTactics);
+	if (bonusData.convictionPerkSpell.positionalTactics) {
+		g_logger().debug("  positionalTactics: {}", bonusData.convictionPerkSpell.positionalTactics);
 	}
-	if (bonusData.instant.ballisticMastery) {
-		g_logger().debug("  ballisticMastery: {}", bonusData.instant.ballisticMastery);
+	if (bonusData.convictionPerkSpell.ballisticMastery) {
+		g_logger().debug("  ballisticMastery: {}", bonusData.convictionPerkSpell.ballisticMastery);
 	}
-	if (bonusData.instant.healingLink) {
-		g_logger().debug("  healingLink: {}", bonusData.instant.healingLink);
+	if (bonusData.convictionPerkSpell.healingLink) {
+		g_logger().debug("  healingLink: {}", bonusData.convictionPerkSpell.healingLink);
 	}
-	if (bonusData.instant.runicMastery) {
-		g_logger().debug("  runicMastery: {}", bonusData.instant.runicMastery);
+	if (bonusData.convictionPerkSpell.runicMastery) {
+		g_logger().debug("  runicMastery: {}", bonusData.convictionPerkSpell.runicMastery);
 	}
-	if (bonusData.instant.focusMastery) {
-		g_logger().debug("  focusMastery: {}", bonusData.instant.focusMastery);
+	if (bonusData.convictionPerkSpell.focusMastery) {
+		g_logger().debug("  focusMastery: {}", bonusData.convictionPerkSpell.focusMastery);
+	}
+	if (bonusData.convictionPerkSpell.guidingPresence) {
+		g_logger().debug("  guidingPresence: {}", bonusData.convictionPerkSpell.guidingPresence);
+	}
+	if (bonusData.convictionPerkSpell.sanctuary) {
+		g_logger().debug("  sanctuary: {}", bonusData.convictionPerkSpell.sanctuary);
 	}
 
-	g_logger().debug("Stages:");
+	g_logger().debug("Revelation Perk:");
 	if (bonusData.stages.combatMastery > 0) {
 		g_logger().debug("  combatMastery: {}", bonusData.stages.combatMastery);
 	}
@@ -2502,6 +2516,12 @@ void PlayerWheel::printPlayerWheelMethodsBonusData(const PlayerWheelMethodsBonus
 	}
 	if (bonusData.stages.executionersThrow > 0) {
 		g_logger().debug("  executionersThrow: {}", bonusData.stages.executionersThrow);
+	}
+	if (bonusData.stages.spiritualOutburst > 0) {
+		g_logger().debug("  spiritualOutburst: {}", bonusData.stages.spiritualOutburst);
+	}
+	if (bonusData.stages.ascetic > 0) {
+		g_logger().debug("  ascetic: {}", bonusData.stages.ascetic);
 	}
 
 	g_logger().debug("Avatar:");
@@ -2573,7 +2593,7 @@ void PlayerWheel::resetRevelationState() {
 	// First we reset the information
 	resetRevelationBonus();
 	if (!m_modifierContext) {
-		m_modifierContext = std::make_unique<WheelModifierContext>(*this, static_cast<Vocation_t>(m_player.getVocation()->getBaseId()));
+		m_modifierContext = std::make_unique<WheelModifierContext>(*this, static_cast<Vocation_t>(m_player.getVocation()->getFromVocation()));
 	}
 	m_modifierContext->resetStrategies();
 	m_spellsBonuses.clear();
@@ -2719,6 +2739,9 @@ void PlayerWheel::applyBlueStageBonus(uint8_t stageValue, Vocation_t vocationEnu
 		}
 	} else if (vocationEnum == Vocation_t::VOCATION_MONK_CIP) {
 		m_playerBonusData.stages.ascetic = stageValue;
+		for (uint8_t i = 0; i <= stageValue; ++i) {
+			addSpellToVector("Ascetic");
+		}
 	}
 }
 
@@ -2815,13 +2838,13 @@ WheelStageEnum_t PlayerWheel::getPlayerSliceStage(const std::string &color) cons
 void PlayerWheel::checkAbilities() {
 	// Wheel of destiny
 	bool reloadClient = false;
-	if (getInstant("Battle Instinct") && getOnThinkTimer(WheelOnThink_t::BATTLE_INSTINCT) < OTSYS_TIME() && checkBattleInstinct()) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::BATTLE_INSTINCT) && getOnThinkTimer(WheelOnThink_t::BATTLE_INSTINCT) < OTSYS_TIME() && checkBattleInstinct()) {
 		reloadClient = true;
 	}
-	if (getInstant("Positional Tactics") && getOnThinkTimer(WheelOnThink_t::POSITIONAL_TACTICS) < OTSYS_TIME() && checkPositionalTactics()) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::POSITIONAL_TACTICS) && getOnThinkTimer(WheelOnThink_t::POSITIONAL_TACTICS) < OTSYS_TIME() && checkPositionalTactics()) {
 		reloadClient = true;
 	}
-	if (getInstant("Ballistic Mastery") && getOnThinkTimer(WheelOnThink_t::BALLISTIC_MASTERY) < OTSYS_TIME() && checkBallisticMastery()) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::BALLISTIC_MASTERY) && getOnThinkTimer(WheelOnThink_t::BALLISTIC_MASTERY) < OTSYS_TIME() && checkBallisticMastery()) {
 		reloadClient = true;
 	}
 
@@ -2941,7 +2964,7 @@ bool PlayerWheel::checkBallisticMastery() {
 bool PlayerWheel::checkCombatMastery() {
 	setOnThinkTimer(WheelOnThink_t::COMBAT_MASTERY, OTSYS_TIME() + 2000);
 	bool updateClient = false;
-	const uint8_t stage = getStage(WheelStage_t::COMBAT_MASTERY);
+	const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::COMBAT_MASTERY);
 
 	const auto &item = m_player.getWeapon();
 	if (item && item->getSlotPosition() & SLOTP_TWO_HAND) {
@@ -3008,7 +3031,7 @@ bool PlayerWheel::checkDivineEmpowerment() {
 	}
 
 	if (isOwner) {
-		const uint8_t stage = getStage(WheelStage_t::DIVINE_EMPOWERMENT);
+		const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::DIVINE_EMPOWERMENT);
 		if (stage >= 3) {
 			damageBonus = 12;
 		} else if (stage >= 2) {
@@ -3032,7 +3055,7 @@ int32_t PlayerWheel::checkDivineGrenade(const std::shared_ptr<Creature> &target)
 	}
 
 	int32_t damageBonus = 0;
-	const uint8_t stage = getStage(WheelStage_t::DIVINE_GRENADE);
+	const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::DIVINE_GRENADE);
 
 	if (stage >= 3) {
 		damageBonus = 100;
@@ -3068,7 +3091,7 @@ int32_t PlayerWheel::checkBlessingGroveHealingByTarget(const std::shared_ptr<Cre
 	}
 
 	int32_t healingBonus = 0;
-	const uint8_t stage = getStage(WheelStage_t::BLESSING_OF_THE_GROVE);
+	const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::BLESSING_OF_THE_GROVE);
 	const int32_t healthPercent = std::round((static_cast<double>(target->getHealth()) * 100) / static_cast<double>(target->getMaxHealth()));
 	if (healthPercent <= 30) {
 		if (stage >= 3) {
@@ -3097,7 +3120,7 @@ int32_t PlayerWheel::checkTwinBurstByTarget(const std::shared_ptr<Creature> &tar
 	}
 
 	int32_t damageBonus = 0;
-	const uint8_t stage = getStage(WheelStage_t::TWIN_BURST);
+	const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::TWIN_BURST);
 	const int32_t healthPercent = std::round((static_cast<double>(target->getHealth()) * 100) / static_cast<double>(target->getMaxHealth()));
 	if (healthPercent > 60) {
 		if (stage >= 3) {
@@ -3118,7 +3141,7 @@ int32_t PlayerWheel::checkExecutionersThrow(const std::shared_ptr<Creature> &tar
 	}
 
 	int32_t damageBonus = 0;
-	const uint8_t stage = getStage(WheelStage_t::EXECUTIONERS_THROW);
+	const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::EXECUTIONERS_THROW);
 	const int32_t healthPercent = std::round((static_cast<double>(target->getHealth()) * 100) / static_cast<double>(target->getMaxHealth()));
 	if (healthPercent <= 30) {
 		if (stage >= 3) {
@@ -3135,7 +3158,7 @@ int32_t PlayerWheel::checkExecutionersThrow(const std::shared_ptr<Creature> &tar
 
 int32_t PlayerWheel::checkBeamMasteryDamage() const {
 	int32_t damageBoost = 0;
-	const uint8_t stage = getStage(WheelStage_t::BEAM_MASTERY);
+	const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::BEAM_MASTERY);
 	if (stage >= 3) {
 		damageBoost = 14;
 	} else if (stage >= 2) {
@@ -3198,16 +3221,16 @@ int32_t PlayerWheel::checkAvatarSkill(WheelAvatarSkill_t skill) const {
 
 	uint8_t stage = 0;
 	if (getOnThinkTimer(WheelOnThink_t::AVATAR_SPELL) > OTSYS_TIME()) {
-		if (getInstant("Avatar of Light")) {
-			stage = getStage(WheelStage_t::AVATAR_OF_LIGHT);
-		} else if (getInstant("Avatar of Steel")) {
-			stage = getStage(WheelStage_t::AVATAR_OF_STEEL);
-		} else if (getInstant("Avatar of Nature")) {
-			stage = getStage(WheelStage_t::AVATAR_OF_NATURE);
-		} else if (getInstant("Avatar of Storm")) {
-			stage = getStage(WheelStage_t::AVATAR_OF_STORM);
-		} else if (getInstant("Avatar of Balance")) {
-			stage = getStage(WheelStage_t::AVATAR_OF_BALANCE);
+		if (getConvictionOrRevelationPerk("Avatar of Light")) {
+			stage = getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_LIGHT);
+		} else if (getConvictionOrRevelationPerk("Avatar of Steel")) {
+			stage = getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STEEL);
+		} else if (getConvictionOrRevelationPerk("Avatar of Nature")) {
+			stage = getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_NATURE);
+		} else if (getConvictionOrRevelationPerk("Avatar of Storm")) {
+			stage = getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STORM);
+		} else if (getConvictionOrRevelationPerk("Avatar of Balance")) {
+			stage = getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_BALANCE);
 		} else {
 			return 0;
 		}
@@ -3243,7 +3266,7 @@ int32_t PlayerWheel::checkAvatarSkill(WheelAvatarSkill_t skill) const {
 }
 
 int32_t PlayerWheel::checkFocusMasteryDamage() {
-	if (getInstant(WheelInstant_t::FOCUS_MASTERY) && getOnThinkTimer(WheelOnThink_t::FOCUS_MASTERY) >= OTSYS_TIME()) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::FOCUS_MASTERY) && getOnThinkTimer(WheelOnThink_t::FOCUS_MASTERY) >= OTSYS_TIME()) {
 		setOnThinkTimer(WheelOnThink_t::FOCUS_MASTERY, 0);
 		return 35;
 	}
@@ -3263,10 +3286,19 @@ void PlayerWheel::onThink(bool force /* = false*/) {
 	bool updateClient = false;
 	m_creaturesNearby = 0;
 	// Gift of life (Cooldown)
-	if (getGiftOfCooldown() > 0 /*getInstant("Gift of Life")*/ && getOnThinkTimer(WheelOnThink_t::GIFT_OF_LIFE) <= OTSYS_TIME()) {
+	if (getGiftOfCooldown() > 0 /*getConvictionOrRevelationPerk("Gift of Life")*/ && getOnThinkTimer(WheelOnThink_t::GIFT_OF_LIFE) <= OTSYS_TIME()) {
 		decreaseGiftOfCooldown(1);
 	}
-	if (!m_player.hasCondition(CONDITION_INFIGHT) || m_player.getZoneType() == ZONE_PROTECTION || (!getInstant("Battle Instinct") && !getInstant("Positional Tactics") && !getInstant("Ballistic Mastery") && !getInstant("Gift of Life") && !getInstant("Combat Mastery") && !getInstant("Divine Empowerment") && getGiftOfCooldown() == 0)) {
+
+	if (getConvictionPerkActived(WheelConvictionPerk_t::SANCTUARY) && (getOnThinkTimer(WheelOnThink_t::SANCTUARY) > OTSYS_TIME())) {
+		m_player.sendMagicEffect(m_player.getPosition(), 260);
+	}
+
+	if (!m_player.hasCondition(CONDITION_INFIGHT) || m_player.getZoneType() == ZONE_PROTECTION || 
+	    (!getConvictionPerkActived(WheelConvictionPerk_t::BATTLE_INSTINCT) && !getConvictionPerkActived(WheelConvictionPerk_t::POSITIONAL_TACTICS) 
+		&& !getConvictionPerkActived(WheelConvictionPerk_t::BALLISTIC_MASTERY) && !getConvictionOrRevelationPerk("Gift of Life") && !getConvictionOrRevelationPerk("Combat Mastery") 
+		&& !getConvictionOrRevelationPerk("Divine Empowerment") && getGiftOfCooldown() == 0 && !getConvictionOrRevelationPerk("Ascetic")))
+	{
 		bool mustReset = false;
 		for (int i = 0; i < static_cast<int>(WheelMajor_t::TOTAL_COUNT); i++) {
 			if (getMajorStat(static_cast<WheelMajor_t>(i)) != 0) {
@@ -3288,23 +3320,23 @@ void PlayerWheel::onThink(bool force /* = false*/) {
 		}
 	}
 	// Battle Instinct
-	if (getInstant("Battle Instinct") && (force || getOnThinkTimer(WheelOnThink_t::BATTLE_INSTINCT) < OTSYS_TIME()) && checkBattleInstinct()) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::BATTLE_INSTINCT) && (force || getOnThinkTimer(WheelOnThink_t::BATTLE_INSTINCT) < OTSYS_TIME()) && checkBattleInstinct()) {
 		updateClient = true;
 	}
 	// Positional Tactics
-	if (getInstant("Positional Tactics") && (force || getOnThinkTimer(WheelOnThink_t::POSITIONAL_TACTICS) < OTSYS_TIME()) && checkPositionalTactics()) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::POSITIONAL_TACTICS) && (force || getOnThinkTimer(WheelOnThink_t::POSITIONAL_TACTICS) < OTSYS_TIME()) && checkPositionalTactics()) {
 		updateClient = true;
 	}
 	// Ballistic Mastery
-	if (getInstant("Ballistic Mastery") && (force || getOnThinkTimer(WheelOnThink_t::BALLISTIC_MASTERY) < OTSYS_TIME()) && checkBallisticMastery()) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::BALLISTIC_MASTERY) && (force || getOnThinkTimer(WheelOnThink_t::BALLISTIC_MASTERY) < OTSYS_TIME()) && checkBallisticMastery()) {
 		updateClient = true;
 	}
 	// Combat Mastery
-	if (getInstant("Combat Mastery") && (force || getOnThinkTimer(WheelOnThink_t::COMBAT_MASTERY) < OTSYS_TIME()) && checkCombatMastery()) {
+	if (getConvictionOrRevelationPerk("Combat Mastery") && (force || getOnThinkTimer(WheelOnThink_t::COMBAT_MASTERY) < OTSYS_TIME()) && checkCombatMastery()) {
 		updateClient = true;
 	}
 	// Divine Empowerment
-	if (getInstant("Divine Empowerment") && (force || getOnThinkTimer(WheelOnThink_t::DIVINE_EMPOWERMENT) < OTSYS_TIME()) && checkDivineEmpowerment()) {
+	if (getConvictionOrRevelationPerk("Divine Empowerment") && (force || getOnThinkTimer(WheelOnThink_t::DIVINE_EMPOWERMENT) < OTSYS_TIME()) && checkDivineEmpowerment()) {
 		updateClient = true;
 	}
 	if (updateClient) {
@@ -3359,14 +3391,14 @@ void PlayerWheel::resetUpgradedSpells() {
 	for (int i = 0; i < static_cast<int>(WheelMajor_t::TOTAL_COUNT); i++) {
 		setMajorStat(static_cast<WheelMajor_t>(i), 0);
 	}
-	for (int i = 0; i < static_cast<int>(WheelStage_t::STAGE_COUNT); i++) {
-		setStage(static_cast<WheelStage_t>(i), 0);
+	for (int i = 0; i < static_cast<int>(WheelRelevationPerk_t::REVELATION_COUNT); i++) {
+		setRevelationPerkStage(static_cast<WheelRelevationPerk_t>(i), 0);
 	}
 	setOnThinkTimer(WheelOnThink_t::FOCUS_MASTERY, 0);
 }
 
 void PlayerWheel::upgradeSpell(const std::string &name) {
-	if (!m_player.hasLearnedInstantSpell(name) && !g_spells().isMonkShrineSpell(name)) {
+	if (!m_player.hasLearnedInstantSpell(name)) {
 		m_learnedSpellsSelected.emplace_back(name);
 		m_player.learnInstantSpell(name);
 	}
@@ -3405,7 +3437,12 @@ std::shared_ptr<Spell> PlayerWheel::getCombatDataSpell(CombatDamage &damage) {
 		if (getHealingLinkUpgrade(spellName)) {
 			damage.healingLink += 10;
 		}
-		if (spell->getSecondaryGroup() == SPELLGROUP_FOCUS && getInstant("Focus Mastery")) {
+
+		if (getConvictionPerkActived(WheelConvictionPerk_t::SANCTUARY)) {
+			setSanctuaryTimer(spellName);
+		}
+
+		if (spell->getSecondaryGroup() == SPELLGROUP_FOCUS && getConvictionPerkActived(WheelConvictionPerk_t::FOCUS_MASTERY)) {
 			setOnThinkTimer(WheelOnThink_t::FOCUS_MASTERY, (OTSYS_TIME() + 12000));
 		}
 
@@ -3435,11 +3472,11 @@ std::shared_ptr<Spell> PlayerWheel::getCombatDataSpell(CombatDamage &damage) {
 	return spell;
 }
 
-// Wheel of destiny - setSpellInstant helpers
-void PlayerWheel::setStage(WheelStage_t type, uint8_t value) {
+// Wheel of destiny - setConvictionOrRevelationPerk helpers
+void PlayerWheel::setRevelationPerkStage(WheelRelevationPerk_t type, uint8_t value) {
 	auto enumValue = static_cast<uint8_t>(type);
 	try {
-		m_stages.at(enumValue) = value;
+		m_revelation_perks.at(enumValue) = value;
 	} catch (const std::out_of_range &e) {
 		g_logger().error("[{}]. Type {} is out of range. Error message: {}", __FUNCTION__, enumValue, e.what());
 	}
@@ -3472,10 +3509,10 @@ void PlayerWheel::setSpecializedMagic(CombatType_t type, int32_t value) {
 	}
 }
 
-void PlayerWheel::setInstant(WheelInstant_t type, bool toggle) {
+void PlayerWheel::setConvictionPerkActived(WheelConvictionPerk_t type, bool toggle) {
 	auto enumValue = static_cast<uint8_t>(type);
 	try {
-		m_instant.at(enumValue) = toggle;
+		m_conviction_perks.at(enumValue) = toggle;
 	} catch (const std::out_of_range &e) {
 		g_logger().error("[{}]. Type {} is out of range. Error message: {}", __FUNCTION__, enumValue, e.what());
 	}
@@ -3499,137 +3536,139 @@ void PlayerWheel::addResistance(CombatType_t type, int32_t value) {
 	m_resistance[index] += value;
 }
 
-void PlayerWheel::setSpellInstant(const std::string &name, bool value) {
-
-	if (name == "Ascetic") {
-		if (value) {
-			setStage(WheelStage_t::ASCETIC, getStage(WheelStage_t::ASCETIC) + 1);
-		} else {
-			setStage(WheelStage_t::ASCETIC, 0);
-		}
-	} else if (name == "Spiritual Outburst") {
-		if (value) {
-			setStage(WheelStage_t::SPIRITUAL_OUTBURST, getStage(WheelStage_t::SPIRITUAL_OUTBURST) + 1);
-		} else {
-			setStage(WheelStage_t::SPIRITUAL_OUTBURST, 0);
-		}
-	} else if (name == "Sanctuary") {
-		setInstant(WheelInstant_t::SANCTUARY, value);
-	} else if (name == "Guiding Presence") {
-		setInstant(WheelInstant_t::GUIDING_PRESENCE, value);
-	} else if (name == "Battle Instinct") {
-		setInstant(WheelInstant_t::BATTLE_INSTINCT, value);
-		if (!getInstant(WheelInstant_t::BATTLE_INSTINCT)) {
+void PlayerWheel::setConvictionOrRevelationPerk(const std::string &name, bool value) {
+	if (name == "Battle Instinct") {
+		setConvictionPerkActived(WheelConvictionPerk_t::BATTLE_INSTINCT, value);
+		if (!getConvictionPerkActived(WheelConvictionPerk_t::BATTLE_INSTINCT)) {
 			setMajorStat(WheelMajor_t::SHIELD, 0);
 			setMajorStat(WheelMajor_t::MELEE, 0);
 		}
 	} else if (name == "Battle Healing") {
-		setInstant(WheelInstant_t::BATTLE_HEALING, value);
+		setConvictionPerkActived(WheelConvictionPerk_t::BATTLE_HEALING, value);
 	} else if (name == "Positional Tactics") {
-		setInstant(WheelInstant_t::POSITIONAL_TACTICS, value);
-		if (!getInstant(WheelInstant_t::POSITIONAL_TACTICS)) {
+		setConvictionPerkActived(WheelConvictionPerk_t::POSITIONAL_TACTICS, value);
+		if (!getConvictionPerkActived(WheelConvictionPerk_t::POSITIONAL_TACTICS)) {
 			setMajorStat(WheelMajor_t::MAGIC, 0);
 			setMajorStat(WheelMajor_t::HOLY_RESISTANCE, 0);
 		}
 	} else if (name == "Ballistic Mastery") {
-		setInstant(WheelInstant_t::BALLISTIC_MASTERY, value);
-		if (!getInstant(WheelInstant_t::BALLISTIC_MASTERY)) {
+		setConvictionPerkActived(WheelConvictionPerk_t::BALLISTIC_MASTERY, value);
+		if (!getConvictionPerkActived(WheelConvictionPerk_t::BALLISTIC_MASTERY)) {
 			setMajorStat(WheelMajor_t::CRITICAL_DMG, 0);
 			setMajorStat(WheelMajor_t::PHYSICAL_DMG, 0);
 			setMajorStat(WheelMajor_t::HOLY_DMG, 0);
 		}
 	} else if (name == "Healing Link") {
-		setInstant(WheelInstant_t::HEALING_LINK, value);
+		setConvictionPerkActived(WheelConvictionPerk_t::HEALING_LINK, value);
 	} else if (name == "Runic Mastery") {
-		setInstant(WheelInstant_t::RUNIC_MASTERY, value);
+		setConvictionPerkActived(WheelConvictionPerk_t::RUNIC_MASTERY, value);
+	} else if (name == "Guiding Presence") {
+		setConvictionPerkActived(WheelConvictionPerk_t::GUIDING_PRESENCE, value);
+	} else if (name == "Sanctuary") {
+		setConvictionPerkActived(WheelConvictionPerk_t::SANCTUARY, value);
+		if (!getConvictionPerkActived(WheelConvictionPerk_t::SANCTUARY)) {
+			setOnThinkTimer(WheelOnThink_t::SANCTUARY, 0);
+		}
 	} else if (name == "Focus Mastery") {
-		setInstant(WheelInstant_t::FOCUS_MASTERY, value);
-		if (!getInstant(WheelInstant_t::FOCUS_MASTERY)) {
+		setConvictionPerkActived(WheelConvictionPerk_t::FOCUS_MASTERY, value);
+		if (!getConvictionPerkActived(WheelConvictionPerk_t::FOCUS_MASTERY)) {
 			setOnThinkTimer(WheelOnThink_t::FOCUS_MASTERY, 0);
 		}
 	} else if (name == "Beam Mastery") {
 		if (value) {
-			setStage(WheelStage_t::BEAM_MASTERY, getStage(WheelStage_t::BEAM_MASTERY) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::BEAM_MASTERY, getRevelationPerkStage(WheelRelevationPerk_t::BEAM_MASTERY) + 1);
 		} else {
-			setStage(WheelStage_t::BEAM_MASTERY, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::BEAM_MASTERY, 0);
 		}
 	} else if (name == "Combat Mastery") {
 		if (value) {
-			setStage(WheelStage_t::COMBAT_MASTERY, getStage(WheelStage_t::COMBAT_MASTERY) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::COMBAT_MASTERY, getRevelationPerkStage(WheelRelevationPerk_t::COMBAT_MASTERY) + 1);
 		} else {
-			setStage(WheelStage_t::COMBAT_MASTERY, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::COMBAT_MASTERY, 0);
 		}
 	} else if (name == "Gift of Life") {
 		if (value) {
-			setStage(WheelStage_t::GIFT_OF_LIFE, getStage(WheelStage_t::GIFT_OF_LIFE) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE, getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) + 1);
 		} else {
-			setStage(WheelStage_t::GIFT_OF_LIFE, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE, 0);
 		}
 	} else if (name == "Blessing of the Grove") {
 		if (value) {
-			setStage(WheelStage_t::BLESSING_OF_THE_GROVE, getStage(WheelStage_t::BLESSING_OF_THE_GROVE) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::BLESSING_OF_THE_GROVE, getRevelationPerkStage(WheelRelevationPerk_t::BLESSING_OF_THE_GROVE) + 1);
 		} else {
-			setStage(WheelStage_t::BLESSING_OF_THE_GROVE, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::BLESSING_OF_THE_GROVE, 0);
 		}
 	} else if (name == "Drain Body") {
 		if (value) {
-			setStage(WheelStage_t::DRAIN_BODY, getStage(WheelStage_t::DRAIN_BODY) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::DRAIN_BODY, getRevelationPerkStage(WheelRelevationPerk_t::DRAIN_BODY) + 1);
 		} else {
-			setStage(WheelStage_t::DRAIN_BODY, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::DRAIN_BODY, 0);
 		}
 	} else if (name == "Divine Empowerment") {
 		if (value) {
-			setStage(WheelStage_t::DIVINE_EMPOWERMENT, getStage(WheelStage_t::DIVINE_EMPOWERMENT) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::DIVINE_EMPOWERMENT, getRevelationPerkStage(WheelRelevationPerk_t::DIVINE_EMPOWERMENT) + 1);
 		} else {
-			setStage(WheelStage_t::DIVINE_EMPOWERMENT, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::DIVINE_EMPOWERMENT, 0);
 		}
 	} else if (name == "Divine Grenade") {
 		if (value) {
-			setStage(WheelStage_t::DIVINE_GRENADE, getStage(WheelStage_t::DIVINE_GRENADE) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::DIVINE_GRENADE, getRevelationPerkStage(WheelRelevationPerk_t::DIVINE_GRENADE) + 1);
 		} else {
-			setStage(WheelStage_t::DIVINE_GRENADE, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::DIVINE_GRENADE, 0);
 		}
 	} else if (name == "Twin Burst") {
 		if (value) {
-			setStage(WheelStage_t::TWIN_BURST, getStage(WheelStage_t::TWIN_BURST) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::TWIN_BURST, getRevelationPerkStage(WheelRelevationPerk_t::TWIN_BURST) + 1);
 		} else {
-			setStage(WheelStage_t::TWIN_BURST, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::TWIN_BURST, 0);
 		}
 	} else if (name == "Executioner's Throw") {
 		if (value) {
-			setStage(WheelStage_t::EXECUTIONERS_THROW, getStage(WheelStage_t::EXECUTIONERS_THROW) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::EXECUTIONERS_THROW, getRevelationPerkStage(WheelRelevationPerk_t::EXECUTIONERS_THROW) + 1);
 		} else {
-			setStage(WheelStage_t::EXECUTIONERS_THROW, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::EXECUTIONERS_THROW, 0);
 		}
 	} else if (name == "Avatar of Light") {
 		if (value) {
-			setStage(WheelStage_t::AVATAR_OF_LIGHT, getStage(WheelStage_t::AVATAR_OF_LIGHT) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_LIGHT, getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_LIGHT) + 1);
 		} else {
-			setStage(WheelStage_t::AVATAR_OF_LIGHT, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_LIGHT, 0);
 		}
 	} else if (name == "Avatar of Nature") {
 		if (value) {
-			setStage(WheelStage_t::AVATAR_OF_NATURE, getStage(WheelStage_t::AVATAR_OF_NATURE) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_NATURE, getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_NATURE) + 1);
 		} else {
-			setStage(WheelStage_t::AVATAR_OF_NATURE, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_NATURE, 0);
 		}
 	} else if (name == "Avatar of Steel") {
 		if (value) {
-			setStage(WheelStage_t::AVATAR_OF_STEEL, getStage(WheelStage_t::AVATAR_OF_STEEL) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STEEL, getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STEEL) + 1);
 		} else {
-			setStage(WheelStage_t::AVATAR_OF_STEEL, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STEEL, 0);
 		}
 	} else if (name == "Avatar of Storm") {
 		if (value) {
-			setStage(WheelStage_t::AVATAR_OF_STORM, getStage(WheelStage_t::AVATAR_OF_STORM) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STORM, getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STORM) + 1);
 		} else {
-			setStage(WheelStage_t::AVATAR_OF_STORM, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_STORM, 0);
 		}
 	} else if (name == "Avatar of Balance") {
 		if (value) {
-			setStage(WheelStage_t::AVATAR_OF_BALANCE, getStage(WheelStage_t::AVATAR_OF_BALANCE) + 1);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_BALANCE, getRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_BALANCE) + 1);
 		} else {
-			setStage(WheelStage_t::AVATAR_OF_BALANCE, 0);
+			setRevelationPerkStage(WheelRelevationPerk_t::AVATAR_OF_BALANCE, 0);
+		}
+	} else if (name == "Ascetic") {
+		if (value) {
+			setRevelationPerkStage(WheelRelevationPerk_t::ASCETIC, getRevelationPerkStage(WheelRelevationPerk_t::ASCETIC) + 1);
+		} else {
+			setRevelationPerkStage(WheelRelevationPerk_t::ASCETIC, 0);
+		}
+	} else if (name == "Spiritual Outburst") {
+		if (value) {
+			setRevelationPerkStage(WheelRelevationPerk_t::SPIRITUAL_OUTBURST, getRevelationPerkStage(WheelRelevationPerk_t::SPIRITUAL_OUTBURST) + 1);
+		} else {
+			setRevelationPerkStage(WheelRelevationPerk_t::SPIRITUAL_OUTBURST, 0);
 		}
 	}
 }
@@ -3647,21 +3686,21 @@ void PlayerWheel::resetStats() {
 }
 
 // Wheel of destiny - Header get:
-bool PlayerWheel::getInstant(WheelInstant_t type) const {
+bool PlayerWheel::getConvictionPerkActived(WheelConvictionPerk_t type) const {
 	auto enumValue = static_cast<uint8_t>(type);
 	try {
-		return m_instant.at(enumValue);
+		return m_conviction_perks.at(enumValue);
 	} catch (const std::out_of_range &e) {
 		g_logger().error("[{}]. Instant type {}. Error message: {}", __FUNCTION__, enumValue, e.what());
 	}
 	return false;
 }
 
-uint8_t PlayerWheel::getStage(std::string_view name) const {
-	using enum WheelInstant_t;
-	using enum WheelStage_t;
+uint8_t PlayerWheel::getConvictionOrRevelationPerk(std::string_view name) const {
+	using enum WheelConvictionPerk_t;
+	using enum WheelRelevationPerk_t;
 
-	static const std::unordered_map<std::string_view, WheelInstant_t> instantMapping = {
+	static const std::unordered_map<std::string_view, WheelConvictionPerk_t> instantMapping = {
 		{ "Battle Instinct", BATTLE_INSTINCT },
 		{ "Battle Healing", BATTLE_HEALING },
 		{ "Positional Tactics", POSITIONAL_TACTICS },
@@ -3669,12 +3708,11 @@ uint8_t PlayerWheel::getStage(std::string_view name) const {
 		{ "Healing Link", HEALING_LINK },
 		{ "Runic Mastery", RUNIC_MASTERY },
 		{ "Focus Mastery", FOCUS_MASTERY },
-		{ "Sanctuary", SANCTUARY },
-		{ "Guiding Presence", GUIDING_PRESENCE }
-
+		{ "Guiding Presence", GUIDING_PRESENCE },
+		{ "Sanctuary", SANCTUARY }
 	};
 
-	static const std::unordered_map<std::string_view, WheelStage_t> stageMapping = {
+	static const std::unordered_map<std::string_view, WheelRelevationPerk_t> stageMapping = {
 		{ "Beam Mastery", BEAM_MASTERY },
 		{ "Combat Mastery", COMBAT_MASTERY },
 		{ "Gift of Life", GIFT_OF_LIFE },
@@ -3688,25 +3726,25 @@ uint8_t PlayerWheel::getStage(std::string_view name) const {
 		{ "Avatar of Nature", AVATAR_OF_NATURE },
 		{ "Avatar of Steel", AVATAR_OF_STEEL },
 		{ "Avatar of Storm", AVATAR_OF_STORM },
-		{ "Ascetic", ASCETIC },
 		{ "Avatar of Balance", AVATAR_OF_BALANCE },
+		{ "Ascetic", ASCETIC },
 		{ "Spiritual Outburst", SPIRITUAL_OUTBURST }
 	};
 
 	if (auto it = instantMapping.find(name); it != instantMapping.end()) {
-		return PlayerWheel::getInstant(it->second);
+		return PlayerWheel::getConvictionPerkActived(it->second);
 	}
 	if (auto it = stageMapping.find(name); it != stageMapping.end()) {
-		return PlayerWheel::getStage(it->second);
+		return PlayerWheel::getRevelationPerkStage(it->second);
 	}
 
 	return false;
 }
 
-uint8_t PlayerWheel::getStage(WheelStage_t type) const {
+uint8_t PlayerWheel::getRevelationPerkStage(WheelRelevationPerk_t type) const {
 	auto enumValue = static_cast<uint8_t>(type);
 	try {
-		return m_stages.at(enumValue);
+		return m_revelation_perks.at(enumValue);
 	} catch (const std::out_of_range &e) {
 		g_logger().error("[{}]. Instant type {}. Error message: {}", __FUNCTION__, enumValue, e.what());
 	}
@@ -3767,7 +3805,7 @@ double PlayerWheel::getMitigationMultiplier() const {
 }
 
 bool PlayerWheel::getHealingLinkUpgrade(const std::string &spell) const {
-	if (!getInstant("Healing Link")) {
+	if (!getConvictionPerkActived(WheelConvictionPerk_t::HEALING_LINK)) {
 		return false;
 	}
 	if (spell == "Nature's Embrace" || spell == "Heal Friend") {
@@ -3777,7 +3815,7 @@ bool PlayerWheel::getHealingLinkUpgrade(const std::string &spell) const {
 }
 
 int32_t PlayerWheel::getMajorStatConditional(const std::string &instant, WheelMajor_t major) const {
-	return PlayerWheel::getInstant(instant) ? PlayerWheel::getMajorStat(major) : 0;
+	return PlayerWheel::getConvictionOrRevelationPerk(instant) ? PlayerWheel::getMajorStat(major) : 0;
 }
 
 int64_t PlayerWheel::getOnThinkTimer(WheelOnThink_t type) const {
@@ -3791,71 +3829,28 @@ int64_t PlayerWheel::getOnThinkTimer(WheelOnThink_t type) const {
 	return 0;
 }
 
-bool PlayerWheel::getInstant(std::string_view name) const {
-	using enum WheelInstant_t;
-	using enum WheelStage_t;
-
-	static const std::unordered_map<std::string_view, WheelInstant_t> instantMapping = {
-		{ "Battle Instinct", BATTLE_INSTINCT },
-		{ "Battle Healing", BATTLE_HEALING },
-		{ "Positional Tactics", POSITIONAL_TACTICS },
-		{ "Ballistic Mastery", BALLISTIC_MASTERY },
-		{ "Healing Link", HEALING_LINK },
-		{ "Runic Mastery", RUNIC_MASTERY },
-		{ "Focus Mastery", FOCUS_MASTERY },
-		{ "Sanctuary", SANCTUARY },
-		{ "Guiding Presence", GUIDING_PRESENCE }
-	};
-
-	static const std::unordered_map<std::string_view, WheelStage_t> stageMapping = {
-		{ "Beam Mastery", BEAM_MASTERY },
-		{ "Combat Mastery", COMBAT_MASTERY },
-		{ "Gift of Life", GIFT_OF_LIFE },
-		{ "Blessing of the Grove", BLESSING_OF_THE_GROVE },
-		{ "Drain Body", DRAIN_BODY },
-		{ "Divine Empowerment", DIVINE_EMPOWERMENT },
-		{ "Divine Grenade", DIVINE_GRENADE },
-		{ "Twin Burst", TWIN_BURST },
-		{ "Executioner's Throw", EXECUTIONERS_THROW },
-		{ "Avatar of Light", AVATAR_OF_LIGHT },
-		{ "Avatar of Nature", AVATAR_OF_NATURE },
-		{ "Avatar of Steel", AVATAR_OF_STEEL },
-		{ "Avatar of Storm", AVATAR_OF_STORM },
-		{ "Avatar of Balance", AVATAR_OF_BALANCE }
-	};
-
-	if (auto it = instantMapping.find(name); it != instantMapping.end()) {
-		return PlayerWheel::getInstant(it->second);
-	}
-	if (auto it = stageMapping.find(name); it != stageMapping.end()) {
-		return PlayerWheel::getStage(it->second);
-	}
-
-	return false;
-}
-
 // Wheel of destiny - Specific functions
 uint32_t PlayerWheel::getGiftOfLifeTotalCooldown() const {
-	if (getStage(WheelStage_t::GIFT_OF_LIFE) == 1) {
+	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 1) {
 		return 1 * 60 * 60 * 30;
 	}
-	if (getStage(WheelStage_t::GIFT_OF_LIFE) == 2) {
+	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 2) {
 		return 1 * 60 * 60 * 20;
 	}
-	if (getStage(WheelStage_t::GIFT_OF_LIFE) == 3) {
+	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 3) {
 		return 1 * 60 * 60 * 10;
 	}
 	return 0;
 }
 
 uint8_t PlayerWheel::getGiftOfLifeValue() const {
-	if (getStage(WheelStage_t::GIFT_OF_LIFE) == 1) {
+	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 1) {
 		return 20;
 	}
-	if (getStage(WheelStage_t::GIFT_OF_LIFE) == 2) {
+	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 2) {
 		return 25;
 	}
-	if (getStage(WheelStage_t::GIFT_OF_LIFE) == 3) {
+	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 3) {
 		return 30;
 	}
 
@@ -3929,7 +3924,7 @@ void PlayerWheel::setWheelBonusData(const PlayerWheelMethodsBonusData &newBonusD
 // Functions used to Manage Combat
 uint8_t PlayerWheel::getBeamAffectedTotal(const CombatDamage &tmpDamage) const {
 	uint8_t beamAffectedTotal = 0; // Removed const
-	if (m_beamMasterySpells.contains(tmpDamage.instantSpellName) && getInstant("Beam Mastery")) {
+	if (m_beamMasterySpells.contains(tmpDamage.instantSpellName) && getConvictionOrRevelationPerk("Beam Mastery")) {
 		beamAffectedTotal = 3;
 	}
 	return beamAffectedTotal;
@@ -3945,7 +3940,7 @@ void PlayerWheel::updateBeamMasteryDamage(CombatDamage &tmpDamage, uint8_t &beam
 }
 
 void PlayerWheel::healIfBattleHealingActive() const {
-	if (getInstant("Battle Healing")) {
+	if (getConvictionPerkActived(WheelConvictionPerk_t::BATTLE_HEALING)) {
 		CombatDamage damage;
 		damage.primary.value = checkBattleHealingAmount();
 		damage.primary.type = COMBAT_HEALING;
@@ -4004,10 +3999,16 @@ float PlayerWheel::calculateMitigation() const {
 		if (weapon->getAmmoType() == AMMO_BOLT || weapon->getAmmoType() == AMMO_ARROW) {
 			distanceFactor = m_player.vocation->mitigationSecondaryShield;
 		} else if (weapon->getSlotPosition() & SLOTP_TWO_HAND) {
-			defenseValue = weapon->getDefense() + weapon->getExtraDefense();
+			defenseValue = (weapon->getDefense() + m_player.getEquippedWeaponProficiency().defense) + (weapon->getExtraDefense() + m_player.getEquippedWeaponProficiency().weaponShieldMod);
+#ifdef DEBUG_SUMMER_UPDATE_2025_LOG
+			//g_logger().warn("[{}] defenseValue {} / weapon->getDefense() {} / weapon->getExtraDefense() {} / weaponShieldMod {} / defense {}", __FUNCTION__, defenseValue, weapon->getDefense(), weapon->getExtraDefense(), m_player.getEquippedWeaponProficiency().weaponShieldMod, m_player.getEquippedWeaponProficiency().defense);
+#endif // DEBUG_SUMMER_UPDATE_2025_LOG
 			shieldFactor = m_player.vocation->mitigationSecondaryShield;
 		} else {
-			defenseValue += weapon->getExtraDefense();
+			defenseValue += weapon->getExtraDefense() + m_player.getEquippedWeaponProficiency().weaponShieldMod;
+#ifdef DEBUG_SUMMER_UPDATE_2025_LOG
+			//g_logger().warn("[{}] defenseValue {} / weapon->getExtraDefense() {} / weaponShieldMod {} / defense {}", __FUNCTION__, defenseValue, weapon->getExtraDefense(), m_player.getEquippedWeaponProficiency().weaponShieldMod, m_player.getEquippedWeaponProficiency().defense);
+#endif // DEBUG_SUMMER_UPDATE_2025_LOG
 			shieldFactor = m_player.vocation->mitigationPrimaryShield;
 		}
 	}
@@ -4070,4 +4071,64 @@ PlayerWheelGem PlayerWheelGem::deserialize(const std::string &uuid, const ValueW
 		static_cast<WheelGemBasicModifier_t>(map["basicModifier2"]->get<IntType>()),
 		static_cast<WheelGemSupremeModifier_t>(map["supremeModifier"]->get<IntType>())
 	};
+}
+
+// Update 15.00
+bool PlayerWheel::hasMonkQuest() const {
+	const auto &kvScoped = m_player.kv()->scoped("the_way_of_the_monk_quest");
+	if (!kvScoped) {
+		return false;
+	}
+
+	const auto boolPointsWheel = kvScoped->get("boolPointsWheel");
+	return boolPointsWheel ? boolPointsWheel->get<bool>() : false;
+}
+
+int32_t PlayerWheel::checkRevelationPerkAscetic() const {
+	int32_t damageBonus = 0;
+
+	const uint16_t mantraTotal = m_player.getPlayer()->getMantraTotal();
+	if (mantraTotal > 0) {
+		const uint8_t stage = getRevelationPerkStage(WheelRelevationPerk_t::ASCETIC);
+		if (stage >= 3) {
+			damageBonus = static_cast<int32_t>(mantraTotal * -3);
+		} else if (stage >= 2) {
+			damageBonus = static_cast<int32_t>(mantraTotal * -2);
+		} else if (stage >= 1) {
+			damageBonus = static_cast<int32_t>(mantraTotal * -1);
+		}
+	}
+
+	return damageBonus;
+}
+
+float PlayerWheel::checkRevelationPerkSanctuary() const {
+	if (getOnThinkTimer(WheelOnThink_t::SANCTUARY) >= OTSYS_TIME()) {
+		return m_harmonySanctuary;
+	}
+	return 1.0f;
+}
+
+static const std::unordered_set<std::string_view> harmonySpells = {
+	"Devastating Knockout",
+	"Greater Tiger Clash",
+	"Mass Spirit Mend",
+	"Spiritual Outburst",
+	"Sweeping Takedown",
+	"Tiger Clash"
+};
+
+bool PlayerWheel::setSanctuaryTimer(const std::string &spell) {
+	if (getOnThinkTimer(WheelOnThink_t::SANCTUARY) >= OTSYS_TIME()) {
+		return true;
+	}
+
+	if (harmonySpells.find(spell) == harmonySpells.end()) {
+		return false;
+	}
+
+	setOnThinkTimer(WheelOnThink_t::SANCTUARY, OTSYS_TIME() + 5000);
+	m_harmonySanctuary = 1.0 + (m_player.getHarmony() * 2) / 100.0; // harmony x 2%
+
+	return true;
 }

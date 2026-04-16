@@ -49,6 +49,7 @@ local config = {
 	[12802] = { NAME = "Wild Horse", ID = 17, BREAK = true, TYPE = TYPE_MONSTER, CHANCE = 15, FAIL_MSG = { { 1, "The horse runs away." }, { 2, "The horse ate the oats." } }, SUCCESS_MSG = "You have tamed the horse.", ACHIEV = "Lucky Horseshoe" },
 	[34258] = { NAME = "White Lion", ID = 174, BREAK = true, TYPE = TYPE_MONSTER, CHANCE = 50, FAIL_MSG = { { 1, "The White Lion runs away." }, { 2, "The White Lion ate the flower." } }, SUCCESS_MSG = "You have tamed the white lion.", ACHIEV = "Well Roared, Lion!" },
 	[37397] = { NAME = "wind-up loco", ID = 194, BREAK = false, TYPE = TYPE_ITEM, CHANCE = 100, FAIL_MSG = {}, SUCCESS_MSG = "You wind the small locomotive up. It starts to move ... and grows!", ACHIEV = "Engine Driver" },
+	[52638] = { NAME = "Frazzlemaw", ID = 246, BREAK = true, TYPE = TYPE_MONSTER, CHANCE = 30, FAIL_MSG = { { 2, "The tamed frazzlemaw devours the rare fish but otherwise takes no notice of your advancement." } }, SUCCESS_MSG = "The tamed frazzlemaw hungers for fish and this one is a particular rare treat. You command this one now, take good care of it!" },
 	[43901] = { NAME = "Foxmouse", ID = 218, BREAK = false, TYPE = TYPE_MONSTER, CHANCE = 100, FAIL_MSG = { { 1, "The foxmouse ran away." } }, SUCCESS_MSG = "You have tamed the foxmouse.", ACHIEV = "Like Fox and Mouse" },
 }
 

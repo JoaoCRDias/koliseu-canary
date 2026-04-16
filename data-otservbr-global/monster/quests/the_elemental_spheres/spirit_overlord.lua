@@ -19,14 +19,14 @@ monster.events = {
 
 monster.health = 4000
 monster.maxHealth = 4000
-monster.race = "undead"
-monster.corpse = 8105
-monster.speed = 165
+monster.race = "blood"
+monster.corpse = 51279
+monster.speed = 150
 monster.manaCost = 0
 
 monster.changeTarget = {
-	interval = 20000,
-	chance = 30,
+	interval = 5000,
+	chance = 8,
 }
 
 monster.strategiesTarget = {
@@ -45,10 +45,10 @@ monster.flags = {
 	rewardBoss = true,
 	illusionable = false,
 	canPushItems = true,
-	canPushCreatures = false,
-	staticAttackChance = 80,
+	canPushCreatures = true,
+	staticAttackChance = 90,
 	targetDistance = 1,
-	runHealth = 1,
+	runHealth = 0,
 	healthHidden = false,
 	isBlockable = false,
 	canWalkOnEnergy = true,
@@ -57,8 +57,8 @@ monster.flags = {
 }
 
 monster.light = {
-	level = 0,
-	color = 0,
+	level = 5,
+	color = 212,
 }
 
 monster.voices = {
@@ -67,25 +67,26 @@ monster.voices = {
 }
 
 monster.loot = {
-	{ name = "gold coin", chance = 44000, maxCount = 120 },
-	{ name = "platinum coin", chance = 29000, maxCount = 3 },
-	{ name = "holy ash", chance = 10800 },
-	{ name = "great spirit potion", chance = 8750, maxCount = 2 },
-	{ name = "moonlight rod", chance = 8300 },
-	{ name = "spirited soil", chance = 7000 },
-	{ name = "holy orchid", chance = 6000 },
+    -- common
+    { name = "reality splinter", chance = 100000 },
+	{ name = "gold coin", chance = 80000, maxCount = 120 },
+	{ name = "platinum coin", chance = 75000, maxCount = 7 },
+    { name = "holy ash", chance = 70000 },
+    -- uncommon
+    { name = "great spirit potion", chance = 25000, maxCount = 3 },
+    -- rare
+	{ name = "holy orchid", chance = 980 },
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -400 },
-	{ name = "combat", interval = 1000, chance = 10, type = COMBAT_EARTHDAMAGE, minDamage = 0, maxDamage = -800, length = 7, spread = 0, effect = CONST_ME_STONES, target = false },
-	{ name = "combat", interval = 1000, chance = 9, type = COMBAT_EARTHDAMAGE, minDamage = 0, maxDamage = -490, radius = 6, effect = CONST_ME_BIGPLANTS, target = false },
-	{ name = "speed", interval = 2000, chance = 20, speedChange = -750, range = 7, effect = CONST_ME_MAGIC_RED, target = false, duration = 4000 },
+	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -450 },
+	{ name = "combat", interval = 2000, chance = 15, type = COMBAT_HOLYDAMAGE, minDamage = -170, maxDamage = -620, length = 8, spread = 0, effect = CONST_ME_HOLYDAMAGE, target = false },
+	{ name = "condition", type = CONDITION_DAZZLED, interval = 2000, chance = 35, minDamage = -50, maxDamage = -320, range = 7, radius = 1, shootEffect = CONST_ANI_HOLY, effect = CONST_ME_HOLYDAMAGE, target = true },
 }
 
 monster.defenses = {
-	defense = 30,
-	armor = 30,
+	defense = 25,
+	armor = 25,
 	--	mitigation = ???,
 }
 

@@ -89,7 +89,6 @@ maxItem = 5000
 maxContainer = 500
 maxContainerDepth = 200
 maxInboxItems = 0
-maxExivaWhitelist = 100
 
 -- Animus Mastery - SoulPit (Get more info in: https://github.com/opentibiabr/canary/pull/3230)
 -- NOTE: animusMasteryMaxMonsterXpMultiplier is the maximum experience the multiplier can be.
@@ -138,6 +137,19 @@ taskHuntingRerollPricePerLevel = 200
 taskHuntingSelectListPrice = 5
 taskHuntingBonusRerollPrice = 1
 taskHuntingFreeRerollTime = 20 * 60 * 60
+
+-- Bounty tasks system (Winter Update 2025)
+-- NOTE: bountyTasksFreeRerollTime: Time in seconds that players will have to wait to get a free bounty tasks reroll.
+bountyTasksEnabled = true
+bountyTasksExpMultiplier = 1
+bountyTasksPointsMultiplier = 1
+bountyTasksRerollMultiplier = 1
+bountyTasksFreeRerollTime = 20 * 60 * 60
+
+-- Weekly tasks system (Winter Update 2025)
+weeklyTasksEnabled = true
+-- Day of week for weekly tasks reset (monday, tuesday, wednesday, thursday, friday, saturday, sunday)
+weeklyTasksResetDay = "monday"
 
 -- Forge system
 -- NOTE: forgeAmountMultiplier, amount dusts multiplies of influenced monsters, default 3
@@ -397,7 +409,7 @@ pushWhenAttacking = false
 -- Note: If toggleDownloadMap is set to false, the mapDownloadUrl will not be used.
 -- Note: If a map with the same name already exists in the world folder, the map will not be downloaded, even if toggleDownloadMap is set to true.
 toggleDownloadMap = true
-mapDownloadUrl = "https://github.com/opentibiabr/canary/releases/download/v3.4.0/otservbr.otbm"
+mapDownloadUrl = "https://github.com/opentibiabr/canary/releases/download/v3.2.0/otservbr.otbm"
 mapName = "otservbr"
 mapAuthor = "OpenTibiaBR"
 
@@ -466,6 +478,12 @@ inventoryGlowOnFiveBless = false
 adventurersBlessingLevel = 21
 skulledDeathLoseStoreItem = false
 experienceDisplayRates = true
+-- configure attack base on Fist Fighting skill/experience
+-- multiplierSpeedOnFist * 5  (multiplies the value obtained from the player fist skill and multiplies it * 5) max 25 is recommended due minTicks limits else player stop attack
+-- maxSpeedOnFist 500 miliseconds  (The maximum attack speed that can be obtained no matter how high the player has the Fist Fighting skill.)
+toggleAttackSpeedOnFist = false
+multiplierSpeedOnFist = 5
+maxSpeedOnFist = 500
 disableLegacyRaids = false
 disableMonsterArmor = false
 minElementalResistance = -200
@@ -480,7 +498,6 @@ combatChainTargets = 5
 combatChainSkillFormulaAxe = 0.9
 combatChainSkillFormulaClub = 0.7
 combatChainSkillFormulaSword = 1.1
-combatChainSkillFormulaFist = 1.1
 
 -- Global server Save
 -- NOTE: globalServerSaveNotifyDuration in minutes
@@ -521,6 +538,15 @@ rateManaRegen = 1.0
 rateManaRegenSpeed = 1.0
 rateSoulRegen = 1.0
 rateSoulRegenSpeed = 1.0
+
+-- Regeneration intervals (in milliseconds)
+-- Base regeneration (without food effect)
+baseHealthRegenInterval = 4000
+baseManaRegenInterval = 6000
+
+-- Regeneration with food effect
+foodHealthRegenInterval = 3000
+foodManaRegenInterval = 5000
 
 rateSpellCooldown = 1.0
 rateAttackSpeed = 1.0

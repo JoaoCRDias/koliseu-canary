@@ -28,11 +28,9 @@ void VocationFunctions::init(lua_State* L) {
 	Lua::registerMethod(L, "Vocation", "getCapacityGain", VocationFunctions::luaVocationGetCapacityGain);
 
 	Lua::registerMethod(L, "Vocation", "getHealthGain", VocationFunctions::luaVocationGetHealthGain);
-	Lua::registerMethod(L, "Vocation", "getHealthGainTicks", VocationFunctions::luaVocationGetHealthGainTicks);
 	Lua::registerMethod(L, "Vocation", "getHealthGainAmount", VocationFunctions::luaVocationGetHealthGainAmount);
 
 	Lua::registerMethod(L, "Vocation", "getManaGain", VocationFunctions::luaVocationGetManaGain);
-	Lua::registerMethod(L, "Vocation", "getManaGainTicks", VocationFunctions::luaVocationGetManaGainTicks);
 	Lua::registerMethod(L, "Vocation", "getManaGainAmount", VocationFunctions::luaVocationGetManaGainAmount);
 
 	Lua::registerMethod(L, "Vocation", "getMaxSoul", VocationFunctions::luaVocationGetMaxSoul);
@@ -167,17 +165,6 @@ int VocationFunctions::luaVocationGetHealthGain(lua_State* L) {
 	return 1;
 }
 
-int VocationFunctions::luaVocationGetHealthGainTicks(lua_State* L) {
-	// vocation:getHealthGainTicks()
-	const auto &vocation = Lua::getUserdataShared<Vocation>(L, 1, "Vocation");
-	if (vocation) {
-		lua_pushnumber(L, vocation->getHealthGainTicks());
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
 int VocationFunctions::luaVocationGetHealthGainAmount(lua_State* L) {
 	// vocation:getHealthGainAmount()
 	const auto &vocation = Lua::getUserdataShared<Vocation>(L, 1, "Vocation");
@@ -194,17 +181,6 @@ int VocationFunctions::luaVocationGetManaGain(lua_State* L) {
 	const auto &vocation = Lua::getUserdataShared<Vocation>(L, 1, "Vocation");
 	if (vocation) {
 		lua_pushnumber(L, vocation->getManaGain());
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int VocationFunctions::luaVocationGetManaGainTicks(lua_State* L) {
-	// vocation:getManaGainTicks()
-	const auto &vocation = Lua::getUserdataShared<Vocation>(L, 1, "Vocation");
-	if (vocation) {
-		lua_pushnumber(L, vocation->getManaGainTicks());
 	} else {
 		lua_pushnil(L);
 	}

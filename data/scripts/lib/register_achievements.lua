@@ -193,7 +193,7 @@ ACHIEVEMENTS = {
 	[192] = { name = "I Like it Fancy", grade = 1, points = 1, secret = true, description = "You definitely know how to bring out the best in your furniture and decoration pieces. Beautiful." },
 	[193] = { name = "Skin-Deep", grade = 2, points = 4, secret = true, description = "You always carry your obsidian knife with you and won't hesitate to use it. You've skinned countless little - and bigger - critters and yeah: they usually don't get any more beautiful on the inside. It's rather blood and gore and all that..." },
 	[194] = { name = "Ashes to Dust", grade = 2, points = 4, secret = true, description = "Staking vampires and demons has almost turned into your profession. You make sure to gather even the tiniest amount of evil dust particles. Beware of silicosis." },
-	-- [195] = Unknown/non-existent
+	[195] = { name = "Smart Thinking", grade = 1, points = 2, secret = true, description = "You are truly clever. The gods had almost given up hope that anyone would ever figure THAT out. Now they smile at you with pride." },
 	[196] = { name = "Safely Stored Away", grade = 1, points = 2, secret = true, description = "Don't worry, no one will be able to take it from you. Probably." },
 	[197] = { name = "Something's in There", grade = 1, points = 1, secret = true, description = "By the gods! What was that?" },
 	[198] = { name = "Silent Pet", grade = 1, points = 1, secret = true, description = "Awww. Your very own little goldfish friend - he's cute, he's shiny and he can't complain should you forget to feed him. He'll definitely brighten up your day!" },
@@ -548,17 +548,42 @@ ACHIEVEMENTS = {
 	[547] = { name = "Museum Goer", grade = 1, points = 2, description = "You unveiled the secret plot of the Mitmah who stole away an entire civilisation for their own entertainment. Let the death of their outpost vanguard be an eternal lesson to them." },
 	[548] = { name = "Mystic Predator", grade = 1, points = 3, description = "Proving your true worth to a mystic creature like the jaguar, king of the hunt, granted you not only respect but also its heart." },
 	[549] = { name = "The Rule of Raccool", grade = 1, points = 2, description = "You almost feel as cool as a raccoon. Now, where's the trash?" },
+	[550] = { name = "A Friend in Need", grade = 1, points = 2, secret = true, description = "You freed the captive forest fury from the Corym Black Market. A friend in need is a friend indeed!" },
+	[551] = { name = "Holzkopf", grade = 1, points = 1, description = "You feel countless tiny roots burrowing into your brain!" },
 	[552] = { name = "I Wanna Fly Away", grade = 1, points = 3, description = "... on a pegasus, to a land of honey and milk. With this beautiful flying steed you certainly can." },
-	[553] = { name = "The Rootwalker", grade = 1, points = 2, description = "Traversing the entrances to Podzilla is an achievement in itself, thanks to Two Lips you are now one with the plant biosphere as you walk its many intertwined trails." },
+	[553] = { name = "The Rootwalker", grade = 1, points = 2, description = "Traversing the innards of Podzilla was a conquest in and by itself, thanks to Two Lips you are now one with the plant biosphere as you stride its many intertwined trails." },
 	[554] = { name = "Soul Crusher", grade = 1, points = 2, description = "The Soulpit resonates as the spirit of your final foe shatters under your might." },
-	[555] = { name = "Inner Peace", grade = 1, points = 2, description = "The transcendence to a higher state of mind and existence in order to achieve inner peace has been amplified by various means throughout Merudri history. Among them a manifold of potions with varying potency - it seems some of them actually work..." },
-	[556] = { name = "Fiend Rider", grade = 1, points = 2, description = "Riding such an ancient beast is certainly a good and harmless idea." },
+	[555] = { name = "Inner Peace", grade = 1, points = 3, description = "The transcendence to a higher state of mind and existence in order to achieve inner peace has been amplified by various means throghout Medudri history. Among them a manifold of potions with varying potence - it seems some of them actually work..." },
+	[556] = { name = "Fiend Rider", grade = 1, points = 3, description = "Riding such an ancient beast is certainly a good and harmless idea." },
 	[557] = { name = "Fiend Slayer", grade = 1, points = 2, description = "No living fiends were hurt to achieve this outfit." },
 	[558] = { name = "Tear the Toxic Veil", grade = 3, points = 7, description = "On the shoulders of demons, you tore through veils of venomous corruption. Demonic essences made you an unstoppable force but take care to also foster your human side." },
-	[559] = { name = "Hope of the Merudri", grade = 1, points = 3, description = "You followed the Three-Fold Path as did generations of Merudri before you. Carry the legacy, culture and hope of the Merudri proudly into this realm, the hearts of its people and beyond." },
-	[560] = { name = "Umbral Redeemer", grade = 2, points = 6, description = "You managed to create, improve and transform your katar into a master state and have proven yourself worthy in a nightmarish world." },
-	[561] = { name = "Hell Rider", grade = 1, points = 2, description = "Pray it never finds its way back to its original stable with you still riding." },
-	[562] = { name = "Alpha Rider", grade = 1, points = 2, description = "You never can tell, who's boss here." },
+	[559] = { name = "Hope of the Merudri", grade = 1, points = 2, description = "You followed the Three-Fold Path as did generations of Merudri before you. Carry the legacy, culture and hope of the Merudri proudly into this realm, the hearts of its people and beyond." },
+	[560] = { name = "Umbral Redeemer", grade = 2, points = 6, description = "You never can tell, who's boss here." },
+	[561] = { name = "Hell Rider", grade = 1, points = 0, description = "Pray it never finds its way back to its original stable with you still riding." },
+	[562] = { name = "Alpha Rider", grade = 1, points = 0, description = "You never can tell, who's boss here." },
+
+	-- Summer Update 2025
+	--[563] = { name = "", grade = 1, points = 0, secret = true, description = "" },
+	[564] = { name = "The First of Many", grade = 1, points = 3, description = "The first step to greatness has been done." },
+	[565] = { name = "A Well-Honed Arsenal", grade = 2, points = 5, description = "Your expertise in weaponry reaches new heights." },
+	[566] = { name = "Arsenal of War", grade = 3, points = 7, description = "Feared by your enemies, admired by many - your reputation in weapon mastery precedes you." },
+	--[567] = { name = "", grade = 1, points = 0, secret = true, description = "" },
+	[568] = { name = "Bat Person", grade = 1, points = 3, description = "No matter your command, this beast is all ears!" },
+	[569] = { name = "Illuminator", grade = 1, points = 3, description = "Joran and Yvette have brought the colours back to the world, and you have freed it from the monsters of this story. The world of books is now yours." },
+	[570] = { name = "Power of Words", grade = 2, points = 5, description = "The pen is mightier than the sword. In a way, yes, you have had this experience. You have seen with your own eyes what the power of words can do, the written word, to be precise." },
+
+	-- Winter Update 2025
+	[571] = { name = "ID 571", grade = 1, points = 0, secret = true, description = "???" },
+	[572] = { name = "Bastard", grade = 2, points = 5, description = "You helped uncover the truth about the lost heir of the Etzel clan. The Order of the Stag will remember your deeds." },
+	[573] = { name = "Errand Runner", grade = 1, points = 3, description = "You've proven yourself as a reliable helper, running errands and completing weekly tasks without hesitation. The task board knows your name well." },
+	[574] = { name = "Feral Trapper", grade = 2, points = 4, description = "You dedicated yourself to countless hunting tasks and earned the respect of Walter Jaeger. Your prowess as a trapper is now legendary." },
+	[575] = { name = "Pest Control", grade = 3, points = 6, description = "From clearing cellars of rats to hunting the most dangerous beasts, no creature is safe when you're on a bounty. You are the ultimate pest controller." },
+	[576] = { name = "ID 576", grade = 1, points = 0, secret = true, description = "???" },
+	[577] = { name = "Razor's Edge", grade = 2, points = 5, secret = true, description = "You completed The Gravedigger's challenge with exceptional precision, finishing with plenty of charges to spare. Living on the edge suits you well." },
+	[578] = { name = "Taskaholic", grade = 3, points = 6, description = "The bulletin board is your second home. No task is too small, no challenge too big - you live for completing tasks and have become truly addicted to them." },
+	[579] = { name = "ID 579", grade = 1, points = 0, secret = true, description = "???" },
+	[580] = { name = "ID 580", grade = 1, points = 0, secret = true, description = "???" },
+	[581] = { name = "Workhorse", grade = 2, points = 4, description = "Whether it's clearing cellars from rats or delivering quara eyes, you do the job regardless of the task type. Your dedication to work is unmatched." },
 }
 
 --[[
@@ -633,18 +658,16 @@ function Player.getAchievements(self)
 end
 
 function Player.addAllAchievements(self, denyMsg)
-	for id in pairs(ACHIEVEMENTS) do
-		if type(id) == "number" then
-			self:addAchievement(id, denyMsg)
-		end
+	for achievIdentifier = ACHIEVEMENT_FIRST, ACHIEVEMENT_LAST do
+		self:addAchievement(achievIdentifier, denyMsg)
 	end
 	return true
 end
 
 function Player.removeAllAchievements(self)
-	for id in pairs(ACHIEVEMENTS) do
-		if type(id) == "number" then
-			self:removeAchievement(id)
+	for achievIdentifier = 1, #ACHIEVEMENTS do
+		if self:hasAchievement(achievIdentifier) then
+			self:removeAchievement(achievIdentifier)
 		end
 	end
 	return true

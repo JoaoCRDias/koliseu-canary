@@ -55,6 +55,10 @@ npcType.onCloseChannel = function(npc, creature)
 	npcHandler:onCloseChannel(npc, creature)
 end
 
+-- NPC dialog options
+npcType:addDialogOptions("withdraw", "deposit all", "balance")
+npcType:speechBubble(SPEECHBUBBLE_TRADE)
+
 local function creatureSayCallback(npc, creature, type, message)
 	local player = Player(creature)
 	local playerId = player:getId()

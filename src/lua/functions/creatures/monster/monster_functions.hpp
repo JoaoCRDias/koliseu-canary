@@ -86,5 +86,7 @@ private:
 	static int luaMonsterAddAttackSpell(lua_State* L);
 	static int luaMonsterAddDefenseSpell(lua_State* L);
 
+	static int luaMonsterWalkTo(lua_State* L); // Summer Update 2025
+
 	friend class CreatureFunctions;
 };

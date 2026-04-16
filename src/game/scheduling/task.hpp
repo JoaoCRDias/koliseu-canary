@@ -69,6 +69,7 @@ private:
 			"Creature::checkCreatureAttack",
 			"Game::checkCreatureWalk",
 			"Game::checkCreatures",
+			"Game::checkSereneStatus",
 			"Game::checkLight",
 			"Game::createFiendishMonsters",
 			"Game::createInfluencedMonsters",

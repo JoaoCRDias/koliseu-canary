@@ -74,6 +74,7 @@ local itemsTable = {
 	["raccoon santa"] = { itemId = 35692, count = 250 },
 	["santa fox"] = { itemId = 27591, count = 250 },
 	["santa leech"] = { itemId = 32746, count = 250 },
+	["ancient bonelord santa"] = { itemId = 52725, count = 250 },
 }
 
 local function creatureSayCallback(npc, creature, type, message)

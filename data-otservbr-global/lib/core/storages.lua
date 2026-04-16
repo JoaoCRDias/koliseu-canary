@@ -239,12 +239,6 @@ Storage = {
 		MessageStair = 52277,
 		Lever = 52278,
 		Mainland = 52279,
-		MonkHealthPotion = 52280,
-		MonkManaPotion = 52281,
-		MonkLightestMissile = 52282,
-		MonkLightStoneShower = 52283,
-		MonkMeat = 52284,
-		Monk = 52285,
 	},
 	TheMummysCurse = {
 		-- Reserved storage from 52350 - 52359
@@ -2956,19 +2950,31 @@ Storage = {
 				AccessDoor = 47952,
 			},
 		},
-		U14_15 = { -- update 14.15 - Reserved Storages 49101 - 49150
-			TheWayOfTheMonk = {
-				QuestLine = 49101,
-				ShrinesCount = 49102,
-				DawnportFirstShrine = 49103,
-				DawnportSecondShrine = 49104,
-				DawnportThirdShrine = 49105,
-				DawnportFourthShrine = 49106,
-				Missions = {
-					TreeFoldPath = 49107,
-				},
+		U15_10 = { -- update 15.10 - Reserved Storages 48000 - 48030
+			BloodyTusks = {
+				Questline = 48000,
+				IntoTheGrave = 48001,
+				ThroughTheMist = 48002,
+				TheWrathOfTheAncestorst = 48003,
+				DanceOfDeath = 48004,
+				TheNextStep = 48005,
+				Bloodbath = 48006,
+				WellPrepared = 48007,
+				BreakingIn = 48008,
+				IntoTheVampiresLair = 48009,
+				TheBloodRitual = 48010,
 			},
 		},
+		U15_12 = { -- update 15.12 - Reserved Storages 48031 - 48040
+			newhavenCitizen = 48031,
+			newhavenTutorialHunting = 48032,
+			newhavenNewLootTheCorruptor = 48033,
+			newhavenGoblinQuestStart = 48034,
+			newhavenGoblinQuestDone = 48035,
+			newhavenMuglexKillCount = 48036,
+			newhavenViolaBookQuestStart = 48037,
+			newhavenViolaBookQuestDone = 48038,
+		}
 	},
 	-- Reserved storage from 63951 - 63999
 	ThaisExhibition = {

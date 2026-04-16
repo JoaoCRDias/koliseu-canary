@@ -361,9 +361,9 @@ std::shared_ptr<MonsterType> Monsters::getMonsterTypeByRaceId(uint16_t raceId, b
 		return bossType;
 	}
 
-	const auto &monster_race_map = g_game().getBestiaryList();
-	auto it = monster_race_map.find(raceId);
-	if (it == monster_race_map.end()) {
+	const auto &bestiaryListMap = g_game().getBestiaryList();
+	auto it = bestiaryListMap.find(raceId);
+	if (it == bestiaryListMap.end()) {
 		return nullptr;
 	}
 

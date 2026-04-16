@@ -2,10 +2,6 @@ local exhaustionTime = 10
 
 local exerciseWeaponsTable = {
 	-- MELE
-	[50292] = { skill = SKILL_FIST },
-	[50293] = { skill = SKILL_FIST },
-	[50294] = { skill = SKILL_FIST },
-	[50295] = { skill = SKILL_FIST },
 	[28540] = { skill = SKILL_SWORD },
 	[28552] = { skill = SKILL_SWORD },
 	[35279] = { skill = SKILL_SWORD },
@@ -37,6 +33,11 @@ local exerciseWeaponsTable = {
 	[28557] = { skill = SKILL_MAGLEVEL, effect = CONST_ANI_FIRE, allowFarUse = true },
 	[35284] = { skill = SKILL_MAGLEVEL, effect = CONST_ANI_FIRE, allowFarUse = true },
 	[35290] = { skill = SKILL_MAGLEVEL, effect = CONST_ANI_FIRE, allowFarUse = true },
+	-- FIST
+	[50292] = { skill = SKILL_FIST, effect = CONST_ANI_WHIRLWINDAXE },
+	[50293] = { skill = SKILL_FIST, effect = CONST_ANI_WHIRLWINDAXE },
+	[50294] = { skill = SKILL_FIST, effect = CONST_ANI_WHIRLWINDAXE },
+	[50295] = { skill = SKILL_FIST, effect = CONST_ANI_WHIRLWINDAXE },
 }
 
 local dummies = Game.getDummies()

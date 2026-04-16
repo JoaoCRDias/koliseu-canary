@@ -33,6 +33,8 @@ public:
 	Npc(const Npc &) = delete;
 	void operator=(const std::shared_ptr<Npc> &) = delete;
 
+	static Npc &getInstance();
+
 	std::shared_ptr<Npc> getNpc() override;
 	std::shared_ptr<const Npc> getNpc() const override;
 
@@ -105,6 +107,8 @@ public:
 	void removeShopPlayer(uint32_t playerGUID);
 	void closeAllShopWindows();
 
+	void sendDialogOptions(const std::shared_ptr<Player> &player, uint8_t conversationId = 1) const;
+
 	static uint32_t npcAutoID;
 
 	void onCreatureWalk() override;
@@ -147,3 +151,5 @@ private:
 	void handlePlayerMove(const std::shared_ptr<Player> &player, const Position &newPos);
 	void loadPlayerSpectators();
 };
+
+constexpr auto g_npc = Npc::getInstance;

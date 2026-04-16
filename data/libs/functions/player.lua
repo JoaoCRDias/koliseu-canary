@@ -13,9 +13,7 @@ function Player.feed(self, food)
 
 		foodCondition:setTicks(food * 1000)
 		foodCondition:setParameter(CONDITION_PARAM_HEALTHGAIN, vocation:getHealthGainAmount())
-		foodCondition:setParameter(CONDITION_PARAM_HEALTHTICKS, vocation:getHealthGainTicks())
 		foodCondition:setParameter(CONDITION_PARAM_MANAGAIN, vocation:getManaGainAmount())
-		foodCondition:setParameter(CONDITION_PARAM_MANATICKS, vocation:getManaGainTicks())
 
 		self:addCondition(foodCondition)
 	end
@@ -50,10 +48,6 @@ end
 
 function Player.isUsingOtClient(self)
 	return self:getClient().os >= CLIENTOS_OTCLIENT_LINUX
-end
-
-function Player.isUsingOTCR(self)
-	return self:getClient().os >= CLIENTOS_OTCLIENT_LINUX and self:getClient().os < CLIENTOS_OTCLIENT_MAC
 end
 
 function Player.sendExtendedOpcode(self, opcode, buffer)
@@ -165,10 +159,6 @@ function Player:vocationAbbrev()
 	return abbrev:upper()
 end
 
-function Player.isMonk(self)
-	return table.contains({ VOCATION.ID.MONK, VOCATION.ID.EXALTED_MONK }, self:getVocation():getId())
-end
-
 function Player.isSorcerer(self)
 	return table.contains({ VOCATION.ID.SORCERER, VOCATION.ID.MASTER_SORCERER }, self:getVocation():getId())
 end
@@ -187,6 +177,10 @@ end
 
 function Player.isMage(self)
 	return table.contains({ VOCATION.ID.SORCERER, VOCATION.ID.MASTER_SORCERER, VOCATION.ID.DRUID, VOCATION.ID.ELDER_DRUID }, self:getVocation():getId())
+end
+
+function Player.isMonk(self)
+	return table.contains({ VOCATION.ID.MONK, VOCATION.ID.EXALTED_MONK }, self:getVocation():getId())
 end
 
 local ACCOUNT_STORAGES = {}
@@ -845,6 +839,7 @@ local emojiMap = {
 	["paladin"] = ":bow_and_arrow:",
 	["druid"] = ":herb:",
 	["sorcerer"] = ":crystal_ball:",
+	["monk"] = ":punch:",
 }
 
 function Player.getMarkdownLink(self)

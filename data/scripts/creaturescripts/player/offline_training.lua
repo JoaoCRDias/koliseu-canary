@@ -61,7 +61,7 @@ function offlineTraining.onLogin(player)
 		local modifier = topVocation:getBaseAttackSpeed() / 1000
 		tries = (trainingTime / modifier) / (offlineTrainingSkill == SKILL_DISTANCE and 4 or 2)
 	elseif offlineTrainingSkill == SKILL_MAGLEVEL then
-		local gainTicks = topVocation:getManaGainTicks() / 1000
+		local gainTicks = configManager.getNumber(configKeys.BASE_MANA_REGEN_INTERVAL) / 1000
 		if gainTicks == 0 then
 			gainTicks = 1
 		end

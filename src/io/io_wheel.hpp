@@ -48,7 +48,7 @@ public:
 			};
 		};
 
-		struct Spells {
+		struct ConvictionPerkAugmented {
 			struct Druid {
 				std::array<WheelSpells::Bonus, 3> grade;
 				std::string name;
@@ -81,7 +81,7 @@ public:
 			std::array<Monk, 5> monk;
 		};
 
-		Spells spells;
+		ConvictionPerkAugmented convictionPerkAugmented;
 		Revelation revelation;
 	};
 
@@ -206,7 +206,7 @@ private:
 	 * @details It assigns names and specific grades of effects to each spell.
 	 * @note Make sure to call this function before using druid spells.
 	 */
-	void initializeDruidSpells();
+	void initializeDruidConvictionPerkAugmented();
 
 	/**
 	 * @brief Initializes the spells for the knight vocation.
@@ -214,7 +214,7 @@ private:
 	 * @details It assigns names and specific grades of effects to each spell.
 	 * @note Make sure to call this function before using knight spells.
 	 */
-	void initializeKnightSpells();
+	void initializeKnightConvictionPerkAugmented();
 
 	/**
 	 * @brief Initializes the spells for the paladin vocation.
@@ -222,7 +222,7 @@ private:
 	 * @details It assigns names and specific grades of effects to each spell.
 	 * @note Make sure to call this function before using paladin spells.
 	 */
-	void initializePaladinSpells();
+	void initializePaladinConvictionPerkAugmented();
 
 	/**
 	 * @brief Initializes the spells for the sorcerer vocation.
@@ -230,17 +230,16 @@ private:
 	 * @details It assigns names and specific grades of effects to each spell.
 	 * @note Make sure to call this function before using sorcerer spells.
 	 */
-	void initializeSorcererSpells();
+	void initializeSorcererConvictionPerkAugmented();
 
 	/**
-	 * @brief Initializes the bonus effects for Monk-specific spells in the Wheel system.
-	 *
-	 * This method sets up all Monk spell entries with their respective bonuses
-	 * for each grade (typically grade 1 and 2). These bonuses include healing,
-	 * cooldown reduction, damage, leech effects, area effects, and critical modifiers.
+	 * @brief Initializes the spells for the monk vocation.
+	 * @details This function sets up the spell information for the monk vocation in the wheel bonus data.
+	 * @details It assigns names and specific grades of effects to each spell.
+	 * @note Make sure to call this function before using monk spells.
 	 */
-	void initializeMonkSpells();
-
+	void initializeMonkConvictionPerkAugmented();
+	
 	/**
 	 * @brief Checks if the number of points is equal to the player's points in the specified slot type.
 	 * @param player The player whose points will be checked.
@@ -278,13 +277,12 @@ private:
 	 */
 	bool isDruid(uint8_t vocationId) const;
 
-	/**
-	 * @brief Determines whether the given vocation ID belongs to the Monk class.
-	 *
-	 * @param vocationId The ID of the vocation to check.
-	 * @return true if the vocation is a Monk; false otherwise.
+		/**
+	 * @brief Checks if the vocation ID corresponds to a Monk.
+	 * @param vocationId The vocation ID to be checked.
+	 * @return true if the vocation ID corresponds to a monk, false otherwise.
 	 */
-	[[nodiscard]] bool isMonk(uint8_t vocationId) const;
+	bool isMonk(uint8_t vocationId) const;
 
 	/**
 	 * @brief Adds a spell to the player's bonus data if the number of points is equal to the player's points in the specified slot type.
@@ -294,7 +292,7 @@ private:
 	 * @param points The number of points required to add the spell.
 	 * @param spellName The name of the spell to add.
 	 */
-	void addSpell(const std::shared_ptr<Player> &player, PlayerWheelMethodsBonusData &bonusData, WheelSlots_t slotType, uint16_t points, const std::string &spellName) const;
+	void addSpellAugmented(const std::shared_ptr<Player> &player, PlayerWheelMethodsBonusData &bonusData, WheelSlots_t slotType, uint16_t points, const std::string &spellName) const;
 
 	/**
 	 * @brief Unlock a vessel resonance if the number of points is equal to the player's points in the specified slot type.

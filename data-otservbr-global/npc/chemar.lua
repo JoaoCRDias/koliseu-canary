@@ -57,6 +57,8 @@ npcType.onCloseChannel = function(npc, creature)
 	npcHandler:onCloseChannel(npc, creature)
 end
 
+npcType:speechBubble(SPEECHBUBBLE_TRAVELER)
+
 -- Travel
 local TheNewFrontier = Storage.Quest.U8_54.TheNewFrontier
 local function addTravelKeyword(keyword, text, cost, destination, condition, action)

@@ -422,7 +422,7 @@ function Player.selectDailyReward(self, msg)
 	-- Items as reward
 	if dailyTable.type == DAILY_REWARD_TYPE_ITEM then
 		local items = {}
-		local possibleItems = DailyRewardItems[self:getVocation():getBaseId()] or DailyRewardItems[0]
+		local possibleItems = DailyRewardItems[self:getVocation():getBaseId()]
 		if dailyTable.items then
 			possibleItems = dailyTable.items
 		end
@@ -555,7 +555,7 @@ function Player.readDailyReward(self, msg, currentDay, state)
 	end
 
 	if systemType == DAILY_REWARD_SYSTEM_TYPE_ONE then
-		rewards = DailyRewardItems[self:getVocation():getBaseId()] or DailyRewardItems[0]
+		rewards = DailyRewardItems[self:getVocation():getBaseId()]
 		if dailyTable.items then
 			rewards = dailyTable.items
 		end

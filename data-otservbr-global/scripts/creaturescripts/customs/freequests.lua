@@ -361,6 +361,18 @@ local questTable = {
 	{ storageName = "TheWhiteRavenMonastery.Passage", storage = Storage.Quest.U7_24.TheWhiteRavenMonastery.Passage, storageValue = 1 },
 	{ storageName = "TheWhiteRavenMonastery.Diary", storage = Storage.Quest.U7_24.TheWhiteRavenMonastery.Diary, storageValue = 2 },
 	{ storageName = "TheWhiteRavenMonastery.Door", storage = Storage.Quest.U7_24.TheWhiteRavenMonastery.Door, storageValue = 1 },
+
+	-- Summer Update 2025
+	{ storageName = "BloodyTusksQuest.IntoTheGrave", storage = Storage.Quest.U15_10.BloodyTusks.IntoTheGrave, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.ThroughTheMist", storage = Storage.Quest.U15_10.BloodyTusks.ThroughTheMist, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.TheWrathOfTheAncestorst", storage = Storage.Quest.U15_10.BloodyTusks.TheWrathOfTheAncestorst, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.DanceOfDeath", storage = Storage.Quest.U15_10.BloodyTusks.DanceOfDeath, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.TheNextStep", storage = Storage.Quest.U15_10.BloodyTusks.TheNextStep, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.Bloodbath", storage = Storage.Quest.U15_10.BloodyTusks.Bloodbath, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.WellPrepared", storage = Storage.Quest.U15_10.BloodyTusks.WellPrepared, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.BreakingIn", storage = Storage.Quest.U15_10.BloodyTusks.BreakingIn, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.IntoTheVampiresLair", storage = Storage.Quest.U15_10.BloodyTusks.IntoTheVampiresLair, storageValue = 2 },
+	{ storageName = "BloodyTusksQuest.TheBloodRitual", storage = Storage.Quest.U15_10.BloodyTusks.TheBloodRitual, storageValue = 2 },
 }
 
 -- from Position: (33201, 31762, 1)

@@ -2,27 +2,28 @@
 runner:
 
   cppcheck:
-    cmd: cppcheck --enable=warning,style,performance,portability --suppress=missingIncludeSystem --template="{file}:{line}:{severity}:{message}" -i src/protobuf -i vcpkg -i vcpkg_installed -i build -i .git -i cmake-build-debug -i cmake-build-release --max-configs=1 -j 2 src/ 2>&1 | sed 's/:error:/:E:/;s/:warning:/:W:/;s/:style:/:I:/;s/:performance:/:I:/;s/:portability:/:I:/'
+    cmd: cppcheck --enable=warning,style,performance,portability --suppress=missingIncludeSystem --template="{file}:{line}:{message}" -i src/protobuf -i vcpkg -i vcpkg_installed -i build -i .git -i cmake-build-debug -i cmake-build-release --max-configs=1 -j 2 src/
     errorformat:
-      - "%f:%l:%t:%m"
+      - "%f:%l:%m"
+    level: warning
 
   luacheck:
     cmd: luacheck --formatter=plain --no-color --no-config --no-global \
       --no-unused --no-unused-args --no-cache --no-max-line-length \
       --no-max-code-line-length --no-max-string-line-length \
-      --no-max-comment-line-length --ignore 4 211 212 213 311 542 -d ./data/ || true
+      --no-max-comment-line-length -d ./data/
     errorformat:
       - "%f:%l:%c: %m"
     level: warning
 
   luac:
-    cmd: find data/ -name '*.lua' -exec sh -c 'luajit -b "$1" /dev/null' _ {} \;
+    cmd: find data/ -name '*.lua' -exec luac -p {} \;
     errorformat:
       - "%r: %f:%l: %m"
-    level: error
+    level: warning
 
   xmllint:
     cmd: find data/ -name '*.xml' -exec xmllint --noout {} \;
     errorformat:
       - "%f:%l: %m"
-    level: error
+    level: warning

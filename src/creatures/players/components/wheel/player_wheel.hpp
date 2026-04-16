@@ -39,6 +39,79 @@ namespace WheelSpells {
 	struct Bonus;
 }
 
+struct PlayerWheelMethodsBonusData {
+	// Raw value. Example: 1 == 1
+	struct Stats {
+		int health = 0;
+		int mana = 0;
+		int capacity = 0;
+		int damage = 0;
+		int healing = 0;
+	};
+	// value * 100. Example: 1% == 100
+	std::array<uint8_t, 4> unlockedVesselResonances = {};
+
+	// Raw value. Example: 1 == 1
+	struct Skills {
+		int melee = 0;
+		int distance = 0;
+		int magic = 0;
+		int fist = 0;
+	};
+
+	// value * 100. Example: 1% == 100
+	struct Leech {
+		double manaLeech = 0;
+		double lifeLeech = 0;
+	};
+
+	struct ConvictionPerkSpell {
+		bool battleInstinct = false; // Knight
+		bool battleHealing = false; // Knight
+		bool positionalTactics = false; // Paladin
+		bool ballisticMastery = false; // Paladin
+		bool healingLink = false; // Druid
+		bool runicMastery = false; // Druid/sorcerer
+		bool focusMastery = false; // Sorcerer
+		bool guidingPresence = false; // Monk
+		bool sanctuary = false; // Monk
+	};
+
+	struct Stages {
+		int combatMastery = 0; // Knight
+		int giftOfLife = 0; // Knight/Paladin/Druid/Sorcerer
+		int divineEmpowerment = 0; // Paladin
+		int divineGrenade = 0; // Paladin
+		int blessingOfTheGrove = 0; // Druid
+		int drainBody = 0; // Sorcerer
+		int beamMastery = 0; // Sorcerer
+		int twinBurst = 0; // Druid
+		int executionersThrow = 0; // Knight
+		int spiritualOutburst = 0; // Monk
+		int ascetic = 0; // Monk
+	};
+
+	struct Avatar {
+		int light = 0; // Paladin
+		int nature = 0; // Druid
+		int steel = 0; // Knight
+		int storm = 0; // Sorcerer
+		int balance = 0; // Monk
+	};
+
+	// Initialize structs
+	Stats stats;
+	Skills skills;
+	Leech leech;
+	ConvictionPerkSpell convictionPerkSpell;
+	Stages stages;
+	Avatar avatar;
+
+	float momentum = 0;
+	float mitigation = 0;
+	std::vector<std::string> spells;
+};
+
 struct PlayerWheelGem {
 	std::string uuid = {};
 	bool locked = false;
@@ -85,8 +158,13 @@ public:
 
 	bool scrollAcquired(const std::string &scrollName);
 	bool unlockScroll(const std::string &scrollName);
-	void loadKVScrolls();
-	void saveKVScrolls() const;
+	void loadKVPromotionScrolls();
+	void saveKVPromotionScrolls() const;
+	void loadKVHuntingTaskShopExtraPoints();
+	void saveKVHuntingTaskShopExtraPoints() const;
+
+	uint16_t getExtraPointsFromHuntingTaskShop() const;
+	void addExtraPointsFromHuntingTaskShop(uint16_t amount);
 
 	void loadKVModGrades();
 	void saveKVModGrades() const;
@@ -272,7 +350,7 @@ public:
 	 * @param type The type of the stage to set.
 	 * @param value The value to set for the stage.
 	 */
-	void setStage(WheelStage_t type, uint8_t value);
+	void setRevelationPerkStage(WheelRelevationPerk_t type, uint8_t value);
 
 	/**
 	 * @brief Sets the on-think timer value for a specific on-think type in the Wheel of Destiny.
@@ -313,7 +391,7 @@ public:
 	 * @param type The type of the instant to set.
 	 * @param toggle The toggle value to set for the instant.
 	 */
-	void setInstant(WheelInstant_t type, bool toggle);
+	void setConvictionPerkActived(WheelConvictionPerk_t type, bool toggle);
 
 	/**
 	 * @brief Adds the value of a specific stat in the Wheel of Destiny.
@@ -344,15 +422,15 @@ public:
 	 * @param name The name of the instant to set.
 	 * @param value The toggle value to set for the instant.
 	 */
-	void setSpellInstant(const std::string &name, bool value);
+	void setConvictionOrRevelationPerk(const std::string &name, bool value);
 	void resetResistance();
 	void resetStats();
 
 	// Wheel of destiny - Header get:
-	bool getInstant(WheelInstant_t type) const;
+	bool getConvictionPerkActived(WheelConvictionPerk_t type) const;
 	bool getHealingLinkUpgrade(const std::string &spell) const;
-	uint8_t getStage(std::string_view name) const;
-	uint8_t getStage(WheelStage_t type) const;
+	uint8_t getConvictionOrRevelationPerk(std::string_view name) const;
+	uint8_t getRevelationPerkStage(WheelRelevationPerk_t type) const;
 	WheelSpellGrade_t getSpellUpgrade(const std::string &name) const;
 	int32_t getMajorStat(WheelMajor_t type) const;
 	int32_t getSpecializedMagic(CombatType_t type) const;
@@ -360,7 +438,6 @@ public:
 	int32_t getResistance(CombatType_t type) const;
 	int32_t getMajorStatConditional(const std::string &instant, WheelMajor_t major) const;
 	int64_t getOnThinkTimer(WheelOnThink_t type) const;
-	bool getInstant(std::string_view name) const;
 	double getMitigationMultiplier() const;
 
 	// Wheel of destiny - Specific functions
@@ -433,6 +510,12 @@ public:
 
 	WheelGemBasicModifier_t selectBasicModifier2(WheelGemBasicModifier_t modifier1) const;
 
+	// Update 15.00
+	bool hasMonkQuest() const;
+	int32_t checkRevelationPerkAscetic() const;
+	float checkRevelationPerkSanctuary() const;
+	bool setSanctuaryTimer(const std::string &spell);
+
 private:
 	void resetRevelationState();
 	void processActiveGems();
@@ -455,13 +538,13 @@ private:
 
 	uint8_t m_modsMaxGrade = {};
 	std::array<uint8_t, 49> m_basicGrades = { 0 };
-	std::array<uint8_t, 95> m_supremeGrades = { 0 };
+	std::array<uint8_t, 99> m_supremeGrades = { 0 };
 
-	std::array<uint8_t, static_cast<size_t>(WheelStage_t::STAGE_COUNT)> m_stages = { 0 };
+	std::array<uint8_t, static_cast<size_t>(WheelRelevationPerk_t::REVELATION_COUNT)> m_revelation_perks = { 0 };
 	std::array<int64_t, static_cast<size_t>(WheelOnThink_t::TOTAL_COUNT)> m_onThink = { 0 };
 	std::array<int32_t, static_cast<size_t>(WheelStat_t::TOTAL_COUNT)> m_stats = { 0 };
 	std::array<int32_t, static_cast<size_t>(WheelMajor_t::TOTAL_COUNT)> m_majorStats = { 0 };
-	std::array<bool, static_cast<size_t>(WheelInstant_t::INSTANT_COUNT)> m_instant = { false };
+	std::array<bool, static_cast<size_t>(WheelConvictionPerk_t::CONVICTION_COUNT)> m_conviction_perks = { false };
 	std::array<int32_t, COMBAT_COUNT> m_resistance = { 0 };
 	std::array<int32_t, COMBAT_COUNT> m_specializedMagic = { 0 };
 
@@ -471,9 +554,13 @@ private:
 	std::unordered_map<std::string, WheelSpells::Bonus> m_spellsBonuses;
 	std::unordered_set<std::string> m_beamMasterySpells;
 
-	std::vector<PromotionScroll> m_unlockedScrolls;
+	std::vector<PromotionScroll> m_unlockedPromotionScrolls;
+	uint16_t m_extraPointsFromHuntingTaskShop = 0;
 
 	std::array<PlayerWheelGem, 4> m_activeGems;
 	std::vector<PlayerWheelGem> m_revealedGems;
 	std::vector<PlayerWheelGem> m_destroyedGems;
+
+	// Update 15.00
+	float m_harmonySanctuary = 1.0f;
 };
