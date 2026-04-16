@@ -787,6 +787,26 @@ void IOLoginDataLoad::loadPlayerMounts(const std::shared_ptr<Player> &player) {
 	}
 }
 
+void IOLoginDataLoad::loadPlayerOutfits(const std::shared_ptr<Player> &player) {
+	if (!player) {
+		g_logger().warn("[{}] - Player nullptr", __FUNCTION__);
+		return;
+	}
+
+	player->outfits.clear();
+	player->outfitsDirty = false;
+
+	const auto query = fmt::format("SELECT `outfit_id`, `addons` FROM `player_outfits` WHERE `player_id` = {}", player->getGUID());
+	if (const auto &result = g_database().storeQuery(query)) {
+		do {
+			player->outfits.emplace_back(
+				result->getNumber<uint16_t>("outfit_id"),
+				static_cast<uint8_t>(result->getNumber<uint16_t>("addons"))
+			);
+		} while (result->next());
+	}
+}
+
 void IOLoginDataLoad::loadPlayerVip(const std::shared_ptr<Player> &player, DBResult_ptr result) {
 	if (!result || !player) {
 		g_logger().warn("[{}] - Player or Result nullptr", __FUNCTION__);

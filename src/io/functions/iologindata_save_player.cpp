@@ -399,6 +399,45 @@ bool IOLoginDataSave::savePlayerStash(const std::shared_ptr<Player> &player) {
 	return true;
 }
 
+bool IOLoginDataSave::savePlayerOutfits(const std::shared_ptr<Player> &player) {
+	if (!player) {
+		g_logger().warn("[IOLoginData::savePlayer] - Player nullptr: {}", __FUNCTION__);
+		return false;
+	}
+
+	if (!player->outfitsDirty) {
+		return true;
+	}
+
+	Database &db = Database::getInstance();
+	std::ostringstream query;
+	query << "DELETE FROM `player_outfits` WHERE `player_id` = " << player->getGUID();
+	if (!db.executeQuery(query.str())) {
+		return false;
+	}
+
+	if (player->outfits.empty()) {
+		player->outfitsDirty = false;
+		return true;
+	}
+
+	DBInsert outfitsQuery("INSERT INTO `player_outfits` (`player_id`, `outfit_id`, `addons`) VALUES ");
+	query.str("");
+	for (const auto &entry : player->outfits) {
+		query << player->getGUID() << ',' << entry.lookType << ',' << static_cast<uint16_t>(entry.addons);
+		if (!outfitsQuery.addRow(query)) {
+			return false;
+		}
+	}
+
+	if (!outfitsQuery.execute()) {
+		return false;
+	}
+
+	player->outfitsDirty = false;
+	return true;
+}
+
 bool IOLoginDataSave::savePlayerMounts(const std::shared_ptr<Player> &player) {
 	if (!player) {
 		g_logger().warn("[IOLoginData::savePlayer] - Player nullptr: {}", __FUNCTION__);

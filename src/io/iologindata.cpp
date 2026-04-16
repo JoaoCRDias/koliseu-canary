@@ -160,6 +160,9 @@ bool IOLoginData::loadPlayer(const std::shared_ptr<Player> &player, const DBResu
 		// load tamed mounts
 		IOLoginDataLoad::loadPlayerMounts(player);
 
+		// load unlocked outfits
+		IOLoginDataLoad::loadPlayerOutfits(player);
+
 		// load vip
 		IOLoginDataLoad::loadPlayerVip(player, result);
 
@@ -234,6 +237,10 @@ bool IOLoginData::savePlayerGuard(const std::shared_ptr<Player> &player) {
 
 	if (!IOLoginDataSave::savePlayerMounts(player)) {
 		throw DatabaseException("[IOLoginDataSave::savePlayerMounts] - Failed to save player mounts: " + player->getName());
+	}
+
+	if (!IOLoginDataSave::savePlayerOutfits(player)) {
+		throw DatabaseException("[IOLoginDataSave::savePlayerOutfits] - Failed to save player outfits: " + player->getName());
 	}
 
 	if (!IOLoginDataSave::savePlayerKills(player)) {

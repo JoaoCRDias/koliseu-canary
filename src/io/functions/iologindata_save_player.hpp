@@ -31,6 +31,7 @@ public:
 	static bool savePlayerBosstiary(const std::shared_ptr<Player> &player);
 	static bool savePlayerStorage(const std::shared_ptr<Player> &player);
 	static bool savePlayerMounts(const std::shared_ptr<Player> &player);
+	static bool savePlayerOutfits(const std::shared_ptr<Player> &player);
 
 	// Winter Update 2025 - Task Board
 	static bool savePlayerBountyTasks(const std::shared_ptr<Player> &player);

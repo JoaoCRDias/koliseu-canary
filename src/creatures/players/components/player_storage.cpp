@@ -54,13 +54,6 @@ void PlayerStorage::ingest(const std::vector<PlayerStorageRow> &rows) {
 
 void PlayerStorage::add(const uint32_t key, const int32_t value, const bool shouldStorageUpdate /* = false*/, const bool shouldTrackModification /*= true*/) {
 	if (isStorageKeyInRange(key, PSTRG_RESERVED_RANGE_START, PSTRG_RESERVED_RANGE_SIZE)) {
-		if (isStorageKeyInRange(key, PSTRG_OUTFITS_RANGE_START, PSTRG_OUTFITS_RANGE_SIZE)) {
-			m_player.outfits.emplace_back(
-				value >> 16,
-				value & 0xFF
-			);
-			return;
-		}
 		if (isStorageKeyInRange(key, PSTRG_FAMILIARS_RANGE_START, PSTRG_FAMILIARS_RANGE_SIZE)) {
 			m_player.familiars.emplace_back(value >> 16);
 			return;
@@ -136,13 +129,6 @@ void PlayerStorage::clearDirty() {
 }
 
 void PlayerStorage::getReservedRange() {
-	// Generate outfits range
-	uint32_t outfits_key = PSTRG_OUTFITS_RANGE_START;
-	for (const auto &entry : m_player.outfits) {
-		++outfits_key;
-		upsertKey(outfits_key, (entry.lookType << 16) | entry.addons);
-	}
-
 	// Generate familiars range
 	uint32_t familiar_key = PSTRG_FAMILIARS_RANGE_START;
 	for (const auto &entry : m_player.familiars) {

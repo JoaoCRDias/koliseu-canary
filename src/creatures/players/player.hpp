@@ -1652,7 +1652,9 @@ private:
 
 	std::vector<uint16_t> quickLootListItemIds;
 
+	// Outfits unlocked by this player. Persisted in `player_outfits`.
 	std::vector<OutfitEntry> outfits;
+	bool outfitsDirty = false;
 	std::vector<FamiliarEntry> familiars;
 
 	// Mounts unlocked by this player. Persisted in `player_mounts`.

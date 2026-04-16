@@ -6433,11 +6433,15 @@ void Player::setSpecialMenuAvailable(bool stashBool, bool marketMenuBool, bool d
 void Player::addOutfit(uint16_t lookType, uint8_t addons) {
 	for (auto &outfitEntry : outfits) {
 		if (outfitEntry.lookType == lookType) {
-			outfitEntry.addons |= addons;
+			if ((outfitEntry.addons & addons) != addons) {
+				outfitEntry.addons |= addons;
+				outfitsDirty = true;
+			}
 			return;
 		}
 	}
 	outfits.emplace_back(lookType, addons);
+	outfitsDirty = true;
 
 	if (const auto &outfit = Outfits::getInstance().getOutfitByLookType(getPlayer(), lookType)) {
 		sendScreenshotAndBannerUnlockedCosmetic(outfit->name, lookType, std::clamp<uint8_t>(addons, 0, 2));
@@ -6449,6 +6453,7 @@ bool Player::removeOutfit(uint16_t lookType) {
 		const auto &entry = *it;
 		if (entry.lookType == lookType) {
 			outfits.erase(it);
+			outfitsDirty = true;
 			return true;
 		}
 	}
@@ -6458,7 +6463,10 @@ bool Player::removeOutfit(uint16_t lookType) {
 bool Player::removeOutfitAddon(uint16_t lookType, uint8_t addons) {
 	for (OutfitEntry &outfitEntry : outfits) {
 		if (outfitEntry.lookType == lookType) {
-			outfitEntry.addons &= ~addons;
+			if ((outfitEntry.addons & addons) != 0) {
+				outfitEntry.addons &= ~addons;
+				outfitsDirty = true;
+			}
 			return true;
 		}
 	}
