@@ -21,8 +21,8 @@ function callback.onModalWindow(player, modalWindowId, buttonId, choiceId)
         end
 
         -- Load modules (evita circular dependency)
-        local BattlePassCore = dofile("data-crystal/scripts/systems/battlepass/core.lua")
-        local BattlePassWindow = dofile("data-crystal/scripts/systems/battlepass/window.lua")
+        local BattlePassCore = dofile("data-koliseu/scripts/systems/battlepass/core.lua")
+        local BattlePassWindow = dofile("data-koliseu/scripts/systems/battlepass/window.lua")
 
         local day = choiceId
 
@@ -40,7 +40,7 @@ function callback.onModalWindow(player, modalWindowId, buttonId, choiceId)
             player:getPosition():sendMagicEffect(CONST_ME_FIREWORK_BLUE)
 
             -- Reabrir janela atualizada using the same season
-            local BattlePassDB = dofile("data-crystal/scripts/systems/battlepass/database.lua")
+            local BattlePassDB = dofile("data-koliseu/scripts/systems/battlepass/database.lua")
             local season = viewingSeasonId and BattlePassDB.getSeasonById(viewingSeasonId) or BattlePassCore.getCurrentSeason()
             if season then
                 local playerBP = BattlePassCore.getPlayerBattlePass(player:getGuid(), season.id)

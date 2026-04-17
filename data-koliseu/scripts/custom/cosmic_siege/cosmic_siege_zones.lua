@@ -2,7 +2,7 @@
 -- Handles player hazard icons and monster power scaling in siege zones
 
 if not CosmicSiege then
-	local ok, err = pcall(dofile, "data-crystal/scripts/custom/cosmic_siege/cosmic_siege.lua")
+	local ok, err = pcall(dofile, "data-koliseu/scripts/custom/cosmic_siege/cosmic_siege.lua")
 	if not ok then
 		logger.error("[Cosmic Siege Zones] Failed to load base module: {}", err)
 		return

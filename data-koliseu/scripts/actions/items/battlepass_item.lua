@@ -29,8 +29,8 @@ local function hasAccountPurchased(accountId, seasonId)
 end
 
 function battlepassItem.onUse(player, item, fromPosition, target, toPosition, isHotkey)
-	local BattlePassCore = dofile("data-crystal/scripts/systems/battlepass/core.lua")
-	local BattlePassDB = dofile("data-crystal/scripts/systems/battlepass/database.lua")
+	local BattlePassCore = dofile("data-koliseu/scripts/systems/battlepass/core.lua")
+	local BattlePassDB = dofile("data-koliseu/scripts/systems/battlepass/database.lua")
 
 	-- Check if item is in the player's inventory
 	local topParent = item:getTopParent()

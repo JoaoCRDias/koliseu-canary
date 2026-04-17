@@ -7,12 +7,12 @@
 	3. Exporting the public API for use in other scripts
 
 	Usage in other scripts:
-		local Mining = dofile('data-crystal/scripts/systems/mining/init.lua')
+		local Mining = dofile('data-koliseu/scripts/systems/mining/init.lua')
 		Mining:attemptMining(player, target, toPosition)
 ]]
 
 -- Get the directory path for this module
-local modulePath = "data-crystal/scripts/systems/mining/"
+local modulePath = "data-koliseu/scripts/systems/mining/"
 
 -- Load all mining modules
 local MiningConfig = dofile(modulePath .. "config.lua")

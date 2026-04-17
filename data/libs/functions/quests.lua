@@ -1,4 +1,8 @@
-require("data-otservbr-global.lib.core.quests")
+-- The active datapack is expected to populate the global `Quests` table
+-- via its own bootstrap (e.g. data-koliseu/lib/core/quests.lua).
+if not Quests then
+	Quests = {}
+end
 
 if not LastQuestlogUpdate then
 	LastQuestlogUpdate = {}

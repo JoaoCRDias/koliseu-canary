@@ -360,17 +360,20 @@ void CanaryServer::initializeDatabase() {
 	if (!Database::getInstance().connect()) {
 		throw FailedToInitializeCanary("Failed to connect to database!");
 	}
-	logger.debug("MySQL Version: {}", Database::getClientVersion());
+	logger.info("[DB] connect() OK. MySQL client: {}", Database::getClientVersion());
 
-	logger.debug("Running database manager...");
+	logger.info("[DB] checking schema (isDatabaseSetup)...");
 	if (!DatabaseManager::isDatabaseSetup()) {
 		throw FailedToInitializeCanary(fmt::format(
 			"The database you have specified in {} is empty, please import the schema.sql to your database.",
 			g_configManager().getConfigFileLua()
 		));
 	}
+	logger.info("[DB] schema present. Running migrations (updateDatabase)...");
 
 	DatabaseManager::updateDatabase();
+
+	logger.info("[DB] migrations finished.");
 
 	if (g_configManager().getBoolean(OPTIMIZE_DATABASE)
 	    && !DatabaseManager::optimizeTables()) {

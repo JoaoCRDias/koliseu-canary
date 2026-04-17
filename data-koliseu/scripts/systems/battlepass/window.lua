@@ -1,4 +1,4 @@
-local BattlePassConfig = dofile("data-crystal/scripts/systems/battlepass/config_rewards.lua")
+local BattlePassConfig = dofile("data-koliseu/scripts/systems/battlepass/config_rewards.lua")
 
 local BattlePassWindow = {}
 

@@ -22,7 +22,7 @@ local ATTEMPTS_PER_TICK = TICK_INTERVAL_MS / 1000 -- 3 attempts per tick (1 per 
 -- ============================================================
 -- Load Mining system
 -- ============================================================
-local Mining = dofile("data-crystal/scripts/systems/mining/init.lua")
+local Mining = dofile("data-koliseu/scripts/systems/mining/init.lua")
 
 -- ============================================================
 -- Zone setup

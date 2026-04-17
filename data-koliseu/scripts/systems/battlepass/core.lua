@@ -1,7 +1,7 @@
-local BattlePassDB = dofile("data-crystal/scripts/systems/battlepass/database.lua")
-local BattlePassConfig = dofile("data-crystal/scripts/systems/battlepass/config_rewards.lua")
-local BattlePassRewards = dofile("data-crystal/scripts/systems/battlepass/rewards.lua")
-local BattlePassWindow = dofile("data-crystal/scripts/systems/battlepass/window.lua")
+local BattlePassDB = dofile("data-koliseu/scripts/systems/battlepass/database.lua")
+local BattlePassConfig = dofile("data-koliseu/scripts/systems/battlepass/config_rewards.lua")
+local BattlePassRewards = dofile("data-koliseu/scripts/systems/battlepass/rewards.lua")
+local BattlePassWindow = dofile("data-koliseu/scripts/systems/battlepass/window.lua")
 
 local BattlePassCore = {}
 
