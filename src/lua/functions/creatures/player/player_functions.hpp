@@ -408,6 +408,10 @@ class PlayerFunctions {
 	static int luaPlayerGetLoyaltyTitle(lua_State* L);
 	static int luaPlayerSetLoyaltyTitle(lua_State* L);
 
+	// Outfit/Mount bonus system
+	static int luaPlayerGetOutfitBonusDescription(lua_State* L);
+	static int luaPlayerGetMountBonusDescription(lua_State* L);
+
 	// Concoction system
 	static int luaPlayerUpdateConcoction(lua_State* L);
 	static int luaPlayerClearSpellCooldowns(lua_State* L);

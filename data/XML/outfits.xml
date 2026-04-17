@@ -1,274 +1,4889 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <outfits>
+	<!-- Example of new attributies
+	<outfit type="1" looktype="128" name="Citizen" premium="no" unlocked="yes" enabled="yes" healthGain="5" healthTicks="5" manaGain="5" manaTicks="5" manaShield="no" speed="220" attackSpeed="500">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	-->
+
+	<!-- MEME OUTFIT -->
+	<outfit type="0" looktype="3002" name="Mito" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="3001" name="Batman" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="3002" name="Mito" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="3001" name="Batman" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+
+	<!-- Custom oufits -->
 	<!-- Female -->
-	<outfit type="0" looktype="136" name="Citizen" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="137" name="Hunter" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="138" name="Mage" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="139" name="Knight" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="140" name="Noblewoman" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="141" name="Summoner" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="142" name="Warrior" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="147" name="Barbarian" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="148" name="Druid" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="149" name="Wizard" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="150" name="Oriental" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="155" name="Pirate" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="156" name="Assassin" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="157" name="Beggar" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="158" name="Shaman" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="252" name="Norsewoman" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="269" name="Nightmare" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="270" name="Jester" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="279" name="Brotherhood" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="288" name="Demon Hunter" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="324" name="Yalaharian" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="329" name="Newly Wed" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="336" name="Warmaster" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="366" name="Wayfarer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="431" name="Afflicted" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="433" name="Elementalist" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="464" name="Deepling" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="466" name="Insectoid" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="471" name="Entrepreneur" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="513" name="Crystal Warlord" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="514" name="Soil Guardian" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="542" name="Demon" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="575" name="Cave Explorer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="578" name="Dream Warden" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="618" name="Glooth Engineer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="620" name="Jersey" premium="yes" unlocked="no" enabled="yes" />
-	<outfit type="0" looktype="632" name="Champion" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="635" name="Conjurer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="636" name="Beastmaster" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="664" name="Chaos Acolyte" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="666" name="Death Herald" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="683" name="Ranger" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="694" name="Ceremonial Garb" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="696" name="Puppeteer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="698" name="Spirit Caller" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="724" name="Evoker" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="732" name="Seaweaver" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="745" name="Recruiter" premium="no" unlocked="no" enabled="yes" />
-	<outfit type="0" looktype="749" name="Sea Dog" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="759" name="Royal Pumpkin" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="845" name="Rift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="852" name="Winter Warden" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="874" name="Philosopher" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="885" name="Arena Champion" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="900" name="Lupine Warden" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="909" name="Grove Keeper" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="929" name="Festive" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="956" name="Pharaoh" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="958" name="Trophy Hunter" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="963" name="Retro Warrior" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="965" name="Retro Summoner" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="967" name="Retro Noblewoman" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="969" name="Retro Mage" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="971" name="Retro Knight" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="973" name="Retro Hunter" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="975" name="Retro Citizen" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1020" name="Herbalist" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1024" name="Sun Priest" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1043" name="Makeshift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1050" name="Siege Master" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1057" name="Mercenary" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1070" name="Battle Mage" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1095" name="Discoverer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1103" name="Sinister Archer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1128" name="Pumpkin Mummy" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1147" name="Dream Warrior" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1162" name="Percht Raider" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1174" name="Owl Keeper" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1187" name="Guidon Bearer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1203" name="Void Master" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1205" name="Veteran Paladin" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1207" name="Lion of War" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1211" name="Golden" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1244" name="Hand of the Inquisition" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1246" name="Breezy Garb" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1252" name="Orcsoberfest Garb" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1271" name="Poltergeist" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1280" name="Herder" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1283" name="Falconer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1289" name="Dragon Slayer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1293" name="Trailblazer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1323" name="Revenant" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1332" name="Jouster" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1339" name="Moth Cape" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1372" name="Rascoohan" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1383" name="Merry Garb" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1385" name="Rune Master" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1387" name="Citizen of Issavi" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1416" name="Forest Warden" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1437" name="Royal Bounacean Advisor" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1445" name="Dragon Knight" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1450" name="Arbalester" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1456" name="Royal Costume" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1461" name="Formal Dress" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1490" name="Ghost Blade" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1501" name="Nordic Chieftain" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1569" name="Fire-Fighter" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1576" name="Fencer" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1582" name="Shadowlotus Disciple" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1598" name="Ancient Aucar" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1613" name="Frost Tracer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1619" name="Armoured Archer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1663" name="Decaying Defender" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1676" name="Darklight Evoker" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1681" name="Flamefury Mage" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1714" name="Doom Knight" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1723" name="Draccoon Herald" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1726" name="Celestial Avenger" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1746" name="Blade Dancer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1775" name="Rootwalker" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1777" name="Beekeeper" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1808" name="Fiend Slayer" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1815" name="Field Surgeon" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1825" name="Monk" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="0" looktype="1832" name="Winged Druid" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1838" name="Martial Artist" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="0" looktype="1846" name="Necromancer" premium="no" unlocked="no" enabled="yes" from="store" />
+	<!-- Physical Adept - Store Description:
+	Unleash raw physical power with the Physical Adept outfit!\n<i>+100 HP</i>\n<i>+2 to All Melee Skills (Fist/Club/Axe/Sword)</i>\n<i>+0.5% Critical Chance</i>
+	-->
+	<outfit type="0" looktype="3003" name="Physical Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Cursed Skeleton - Store Description:
+	Channel the power of the undead with Cursed Skeleton!\n<i>+50 HP / +50 MP</i>\n<i>+2 Magic Level</i>\n<i>+0.5% Life Leech</i>
+	-->
+	<outfit type="0" looktype="3007" name="Cursed Skeleton" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
 
-	<!-- Summer Update 2025 -->
-	<outfit type="0" looktype="1861" name="Illuminator" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="0" looktype="1875" name="Bat Knight" premium="no" unlocked="no" enabled="yes" from="store" />
+	</outfit>
+	<!-- Rotten Wizard - Store Description:
+	Command dark magic with the Rotten Wizard!\n<i>+100 MP</i>\n<i>+3 Magic Level</i>\n<i>+0.5% Mana Leech</i>
+	-->
+	<outfit type="0" looktype="3008" name="Rotten Wizard" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
 
-	<!-- Winter Update 2025 -->
-	<outfit type="0" looktype="1906" name="Feral Trapper" premium="yes" unlocked="no" enabled="yes" from="quest" />
+	</outfit>
+	<!-- Royal Clothing - Store Description:
+	Dress in royalty with the Royal Clothing!\n<i>+75 HP / +75 MP</i>\n<i>+1 Magic Level</i>\n<i>+50 Capacity</i>
+	-->
+	<outfit type="0" looktype="3021" name="Royal Clothing" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Bodybuilder - Store Description:
+	Show off your strength with Bodybuilder!\n<i>+150 HP</i>\n<i>+2 to All Melee Skills</i>\n<i>+100 Capacity</i>
+	-->
+	<outfit type="0" looktype="3024" name="Bodybuilder" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Ice Adept - Store Description:
+	Master the power of frost with Ice Adept!\n<i>+50 HP / +50 MP</i>\n<i>+2 Magic Level</i>\n<i>+1 Shielding</i>
+	-->
+	<outfit type="0" looktype="3038" name="Ice Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Energy Adept - Store Description:
+	Harness electric power with Energy Adept!\n<i>+50 HP / +50 MP</i>\n<i>+2 Magic Level</i>\n<i>+0.5% Mana Leech</i>
+	-->
+	<outfit type="0" looktype="3040" name="Energy Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Earth Adept - Store Description:
+	Control nature's might with Earth Adept!\n<i>+100 HP</i>\n<i>+2 Magic Level</i>\n<i>+75 Capacity</i>
+	-->
+	<outfit type="0" looktype="3042" name="Earth Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Fire Adept - Store Description:
+	Wield flames of destruction with Fire Adept!\n<i>+50 HP / +50 MP</i>\n<i>+2 Magic Level</i>\n<i>+0.5% Critical Chance</i>
+	-->
+	<outfit type="0" looktype="3044" name="Fire Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Divine Vassal - Store Description:
+	Embrace holy power with Divine Vassal!\n<i>+100 MP</i>\n<i>+3 Magic Level</i>\n<i>+1% Life Leech</i>
+	-->
+	<outfit type="0" looktype="3046" name="Divine Vassal" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Hidden Demon - Store Description:
+	Conceal demonic power with Hidden Demon!\n<i>+75 HP / +75 MP</i>\n<i>+2 Magic Level</i>\n<i>+1% Critical Damage</i>
+	-->
+	<outfit type="0" looktype="3049" name="Hidden Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Dwilight - Store Description:
+	Command twilight magic with Dwilight!\n<i>+100 MP</i>\n<i>+2 Magic Level</i>\n<i>+1 Distance Fighting</i>
+	-->
+	<outfit type="0" looktype="3051" name="Dwilight" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Crusher - Store Description:
+	Dominate with brute force as Crusher!\n<i>+125 HP</i>\n<i>+3 Club Fighting</i>\n<i>+75 Capacity</i>
+	-->
+	<outfit type="0" looktype="3056" name="Crusher" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Darkness Warrior - Store Description:
+	Embrace shadow combat with Darkness Warrior!\n<i>+100 HP</i>\n<i>+2 Sword/Axe Fighting</i>\n<i>+1% Critical Chance</i>
+	-->
+	<outfit type="0" looktype="3059" name="Darkness Warrior" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Platinum - Store Description:
+	Shine with platinum elegance!\n<i>+100 HP / +100 MP</i>\n<i>+2 Magic Level</i>\n<i>+50 Capacity</i>
+	-->
+	<outfit type="0" looktype="3061" name="Platinum" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Crystal - Store Description:
+	Radiate crystalline power with Crystal!\n<i>+100 HP / +100 MP</i>\n<i>+2 Magic Level</i>\n<i>+1% Mana Leech</i>
+	-->
+	<outfit type="0" looktype="3063" name="Crystal" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<!-- Skull Master - Store Description:
+	Command death itself with Skull Master!\n<i>+75 HP / +75 MP</i>\n<i>+3 Magic Level</i>\n<i>+1% Life Leech / +1% Mana Leech</i>
+	-->
+	<outfit type="0" looktype="3066" name="Skull Master" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="3089" name="Verdant Mage" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="3090" name="Verdant Assassin" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="3095" name="Castle Warlord" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="2" />
+		</imbuing>
+	</outfit>
+
+
+
+	<!-- Baldur Reaper (Female) -->
+	<outfit type="0" looktype="3120" name="Baldur Reaper" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
+	<!-- Baldur Reaper (Male) -->
+	<outfit type="1" looktype="3121" name="Baldur Reaper" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
 
 	<!-- Male -->
-	<outfit type="1" looktype="128" name="Citizen" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="129" name="Hunter" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="130" name="Mage" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="131" name="Knight" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="132" name="Nobleman" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="133" name="Summoner" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="134" name="Warrior" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="143" name="Barbarian" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="144" name="Druid" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="145" name="Wizard" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="146" name="Oriental" premium="yes" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="151" name="Pirate" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="152" name="Assassin" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="153" name="Beggar" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="154" name="Shaman" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="251" name="Norseman" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="268" name="Nightmare" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="273" name="Jester" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="278" name="Brotherhood" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="289" name="Demon Hunter" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="325" name="Yalaharian" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="328" name="Newly Wed" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="335" name="Warmaster" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="367" name="Wayfarer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="430" name="Afflicted" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="432" name="Elementalist" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="463" name="Deepling" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="465" name="Insectoid" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="472" name="Entrepreneur" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="512" name="Crystal Warlord" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="516" name="Soil Guardian" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="541" name="Demon" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="574" name="Cave Explorer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="577" name="Dream Warden" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="610" name="Glooth Engineer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="619" name="Jersey" premium="yes" unlocked="no" enabled="yes" />
-	<outfit type="1" looktype="633" name="Champion" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="634" name="Conjurer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="637" name="Beastmaster" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="665" name="Chaos Acolyte" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="667" name="Death Herald" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="684" name="Ranger" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="695" name="Ceremonial Garb" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="697" name="Puppeteer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="699" name="Spirit Caller" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="725" name="Evoker" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="733" name="Seaweaver" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="746" name="Recruiter" premium="no" unlocked="no" enabled="yes" />
-	<outfit type="1" looktype="750" name="Sea Dog" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="760" name="Royal Pumpkin" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="846" name="Rift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="853" name="Winter Warden" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="873" name="Philosopher" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="884" name="Arena Champion" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="899" name="Lupine Warden" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="908" name="Grove Keeper" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="931" name="Festive" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="955" name="Pharaoh" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="957" name="Trophy Hunter" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="962" name="Retro Warrior" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="964" name="Retro Summoner" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="966" name="Retro Nobleman" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="968" name="Retro Mage" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="970" name="Retro Knight" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="972" name="Retro Hunter" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="974" name="Retro Citizen" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1021" name="Herbalist" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1023" name="Sun Priest" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1042" name="Makeshift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1051" name="Siege Master" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1056" name="Mercenary" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1069" name="Battle Mage" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1094" name="Discoverer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1102" name="Sinister Archer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1127" name="Pumpkin Mummy" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1146" name="Dream Warrior" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1161" name="Percht Raider" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1173" name="Owl Keeper" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1186" name="Guidon Bearer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1202" name="Void Master" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1204" name="Veteran Paladin" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1206" name="Lion of War" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1210" name="Golden" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1243" name="Hand of the Inquisition" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1245" name="Breezy Garb" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1251" name="Orcsoberfest Garb" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1270" name="Poltergeist" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1279" name="Herder" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1282" name="Falconer" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1288" name="Dragon Slayer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1292" name="Trailblazer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1322" name="Revenant" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1331" name="Jouster" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1338" name="Moth Cape" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1371" name="Rascoohan" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1382" name="Merry Garb" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1384" name="Rune Master" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1386" name="Citizen of Issavi" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1415" name="Forest Warden" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1436" name="Royal Bounacean Advisor" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1444" name="Dragon Knight" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1449" name="Arbalester" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1457" name="Royal Costume" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1460" name="Formal Dress" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1489" name="Ghost Blade" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1500" name="Nordic Chieftain" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1568" name="Fire-Fighter" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1575" name="Fencer" premium="yes" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1581" name="Shadowlotus Disciple" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1597" name="Ancient Aucar" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1612" name="Frost Tracer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1618" name="Armoured Archer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1662" name="Decaying Defender" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1675" name="Darklight Evoker" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1680" name="Flamefury Mage" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1713" name="Doom Knight" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1722" name="Draccoon Herald" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1725" name="Celestial Avenger" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1745" name="Blade Dancer" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1774" name="Rootwalker" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1776" name="Beekeeper" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1809" name="Fiend Slayer" premium="no" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1814" name="Field Surgeon" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1824" name="Monk" premium="no" unlocked="yes" enabled="yes" />
-	<outfit type="1" looktype="1831" name="Winged Druid" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1837" name="Martial Artist" premium="no" unlocked="no" enabled="yes" from="store" />
-	<outfit type="1" looktype="1845" name="Necromancer" premium="no" unlocked="no" enabled="yes" from="store" />
 
-	<!-- Summer Update 2025 -->
-	<outfit type="1" looktype="1860" name="Illuminator" premium="yes" unlocked="no" enabled="yes" from="quest" />
-	<outfit type="1" looktype="1874" name="Bat Knight" premium="no" unlocked="no" enabled="yes" from="store" />
+	<outfit type="1" looktype="3004" name="Physical Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<outfit type="1" looktype="3007" name="Cursed Skeleton" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
 
-	<!-- Winter Update 2025 -->
-	<outfit type="1" looktype="1907" name="Feral Trapper" premium="yes" unlocked="no" enabled="yes" from="quest" />
+	</outfit>
+	<outfit type="1" looktype="3008" name="Rotten Wizard" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3020" name="Royal Clothing" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3023" name="Bodybuilder" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3045" name="Ice Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3039" name="Energy Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3041" name="Earth Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3043" name="Fire Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3047" name="Divine Vassal" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3048" name="Hidden Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3050" name="Dwilight" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3055" name="Crusher" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3058" name="Darkness Warrior" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3060" name="Platinum" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3062" name="Crystal" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3067" name="Skull Master" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3089" name="Verdant Mage" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3090" name="Verdant Assassin" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="3096" name="Castle Warlord" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<distance value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="2" />
+		</imbuing>
+	</outfit>
+	<outfit type="1" looktype="3124" name="Flame Feather" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="2" />
+		</imbuing>
+	</outfit>
+	<outfit type="1" looktype="3107" name="Spartan" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
+	<outfit type="0" looktype="3131" name="Cosmic Warrior" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="1" looktype="3130" name="Cosmic Warrior" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
+
+	<outfit type="0" looktype="3133" name="Cosmic Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<outfit type="1" looktype="3132" name="Cosmic Adept" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+
+
+	<!-- Female -->
+	<outfit type="0" looktype="3106" name="Spartan" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="0" looktype="136" name="Citizen" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="137" name="Hunter" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="138" name="Mage" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="139" name="Knight" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="140" name="Noblewoman" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="141" name="Summoner" premium="yes" unlocked="yes" enabled="yes"  experienceRate="0.02">
+		<stats>
+			<maxHealth value="1.00" />
+			<maxMana value="1.00" />
+			<cap value="50" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="0" looktype="142" name="Warrior" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="147" name="Barbarian" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="148" name="Druid" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="149" name="Wizard" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="150" name="Oriental" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="155" name="Pirate" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="156" name="Assassin" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="157" name="Beggar" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="158" name="Shaman" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="252" name="Norsewoman" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="269" name="Nightmare" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="270" name="Jester" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="279" name="Brotherhood" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="288" name="Demon Hunter" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="324" name="Yalaharian" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="329" name="Newly Wed" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="336" name="Warmaster" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="366" name="Wayfarer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="431" name="Afflicted" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="433" name="Elementalist" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="464" name="Deepling" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="466" name="Insectoid" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="471" name="Entrepreneur" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<outfit type="0" looktype="513" name="Crystal Warlord" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="514" name="Soil Guardian" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="542" name="Demon" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="575" name="Cave Explorer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="578" name="Dream Warden" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="618" name="Glooth Engineer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="620" name="Jersey" premium="yes" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="632" name="Champion" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<outfit type="0" looktype="635" name="Conjurer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="636" name="Beastmaster" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="664" name="Chaos Acolyte" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="666" name="Death Herald" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="683" name="Ranger" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="694" name="Ceremonial Garb" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="696" name="Puppeteer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="698" name="Spirit Caller" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="724" name="Evoker" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="732" name="Seaweaver" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="745" name="Recruiter" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="749" name="Sea Dog" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="759" name="Royal Pumpkin" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="845" name="Rift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="852" name="Winter Warden" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="874" name="Philosopher" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="885" name="Arena Champion" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="900" name="Lupine Warden" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="909" name="Grove Keeper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="929" name="Festive" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="956" name="Pharaoh" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="958" name="Trophy Hunter" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="963" name="Retro Warrior" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="965" name="Retro Summoner" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="967" name="Retro Noblewoman" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="969" name="Retro Mage" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="971" name="Retro Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="973" name="Retro Hunter" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="975" name="Retro Citizen" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1020" name="Herbalist" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1024" name="Sun Priest" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1043" name="Makeshift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1050" name="Siege Master" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1057" name="Mercenary" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1070" name="Battle Mage" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1095" name="Discoverer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1103" name="Sinister Archer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1128" name="Pumpkin Mummy" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1147" name="Dream Warrior" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1162" name="Percht Raider" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1174" name="Owl Keeper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1187" name="Guidon Bearer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1203" name="Void Master" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1205" name="Veteran Paladin" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1207" name="Lion of War" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1211" name="Golden" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="1.00" />
+			<maxMana value="1.00" />
+			<cap value="50" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="0" looktype="1244" name="Hand of the Inquisition" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1246" name="Breezy Garb" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1252" name="Orcsoberfest Garb" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1271" name="Poltergeist" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1280" name="Herder" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1283" name="Falconer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1289" name="Dragon Slayer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1293" name="Trailblazer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1323" name="Revenant" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1332" name="Jouster" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1339" name="Moth Cape" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1372" name="Rascoohan" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1383" name="Merry Garb" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1385" name="Rune Master" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1387" name="Citizen of Issavi" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1416" name="Forest Warden" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1437" name="Royal Bounacean Advisor" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1445" name="Dragon Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1450" name="Arbalester" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1456" name="Royal Costume" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.00" />
+			<maxMana value="1.00" />
+			<cap value="50" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="0" looktype="1461" name="Formal Dress" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1490" name="Ghost Blade" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1501" name="Nordic Chieftain" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1569" name="Fire-Fighter" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1576" name="Fencer" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1582" name="Shadowlotus Disciple" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1598" name="Ancient Aucar" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1613" name="Frost Tracer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1619" name="Armoured Archer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1663" name="Decaying Defender" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1676" name="Darklight Evoker" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1681" name="Flamefury Mage" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1714" name="Doom Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1723" name="Draccoon Herald" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1726" name="Celestial Avenger" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1746" name="Blade Dancer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1775" name="Rootwalker" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1777" name="Beekeeper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1825" name="Monk" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1808" name="Fiend Slayer" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1815" name="Field Surgeon" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1832" name="Winged Druid" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1838" name="Martial Artist" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1846" name="Necromancer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="0" looktype="1861" name="Illuminator" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="0" looktype="1875" name="Bat Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+
+	<!-- Male -->
+	<outfit type="1" looktype="128" name="Citizen" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="129" name="Hunter" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="130" name="Mage" premium="no" unlocked="yes" enabled="yes"  experienceRate="0.02">
+		<stats>
+			<maxHealth value="1.00" />
+			<maxMana value="1.00" />
+			<cap value="50" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="1" looktype="131" name="Knight" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="132" name="Nobleman" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="133" name="Summoner" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="134" name="Warrior" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="143" name="Barbarian" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="144" name="Druid" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="145" name="Wizard" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="146" name="Oriental" premium="yes" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="151" name="Pirate" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="152" name="Assassin" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="153" name="Beggar" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="154" name="Shaman" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="251" name="Norseman" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="268" name="Nightmare" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="273" name="Jester" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="278" name="Brotherhood" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="289" name="Demon Hunter" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="325" name="Yalaharian" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="328" name="Newly Wed" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="335" name="Warmaster" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="367" name="Wayfarer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="430" name="Afflicted" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="432" name="Elementalist" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="463" name="Deepling" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="465" name="Insectoid" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="472" name="Entrepreneur" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="512" name="Crystal Warlord" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="516" name="Soil Guardian" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="541" name="Demon" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="574" name="Cave Explorer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="577" name="Dream Warden" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="610" name="Glooth Engineer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="619" name="Jersey" premium="yes" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="633" name="Champion" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<distance value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="634" name="Conjurer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="637" name="Beastmaster" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="665" name="Chaos Acolyte" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="667" name="Death Herald" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="684" name="Ranger" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="695" name="Ceremonial Garb" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="697" name="Puppeteer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="699" name="Spirit Caller" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="725" name="Evoker" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="733" name="Seaweaver" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="746" name="Recruiter" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="750" name="Sea Dog" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="760" name="Royal Pumpkin" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="846" name="Rift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="853" name="Winter Warden" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="873" name="Philosopher" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="884" name="Arena Champion" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="899" name="Lupine Warden" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="908" name="Grove Keeper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="931" name="Festive" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="955" name="Pharaoh" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="957" name="Trophy Hunter" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="962" name="Retro Warrior" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="964" name="Retro Summoner" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="966" name="Retro Nobleman" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="968" name="Retro Mage" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="970" name="Retro Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="972" name="Retro Hunter" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="974" name="Retro Citizen" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1021" name="Herbalist" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1023" name="Sun Priest" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1042" name="Makeshift Warrior" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1051" name="Siege Master" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1056" name="Mercenary" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1069" name="Battle Mage" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1094" name="Discoverer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1102" name="Sinister Archer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1127" name="Pumpkin Mummy" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1146" name="Dream Warrior" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1161" name="Percht Raider" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1173" name="Owl Keeper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1186" name="Guidon Bearer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1202" name="Void Master" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1204" name="Veteran Paladin" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1206" name="Lion of War" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1210" name="Golden" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="1.00" />
+			<maxMana value="1.00" />
+			<cap value="50" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="1" looktype="1243" name="Hand of the Inquisition" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1245" name="Breezy Garb" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1251" name="Orcsoberfest Garb" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1270" name="Poltergeist" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1279" name="Herder" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1282" name="Falconer" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1288" name="Dragon Slayer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1292" name="Trailblazer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1322" name="Revenant" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1331" name="Jouster" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1338" name="Moth Cape" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1371" name="Rascoohan" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1382" name="Merry Garb" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1384" name="Rune Master" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1386" name="Citizen of Issavi" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1415" name="Forest Warden" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1436" name="Royal Bounacean Advisor" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1444" name="Dragon Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1449" name="Arbalester" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1457" name="Royal Costume" premium="no" unlocked="no" enabled="yes" from="store">
+<stats>
+			<maxHealth value="1.00" />
+			<maxMana value="1.00" />
+			<cap value="50" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="1" looktype="1460" name="Formal Dress" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1489" name="Ghost Blade" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1500" name="Nordic Chieftain" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1568" name="Fire-Fighter" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1575" name="Fencer" premium="yes" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1581" name="Shadowlotus Disciple" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1597" name="Ancient Aucar" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1612" name="Frost Tracer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1618" name="Armoured Archer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1662" name="Decaying Defender" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1675" name="Darklight Evoker" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1680" name="Flamefury Mage" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1713" name="Doom Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1722" name="Draccoon Herald" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1725" name="Celestial Avenger" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1745" name="Blade Dancer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1774" name="Rootwalker" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1776" name="Beekeeper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1824" name="Monk" premium="no" unlocked="yes" enabled="yes">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1809" name="Fiend Slayer" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1814" name="Field Surgeon" premium="no" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1831" name="Winged Druid" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1837" name="Martial Artist" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1845" name="Necromancer" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+
+	</outfit>
+	<outfit type="1" looktype="1860" name="Illuminator" premium="yes" unlocked="no" enabled="yes" from="quest">
+		<stats>
+			<maxHealth value="0.75" />
+			<maxMana value="0.75" />
+			<cap value="50" />
+		</stats>
+	</outfit>
+	<outfit type="1" looktype="1874" name="Bat Knight" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+	</outfit>
+
+	<outfit type="0" looktype="1937" name="Monk Warlord" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+	</outfit>
+
+	<outfit type="1" looktype="1936" name="Monk Warlord" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+	</outfit>
+
+	<outfit type="0" looktype="1921" name="Sun Servant" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+	</outfit>
+
+	<outfit type="1" looktype="1920" name="Sun Servant" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+	</outfit>
+
+	<outfit type="0" looktype="1906" name="Feral Trapper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+	</outfit>
+
+	<outfit type="1" looktype="1907" name="Feral Trapper" premium="no" unlocked="no" enabled="yes" from="store">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<distance value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+		</skills>
+	</outfit>
+	<!-- Booster Package Exclusive Outfit (Female) -->
+	<outfit type="0" looktype="3125" name="Flame Feather" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="2" />
+		</imbuing>
+	</outfit>
+
+	<!-- Roulette Exclusive Outfits -->
+	<!-- Looktype 3126 - Male -->
+	<outfit type="1" looktype="3126" name="Red Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<!-- Looktype 3126 - Female -->
+	<outfit type="0" looktype="3126" name="Red Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
+	<!-- Looktype 3127 - Male -->
+	<outfit type="1" looktype="3127" name="Cyan Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<!-- Looktype 3127 - Female -->
+	<outfit type="0" looktype="3127" name="Cyan Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
+	<!-- Looktype 3128 - Male -->
+	<outfit type="1" looktype="3128" name="Green Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<!-- Looktype 3128 - Female -->
+	<outfit type="0" looktype="3128" name="Green Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
+	<!-- Looktype 3129 - Male -->
+	<outfit type="1" looktype="3129" name="White Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<!-- Looktype 3129 - Female -->
+	<outfit type="0" looktype="3129" name="White Demon" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="150" />
+			<magicLevel value="3" />
+		</stats>
+		<skills>
+			<fist value="3" />
+			<club value="3" />
+			<axe value="3" />
+			<sword value="3" />
+			<distance value="3" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+
+	<!-- Meme outfits 3134-3150 (no bonuses) -->
+	<!-- Looktype 3134 - Male -->
+	<outfit type="1" looktype="3134" name="Meme 3134" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3134 - Female -->
+	<outfit type="0" looktype="3134" name="Meme 3134" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3135 - Male -->
+	<outfit type="1" looktype="3135" name="Meme 3135" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3135 - Female -->
+	<outfit type="0" looktype="3135" name="Meme 3135" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3136 - Male -->
+	<outfit type="1" looktype="3136" name="Meme 3136" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3136 - Female -->
+	<outfit type="0" looktype="3136" name="Meme 3136" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3137 - Male -->
+	<outfit type="1" looktype="3137" name="Meme 3137" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3137 - Female -->
+	<outfit type="0" looktype="3137" name="Meme 3137" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3138 - Male -->
+	<outfit type="1" looktype="3138" name="Meme 3138" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3138 - Female -->
+	<outfit type="0" looktype="3138" name="Meme 3138" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3139 - Male -->
+	<outfit type="1" looktype="3139" name="Meme 3139" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3139 - Female -->
+	<outfit type="0" looktype="3139" name="Meme 3139" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3140 - Male -->
+	<outfit type="1" looktype="3140" name="Meme 3140" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3140 - Female -->
+	<outfit type="0" looktype="3140" name="Meme 3140" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3141 - Male -->
+	<outfit type="1" looktype="3141" name="Meme 3141" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3141 - Female -->
+	<outfit type="0" looktype="3141" name="Meme 3141" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3142 - Male -->
+	<outfit type="1" looktype="3142" name="Meme 3142" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3142 - Female -->
+	<outfit type="0" looktype="3142" name="Meme 3142" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3143 - Male -->
+	<outfit type="1" looktype="3143" name="Meme 3143" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3143 - Female -->
+	<outfit type="0" looktype="3143" name="Meme 3143" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3144 - Male -->
+	<outfit type="1" looktype="3144" name="Meme 3144" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3144 - Female -->
+	<outfit type="0" looktype="3144" name="Meme 3144" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3145 - Male -->
+	<outfit type="1" looktype="3145" name="Meme 3145" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3145 - Female -->
+	<outfit type="0" looktype="3145" name="Meme 3145" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3146 - Male -->
+	<outfit type="1" looktype="3146" name="Meme 3146" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3146 - Female -->
+	<outfit type="0" looktype="3146" name="Meme 3146" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3147 - Male -->
+	<outfit type="1" looktype="3147" name="Meme 3147" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3147 - Female -->
+	<outfit type="0" looktype="3147" name="Meme 3147" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3148 - Male -->
+	<outfit type="1" looktype="3148" name="Meme 3148" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3148 - Female -->
+	<outfit type="0" looktype="3148" name="Meme 3148" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3149 - Male -->
+	<outfit type="1" looktype="3149" name="Meme 3149" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3149 - Female -->
+	<outfit type="0" looktype="3149" name="Meme 3149" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3150 - Male -->
+	<outfit type="1" looktype="3150" name="Meme 3150" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+	<!-- Looktype 3150 - Female -->
+	<outfit type="0" looktype="3150" name="Meme 3150" premium="no" unlocked="no" enabled="yes">
+	</outfit>
+
+	<!-- ADM Birthday Bash Event - Serenity Outfit -->
+	<!-- Looktype 3164 - Female -->
+	<outfit type="0" looktype="3164" name="Serenity" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.0" />
+			<maxMana value="1.0" />
+			<cap value="100" />
+			<magicLevel value="2" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<!-- Looktype 3165 - Male -->
+	<outfit type="1" looktype="3165" name="Serenity" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.0" />
+			<maxMana value="1.0" />
+			<cap value="100" />
+			<magicLevel value="2" />
+		</stats>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<!-- Special Warrior - Male -->
+	<outfit type="1" looktype="7281" name="Special Warrior" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior - Female -->
+	<outfit type="0" looktype="7282" name="Special Warrior" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Death - Male -->
+	<outfit type="1" looktype="7283" name="Special Warrior Death" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Death - Female -->
+	<outfit type="0" looktype="7284" name="Special Warrior Death" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Energy - Male -->
+	<outfit type="1" looktype="7285" name="Special Warrior Energy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Energy - Female -->
+	<outfit type="0" looktype="7286" name="Special Warrior Energy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Earth - Male -->
+	<outfit type="1" looktype="7287" name="Special Citizen Earth" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Earth - Female -->
+	<outfit type="0" looktype="7288" name="Special Citizen Earth" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Death - Male -->
+	<outfit type="1" looktype="7289" name="Special Citizen Death" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Death - Female -->
+	<outfit type="0" looktype="7290" name="Special Citizen Death" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Energy - Male -->
+	<outfit type="1" looktype="7291" name="Special Citizen Energy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Energy - Female -->
+	<outfit type="0" looktype="7292" name="Special Citizen Energy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Ice - Male -->
+	<outfit type="1" looktype="7293" name="Special Citizen Ice" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Ice - Female -->
+	<outfit type="0" looktype="7294" name="Special Citizen Ice" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Fire - Male -->
+	<outfit type="1" looktype="7295" name="Special Citizen Fire" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Fire - Female -->
+	<outfit type="0" looktype="7296" name="Special Citizen Fire" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Holy - Male -->
+	<outfit type="1" looktype="7297" name="Special Citizen Holy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Citizen Holy - Female -->
+	<outfit type="0" looktype="7298" name="Special Citizen Holy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Ice - Male -->
+	<outfit type="1" looktype="7299" name="Special Warrior Ice" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Ice - Female -->
+	<outfit type="0" looktype="7300" name="Special Warrior Ice" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Holy - Male -->
+	<outfit type="1" looktype="7301" name="Special Warrior Holy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Holy - Female -->
+	<outfit type="0" looktype="7302" name="Special Warrior Holy" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Earth - Male -->
+	<outfit type="1" looktype="7303" name="Special Warrior Earth" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Earth - Female -->
+	<outfit type="0" looktype="7304" name="Special Warrior Earth" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Fire - Male -->
+	<outfit type="1" looktype="7305" name="Special Warrior Fire" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Special Warrior Fire - Female -->
+	<outfit type="0" looktype="7306" name="Special Warrior Fire" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1.25" />
+			<maxMana value="1.25" />
+			<cap value="100" />
+			<magicLevel value="1" />
+		</stats>
+		<skills>
+			<fist value="1" />
+			<club value="1" />
+			<axe value="1" />
+			<sword value="1" />
+			<distance value="1" />
+		</skills>
+	</outfit>
+	<!-- Survivor Warrior - Female -->
+	<outfit type="0" looktype="7247" name="Survivor Warrior" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="1" />
+			<maxMana value="0.5" />
+			<magiclevel value="2" />
+		</stats>
+		<imbuing>
+			<criticalchance value="0.5" />
+			<criticaldamage value="0.5" />
+		</imbuing>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+	</outfit>
+	<!-- Survivor Warrior - Male -->
+	<outfit type="1" looktype="7246" name="Survivor Warrior" premium="no" unlocked="no" enabled="yes" experienceRate="0.01">
+		<stats>
+			<maxHealth value="1" />
+			<maxMana value="0.5" />
+			<magiclevel value="2" />
+		</stats>
+		<imbuing>
+			<criticalchance value="0.5" />
+			<criticaldamage value="0.5" />
+		</imbuing>
+		<skills>
+			<fist value="2" />
+			<club value="2" />
+			<axe value="2" />
+			<sword value="2" />
+			<distance value="2" />
+		</skills>
+	</outfit>
+	<outfit type="0" looktype="7245" name="Dark Wing" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
+	<outfit type="1" looktype="7248" name="Dark Wing" premium="no" unlocked="no" enabled="yes">
+		<stats>
+			<maxHealth value="2.5" />
+			<maxMana value="2.5" />
+			<cap value="200" />
+			<magicLevel value="5" />
+		</stats>
+		<skills>
+			<fist value="5" />
+			<club value="5" />
+			<axe value="5" />
+			<sword value="5" />
+			<distance value="5" />
+		</skills>
+		<imbuing>
+			<criticaldamage value="1" />
+		</imbuing>
+	</outfit>
 </outfits>

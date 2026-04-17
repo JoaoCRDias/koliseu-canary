@@ -52,6 +52,9 @@ SERVER_MOTD = configManager.getString(configKeys.SERVER_MOTD)
 
 AUTH_TYPE = configManager.getString(configKeys.AUTH_TYPE)
 
+-- Load config.lua globals (serverEnvironment, etc.) into script state
+dofile("config.lua")
+
 -- Event Schedule
 SCHEDULE_LOOT_RATE = 100
 SCHEDULE_EXP_RATE = 100

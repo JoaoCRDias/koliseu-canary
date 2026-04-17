@@ -312,6 +312,17 @@ public:
 	uint8_t getRandomMountId() const;
 	void dismount();
 
+	// Outfit/Mount bonus system
+	void applyCumulativeOutfitBonuses();
+	void applyOutfitBonuses(uint16_t lookType);
+	void removeOutfitBonuses(uint16_t lookType);
+	void applyMountBonuses(uint16_t mountId);
+	void removeMountBonuses(uint16_t mountId);
+	void removeConditionBySubId(ConditionType_t type, ConditionId_t conditionId, uint32_t subId);
+
+	std::string getOutfitBonusDescription() const;
+	std::string getMountBonusDescription() const;
+
 	uint16_t getDodgeChance() const;
 
 	uint8_t isRandomMounted() const;
@@ -1662,6 +1673,10 @@ private:
 	bool tamedMountsDirty = false;
 	// Id of the mount the player is currently riding (or 0). Persisted in `players.currentmount`.
 	uint8_t currentMount = 0;
+
+	// Outfit/Mount bonus tracking (HP/Mana % applied, for clean removal)
+	std::unordered_map<uint16_t, std::pair<int32_t, int32_t>> appliedOutfitHpMana;
+	std::unordered_map<uint16_t, std::pair<int32_t, int32_t>> appliedMountHpMana;
 
 	std::vector<std::unique_ptr<PreySlot>> preys;
 	std::vector<std::unique_ptr<TaskHuntingSlot>> taskHunting;

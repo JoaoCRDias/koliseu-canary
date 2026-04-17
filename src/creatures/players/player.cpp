@@ -6438,15 +6438,29 @@ void Player::setSpecialMenuAvailable(bool stashBool, bool marketMenuBool, bool d
 void Player::addOutfit(uint16_t lookType, uint8_t addons) {
 	for (auto &outfitEntry : outfits) {
 		if (outfitEntry.lookType == lookType) {
+			uint8_t oldAddons = outfitEntry.addons;
 			if ((outfitEntry.addons & addons) != addons) {
 				outfitEntry.addons |= addons;
 				outfitsDirty = true;
+			}
+			// If addon 3 was just reached, apply bonuses
+			if ((outfitEntry.addons == 3) && (oldAddons != 3)) {
+				applyOutfitBonuses(lookType);
+				sendStats();
+				sendSkills();
 			}
 			return;
 		}
 	}
 	outfits.emplace_back(lookType, addons);
 	outfitsDirty = true;
+
+	// If adding outfit with addon 3, apply bonuses
+	if (addons == 3) {
+		applyOutfitBonuses(lookType);
+		sendStats();
+		sendSkills();
+	}
 
 	if (const auto &outfit = Outfits::getInstance().getOutfitByLookType(getPlayer(), lookType)) {
 		sendScreenshotAndBannerUnlockedCosmetic(outfit->name, lookType, std::clamp<uint8_t>(addons, 0, 2));
@@ -6457,6 +6471,10 @@ bool Player::removeOutfit(uint16_t lookType) {
 	for (auto it = outfits.begin(), end = outfits.end(); it != end; ++it) {
 		const auto &entry = *it;
 		if (entry.lookType == lookType) {
+			// If outfit had addon 3, remove its bonuses
+			if (entry.addons == 3) {
+				removeOutfitBonuses(lookType);
+			}
 			outfits.erase(it);
 			outfitsDirty = true;
 			return true;
@@ -6468,9 +6486,14 @@ bool Player::removeOutfit(uint16_t lookType) {
 bool Player::removeOutfitAddon(uint16_t lookType, uint8_t addons) {
 	for (OutfitEntry &outfitEntry : outfits) {
 		if (outfitEntry.lookType == lookType) {
+			uint8_t oldAddons = outfitEntry.addons;
 			if ((outfitEntry.addons & addons) != 0) {
 				outfitEntry.addons &= ~addons;
 				outfitsDirty = true;
+			}
+			// If addon 3 was lost, remove bonuses
+			if (oldAddons == 3 && outfitEntry.addons != 3) {
+				removeOutfitBonuses(lookType);
 			}
 			return true;
 		}
@@ -7615,6 +7638,7 @@ bool Player::tameMount(uint8_t mountId) {
 		tamedMountsDirty = true;
 	}
 
+	applyMountBonuses(mountId);
 	sendScreenshotAndBannerUnlockedCosmetic(mount->name, mount->clientId, 3);
 
 	return true;
@@ -7624,6 +7648,8 @@ bool Player::untameMount(uint8_t mountId) {
 	if (!g_game().mounts->getMountByID(mountId)) {
 		return false;
 	}
+
+	removeMountBonuses(mountId);
 
 	if (tamedMounts.erase(mountId) > 0) {
 		tamedMountsDirty = true;
@@ -11041,6 +11067,11 @@ void Player::onCreatureAppear(const std::shared_ptr<Creature> &creature, bool is
 	if (isLogin && creature == getPlayer()) {
 		onEquipInventory();
 
+		// Apply passive bonuses for all owned mounts
+		for (const auto &mountId : tamedMounts) {
+			applyMountBonuses(mountId);
+		}
+
 		// Refresh bosstiary tracker onLogin
 		refreshCyclopediaMonsterTracker(true);
 		// Refresh bestiary tracker onLogin
@@ -12824,6 +12855,961 @@ void Player::removeEquippedWeaponProficiency(const uint16_t itemId) {
 #ifdef DEBUG_SUMMER_UPDATE_2025_LOG
 	g_logger().warn("--------------  {} --------------", __FUNCTION__);
 #endif // DEBUG_SUMMER_UPDATE_2025_LOG
+}
+
+// ==================== Outfit/Mount Bonus System ====================
+
+namespace {
+	bool isKnightVocation(uint16_t vocationId) {
+		return vocationId == VOCATION_KNIGHT || vocationId == VOCATION_ELITE_KNIGHT;
+	}
+
+	bool isPaladinVocation(uint16_t vocationId) {
+		return vocationId == VOCATION_PALADIN || vocationId == VOCATION_ROYAL_PALADIN;
+	}
+
+	bool isMonkVocation(uint16_t vocationId) {
+		return vocationId == VOCATION_MONK || vocationId == VOCATION_EXALTED_MONK;
+	}
+
+	bool vocationAllowsClassSkill(uint16_t vocationId, skills_t skill) {
+		switch (skill) {
+			case SKILL_FIST:
+				return isMonkVocation(vocationId);
+			case SKILL_CLUB:
+			case SKILL_SWORD:
+			case SKILL_AXE:
+				return isKnightVocation(vocationId);
+			case SKILL_DISTANCE:
+				return isPaladinVocation(vocationId);
+			default:
+				return true;
+		}
+	}
+} // namespace
+
+void Player::removeConditionBySubId(ConditionType_t type, ConditionId_t conditionId, uint32_t subId) {
+	for (const auto &condition : getConditionsByType(type)) {
+		if (condition->getId() == conditionId && condition->getSubId() == subId) {
+			removeCondition(condition);
+			break;
+		}
+	}
+}
+
+void Player::applyOutfitBonuses(uint16_t lookType) {
+	g_logger().debug("[Player::applyOutfitBonuses] Applying bonuses for outfit {} to player {}", lookType, getName());
+
+	auto outfit = Outfits::getInstance().getOutfitByLookType(getPlayer(), lookType);
+	if (!outfit) {
+		g_logger().debug("[Player::applyOutfitBonuses] Failed to find outfit {} for player {}", lookType, getName());
+		return;
+	}
+
+	// Apply special conditions (using lookType as subId for uniqueness)
+	if (outfit->manaShield) {
+		const auto &condition = Condition::createCondition(CONDITIONID_OUTFIT, CONDITION_MANASHIELD, -1, 0, false, lookType);
+		addCondition(condition);
+	}
+
+	if (outfit->invisible) {
+		const auto &condition = Condition::createCondition(CONDITIONID_OUTFIT, CONDITION_INVISIBLE, -1, 0, false, lookType);
+		addCondition(condition);
+	}
+
+	if (outfit->regeneration) {
+		const auto &condition = Condition::createCondition(CONDITIONID_OUTFIT, CONDITION_REGENERATION, -1, 0, false, lookType);
+		if (outfit->healthGain) {
+			condition->setParam(CONDITION_PARAM_HEALTHGAIN, outfit->healthGain);
+		}
+		if (outfit->healthTicks) {
+			condition->setParam(CONDITION_PARAM_HEALTHTICKS, outfit->healthTicks);
+		}
+		if (outfit->manaGain) {
+			condition->setParam(CONDITION_PARAM_MANAGAIN, outfit->manaGain);
+		}
+		if (outfit->manaTicks) {
+			condition->setParam(CONDITION_PARAM_MANATICKS, outfit->manaTicks);
+		}
+		addCondition(condition);
+	}
+
+	// Speed from outfits is not cumulative — handled by equip system only.
+
+	if (outfit->attackSpeed) {
+		setVarSkill(SKILL_ATTACK_SPEED, outfit->attackSpeed);
+	}
+
+	// Apply skills (automatically accumulate via setVarSkill)
+	const uint16_t vocationId = getVocationId();
+	for (uint32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i) {
+		if (outfit->skills[i]) {
+			const auto skill = static_cast<skills_t>(i);
+			if (!vocationAllowsClassSkill(vocationId, skill)) {
+				continue;
+			}
+			setVarSkill(skill, outfit->skills[i]);
+		}
+	}
+
+	// Apply life leech
+	if (outfit->lifeLeechChance > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_CHANCE, outfit->lifeLeechChance);
+	}
+	if (outfit->lifeLeechAmount > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_AMOUNT, outfit->lifeLeechAmount);
+	}
+
+	// Apply mana leech
+	if (outfit->manaLeechChance > 0) {
+		setVarSkill(SKILL_MANA_LEECH_CHANCE, outfit->manaLeechChance);
+	}
+	if (outfit->manaLeechAmount > 0) {
+		setVarSkill(SKILL_MANA_LEECH_AMOUNT, outfit->manaLeechAmount);
+	}
+
+	// Apply critical hit
+	if (outfit->criticalChance > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_CHANCE, outfit->criticalChance);
+	}
+	if (outfit->criticalDamage > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_DAMAGE, outfit->criticalDamage);
+	}
+
+	// Apply percentage-based stats (HP/Mana as % of base)
+	{
+		int32_t hpBonus = 0;
+		int32_t manaBonus = 0;
+		if (outfit->statsPercent[STAT_MAXHITPOINTS]) {
+			hpBonus = static_cast<int32_t>(healthMax * outfit->statsPercent[STAT_MAXHITPOINTS] / 100);
+			if (hpBonus > 0) {
+				setVarStats(STAT_MAXHITPOINTS, hpBonus);
+			}
+		}
+		if (outfit->statsPercent[STAT_MAXMANAPOINTS]) {
+			manaBonus = static_cast<int32_t>(manaMax * outfit->statsPercent[STAT_MAXMANAPOINTS] / 100);
+			if (manaBonus > 0) {
+				setVarStats(STAT_MAXMANAPOINTS, manaBonus);
+			}
+		}
+		if (hpBonus > 0 || manaBonus > 0) {
+			appliedOutfitHpMana[lookType] = { hpBonus, manaBonus };
+		}
+	}
+
+	// Apply absolute stats (capacity, magic level)
+	for (uint32_t s = STAT_FIRST; s <= STAT_LAST; ++s) {
+		if (s == STAT_MAXHITPOINTS || s == STAT_MAXMANAPOINTS) {
+			continue; // Already handled as percentage above
+		}
+		if (outfit->stats[s]) {
+			// Magic level bonus only for vocations 1, 2, 5, 6 (sorcerer, druid, master sorcerer, elder druid)
+			if (s == STAT_MAGICPOINTS) {
+				uint16_t vid = getVocationId();
+				if (vid != 1 && vid != 2 && vid != 5 && vid != 6) {
+					continue;
+				}
+			}
+			setVarStats(static_cast<stats_t>(s), outfit->stats[s]);
+		}
+	}
+
+	g_logger().debug("[Player::applyOutfitBonuses] Successfully applied bonuses for outfit {} to player {}", lookType, getName());
+
+	sendStats();
+	sendSkills();
+}
+
+void Player::removeOutfitBonuses(uint16_t lookType) {
+	g_logger().debug("[Player::removeOutfitBonuses] Removing bonuses for outfit {} from player {}", lookType, getName());
+
+	auto outfit = Outfits::getInstance().getOutfitByLookType(getPlayer(), lookType);
+	if (!outfit) {
+		g_logger().warn("[Player::removeOutfitBonuses] Failed to find outfit {} for player {}", lookType, getName());
+		return;
+	}
+
+	// Remove conditions using subId
+	if (outfit->manaShield) {
+		removeConditionBySubId(CONDITION_MANASHIELD, CONDITIONID_OUTFIT, lookType);
+	}
+
+	if (outfit->invisible) {
+		removeConditionBySubId(CONDITION_INVISIBLE, CONDITIONID_OUTFIT, lookType);
+	}
+
+	if (outfit->regeneration) {
+		removeConditionBySubId(CONDITION_REGENERATION, CONDITIONID_OUTFIT, lookType);
+	}
+
+	// Speed from outfits is not cumulative — handled by equip system only.
+
+	if (outfit->attackSpeed) {
+		setVarSkill(SKILL_ATTACK_SPEED, -outfit->attackSpeed);
+	}
+
+	// Remove skills (negative values)
+	const uint16_t vocationId = getVocationId();
+	for (uint32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i) {
+		if (outfit->skills[i]) {
+			const auto skill = static_cast<skills_t>(i);
+			if (!vocationAllowsClassSkill(vocationId, skill)) {
+				continue;
+			}
+			setVarSkill(skill, -outfit->skills[i]);
+		}
+	}
+
+	// Remove life leech
+	if (outfit->lifeLeechChance > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_CHANCE, -outfit->lifeLeechChance);
+	}
+	if (outfit->lifeLeechAmount > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_AMOUNT, -outfit->lifeLeechAmount);
+	}
+
+	// Remove mana leech
+	if (outfit->manaLeechChance > 0) {
+		setVarSkill(SKILL_MANA_LEECH_CHANCE, -outfit->manaLeechChance);
+	}
+	if (outfit->manaLeechAmount > 0) {
+		setVarSkill(SKILL_MANA_LEECH_AMOUNT, -outfit->manaLeechAmount);
+	}
+
+	// Remove critical hit
+	if (outfit->criticalChance > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_CHANCE, -outfit->criticalChance);
+	}
+	if (outfit->criticalDamage > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_DAMAGE, -outfit->criticalDamage);
+	}
+
+	// Remove percentage-based stats (HP/Mana)
+	{
+		auto it = appliedOutfitHpMana.find(lookType);
+		if (it != appliedOutfitHpMana.end()) {
+			if (it->second.first > 0) {
+				setVarStats(STAT_MAXHITPOINTS, -it->second.first);
+			}
+			if (it->second.second > 0) {
+				setVarStats(STAT_MAXMANAPOINTS, -it->second.second);
+			}
+			appliedOutfitHpMana.erase(it);
+		}
+	}
+
+	// Remove absolute stats (capacity, magic level)
+	for (uint32_t s = STAT_FIRST; s <= STAT_LAST; ++s) {
+		if (s == STAT_MAXHITPOINTS || s == STAT_MAXMANAPOINTS) {
+			continue;
+		}
+		if (outfit->stats[s]) {
+			if (s == STAT_MAGICPOINTS) {
+				uint16_t vid = getVocationId();
+				if (vid != 1 && vid != 2 && vid != 5 && vid != 6) {
+					continue;
+				}
+			}
+			setVarStats(static_cast<stats_t>(s), -outfit->stats[s]);
+		}
+	}
+
+	g_logger().debug("[Player::removeOutfitBonuses] Successfully removed bonuses for outfit {} from player {}", lookType, getName());
+
+	sendStats();
+	sendSkills();
+}
+
+void Player::applyMountBonuses(uint16_t mountId) {
+	g_logger().debug("[Player::applyMountBonuses] Applying bonuses for mount {} to player {}", mountId, getName());
+
+	auto mount = g_game().mounts->getMountByID(mountId);
+	if (!mount) {
+		g_logger().debug("[Player::applyMountBonuses] Failed to find mount {} for player {}", mountId, getName());
+		return;
+	}
+
+	// Apply special conditions (using mountId as subId for uniqueness)
+	if (mount->manaShield) {
+		const auto &condition = Condition::createCondition(CONDITIONID_MOUNT, CONDITION_MANASHIELD, -1, 0, false, mountId);
+		addCondition(condition);
+	}
+
+	if (mount->invisible) {
+		const auto &condition = Condition::createCondition(CONDITIONID_MOUNT, CONDITION_INVISIBLE, -1, 0, false, mountId);
+		addCondition(condition);
+	}
+
+	if (mount->regeneration) {
+		const auto &condition = Condition::createCondition(CONDITIONID_MOUNT, CONDITION_REGENERATION, -1, 0, false, mountId);
+		if (mount->healthGain) {
+			condition->setParam(CONDITION_PARAM_HEALTHGAIN, mount->healthGain);
+		}
+		if (mount->healthTicks) {
+			condition->setParam(CONDITION_PARAM_HEALTHTICKS, mount->healthTicks);
+		}
+		if (mount->manaGain) {
+			condition->setParam(CONDITION_PARAM_MANAGAIN, mount->manaGain);
+		}
+		if (mount->manaTicks) {
+			condition->setParam(CONDITION_PARAM_MANATICKS, mount->manaTicks);
+		}
+		addCondition(condition);
+	}
+
+	// Mount speed is applied only when mounted (toggleMount handles it).
+
+	// Apply attack speed
+	if (mount->attackSpeed) {
+		setVarSkill(SKILL_ATTACK_SPEED, mount->attackSpeed);
+	}
+
+	// Apply skills (automatically accumulate via setVarSkill)
+	const uint16_t vocationId = getVocationId();
+	for (uint32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i) {
+		if (mount->skills[i]) {
+			const auto skill = static_cast<skills_t>(i);
+			if (!vocationAllowsClassSkill(vocationId, skill)) {
+				continue;
+			}
+			setVarSkill(skill, mount->skills[i]);
+		}
+	}
+
+	// Apply life leech
+	if (mount->lifeLeechChance > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_CHANCE, mount->lifeLeechChance);
+	}
+	if (mount->lifeLeechAmount > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_AMOUNT, mount->lifeLeechAmount);
+	}
+
+	// Apply mana leech
+	if (mount->manaLeechChance > 0) {
+		setVarSkill(SKILL_MANA_LEECH_CHANCE, mount->manaLeechChance);
+	}
+	if (mount->manaLeechAmount > 0) {
+		setVarSkill(SKILL_MANA_LEECH_AMOUNT, mount->manaLeechAmount);
+	}
+
+	// Apply critical hit
+	if (mount->criticalChance > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_CHANCE, mount->criticalChance);
+	}
+	if (mount->criticalDamage > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_DAMAGE, mount->criticalDamage);
+	}
+
+	// Apply percentage-based stats (HP/Mana as % of base)
+	{
+		int32_t hpBonus = 0;
+		int32_t manaBonus = 0;
+		if (mount->statsPercent[STAT_MAXHITPOINTS]) {
+			hpBonus = static_cast<int32_t>(healthMax * mount->statsPercent[STAT_MAXHITPOINTS] / 100);
+			if (hpBonus > 0) {
+				setVarStats(STAT_MAXHITPOINTS, hpBonus);
+			}
+		}
+		if (mount->statsPercent[STAT_MAXMANAPOINTS]) {
+			manaBonus = static_cast<int32_t>(manaMax * mount->statsPercent[STAT_MAXMANAPOINTS] / 100);
+			if (manaBonus > 0) {
+				setVarStats(STAT_MAXMANAPOINTS, manaBonus);
+			}
+		}
+		if (hpBonus > 0 || manaBonus > 0) {
+			appliedMountHpMana[mountId] = { hpBonus, manaBonus };
+		}
+	}
+
+	// Apply absolute stats (capacity, magic level)
+	for (uint32_t s = STAT_FIRST; s <= STAT_LAST; ++s) {
+		if (s == STAT_MAXHITPOINTS || s == STAT_MAXMANAPOINTS) {
+			continue;
+		}
+		if (mount->stats[s]) {
+			if (s == STAT_MAGICPOINTS) {
+				uint16_t vid = getVocationId();
+				if (vid != 1 && vid != 2 && vid != 5 && vid != 6) {
+					continue;
+				}
+			}
+			setVarStats(static_cast<stats_t>(s), mount->stats[s]);
+		}
+	}
+
+	g_logger().debug("[Player::applyMountBonuses] Successfully applied bonuses for mount {} to player {}", mountId, getName());
+
+	sendStats();
+	sendSkills();
+}
+
+void Player::removeMountBonuses(uint16_t mountId) {
+	g_logger().debug("[Player::removeMountBonuses] Removing bonuses for mount {} from player {}", mountId, getName());
+
+	auto mount = g_game().mounts->getMountByID(mountId);
+	if (!mount) {
+		g_logger().debug("[Player::removeMountBonuses] Failed to find mount {} for player {}", mountId, getName());
+		return;
+	}
+
+	// Remove conditions using subId
+	if (mount->manaShield) {
+		removeConditionBySubId(CONDITION_MANASHIELD, CONDITIONID_MOUNT, mountId);
+	}
+
+	if (mount->invisible) {
+		removeConditionBySubId(CONDITION_INVISIBLE, CONDITIONID_MOUNT, mountId);
+	}
+
+	if (mount->regeneration) {
+		removeConditionBySubId(CONDITION_REGENERATION, CONDITIONID_MOUNT, mountId);
+	}
+
+	// Mount speed is applied only when mounted (toggleMount handles it).
+
+	// Remove attack speed
+	if (mount->attackSpeed) {
+		setVarSkill(SKILL_ATTACK_SPEED, -mount->attackSpeed);
+	}
+
+	// Remove skills
+	const uint16_t vocationId = getVocationId();
+	for (uint32_t i = SKILL_FIRST; i <= SKILL_LAST; ++i) {
+		if (mount->skills[i]) {
+			const auto skill = static_cast<skills_t>(i);
+			if (!vocationAllowsClassSkill(vocationId, skill)) {
+				continue;
+			}
+			setVarSkill(skill, -mount->skills[i]);
+		}
+	}
+
+	// Remove life leech
+	if (mount->lifeLeechChance > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_CHANCE, -mount->lifeLeechChance);
+	}
+	if (mount->lifeLeechAmount > 0) {
+		setVarSkill(SKILL_LIFE_LEECH_AMOUNT, -mount->lifeLeechAmount);
+	}
+
+	// Remove mana leech
+	if (mount->manaLeechChance > 0) {
+		setVarSkill(SKILL_MANA_LEECH_CHANCE, -mount->manaLeechChance);
+	}
+	if (mount->manaLeechAmount > 0) {
+		setVarSkill(SKILL_MANA_LEECH_AMOUNT, -mount->manaLeechAmount);
+	}
+
+	// Remove critical hit
+	if (mount->criticalChance > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_CHANCE, -mount->criticalChance);
+	}
+	if (mount->criticalDamage > 0) {
+		setVarSkill(SKILL_CRITICAL_HIT_DAMAGE, -mount->criticalDamage);
+	}
+
+	// Remove percentage-based stats (HP/Mana)
+	{
+		auto it = appliedMountHpMana.find(mountId);
+		if (it != appliedMountHpMana.end()) {
+			if (it->second.first > 0) {
+				setVarStats(STAT_MAXHITPOINTS, -it->second.first);
+			}
+			if (it->second.second > 0) {
+				setVarStats(STAT_MAXMANAPOINTS, -it->second.second);
+			}
+			appliedMountHpMana.erase(it);
+		}
+	}
+
+	// Remove absolute stats (capacity, magic level)
+	for (uint32_t s = STAT_FIRST; s <= STAT_LAST; ++s) {
+		if (s == STAT_MAXHITPOINTS || s == STAT_MAXMANAPOINTS) {
+			continue;
+		}
+		if (mount->stats[s]) {
+			if (s == STAT_MAGICPOINTS) {
+				uint16_t vid = getVocationId();
+				if (vid != 1 && vid != 2 && vid != 5 && vid != 6) {
+					continue;
+				}
+			}
+			setVarStats(static_cast<stats_t>(s), -mount->stats[s]);
+		}
+	}
+
+	g_logger().debug("[Player::removeMountBonuses] Successfully removed bonuses for mount {} from player {}", mountId, getName());
+
+	sendStats();
+	sendSkills();
+}
+
+void Player::applyCumulativeOutfitBonuses() {
+	g_logger().debug("[Player::applyCumulativeOutfitBonuses] Applying cumulative outfit bonuses for player {}", getName());
+
+	for (const auto &outfitEntry : outfits) {
+		if (outfitEntry.addons == 3) {
+			applyOutfitBonuses(outfitEntry.lookType);
+		}
+	}
+
+	g_logger().debug("[Player::applyCumulativeOutfitBonuses] Finished applying cumulative outfit bonuses for player {}", getName());
+}
+
+std::string Player::getOutfitBonusDescription() const {
+	std::ostringstream ss;
+
+	std::vector<std::pair<uint16_t, std::shared_ptr<Outfit>>> outfitsWithFullAddons;
+
+	for (const auto &outfitEntry : outfits) {
+		if (outfitEntry.addons == 3) {
+			auto outfit = Outfits::getInstance().getOutfitByLookType(getPlayer(), outfitEntry.lookType);
+			if (outfit) {
+				outfitsWithFullAddons.push_back({ outfitEntry.lookType, outfit });
+			}
+		}
+	}
+
+	if (outfitsWithFullAddons.empty()) {
+		return "You don't have any outfits with full addons (addon 3).";
+	}
+
+	static const std::pair<skills_t, const char*> trackedSkills[] = {
+		{ SKILL_FIST, "Fist" },
+		{ SKILL_CLUB, "Club" },
+		{ SKILL_SWORD, "Sword" },
+		{ SKILL_AXE, "Axe" },
+		{ SKILL_DISTANCE, "Distance" },
+		{ SKILL_SHIELD, "Shielding" },
+		{ SKILL_FISHING, "Fishing" },
+	};
+	constexpr size_t trackedSkillCount = sizeof(trackedSkills) / sizeof(trackedSkills[0]);
+
+	const uint16_t vocationId = getVocationId();
+	const bool canUseMagicBonus = (vocationId == 1 || vocationId == 2 || vocationId == 5 || vocationId == 6);
+
+	ss << "=== Your Outfit Bonuses ===\n\n";
+	ss << "You have " << outfitsWithFullAddons.size() << " outfit(s) with full addons.\n";
+	ss << "All bonuses are CUMULATIVE and ALWAYS ACTIVE!\n\n";
+
+	int32_t totalSpeed = 0;
+	int32_t totalAttackSpeed = 0;
+	int32_t totalHealthGain = 0, totalManaGain = 0;
+	float totalMaxHealthPercent = 0, totalMaxManaPercent = 0;
+	int32_t totalCapacity = 0, totalMagicLevel = 0;
+	int32_t totalSkillValues[trackedSkillCount] = { 0 };
+	double totalLifeLeechChance = 0, totalLifeLeechAmount = 0;
+	double totalManaLeechChance = 0, totalManaLeechAmount = 0;
+	double totalCriticalChance = 0, totalCriticalDamage = 0;
+	double totalExperienceRate = 0;
+	int manaShieldCount = 0, invisibleCount = 0, regenCount = 0;
+	int32_t suppressedMagicLevel = 0;
+
+	ss << "--- Outfits with Full Addons ---\n";
+	for (const auto &[lookType, outfit] : outfitsWithFullAddons) {
+		ss << "\n[" << outfit->name << " (ID: " << lookType << ")]\n";
+
+		if (outfit->statsPercent[STAT_MAXHITPOINTS] != 0.0f) {
+			ss << "  +Max Health: " << outfit->statsPercent[STAT_MAXHITPOINTS] << "%\n";
+			totalMaxHealthPercent += outfit->statsPercent[STAT_MAXHITPOINTS];
+		}
+		if (outfit->statsPercent[STAT_MAXMANAPOINTS] != 0.0f) {
+			ss << "  +Max Mana: " << outfit->statsPercent[STAT_MAXMANAPOINTS] << "%\n";
+			totalMaxManaPercent += outfit->statsPercent[STAT_MAXMANAPOINTS];
+		}
+		if (outfit->stats[STAT_CAPACITY]) {
+			int32_t cap = outfit->stats[STAT_CAPACITY] / 100;
+			ss << "  +Capacity: " << cap << "\n";
+			totalCapacity += cap;
+		}
+		if (outfit->stats[STAT_MAGICPOINTS]) {
+			if (canUseMagicBonus) {
+				ss << "  +Magic Level: " << outfit->stats[STAT_MAGICPOINTS] << "\n";
+				totalMagicLevel += outfit->stats[STAT_MAGICPOINTS];
+			} else {
+				suppressedMagicLevel += outfit->stats[STAT_MAGICPOINTS];
+			}
+		}
+
+		for (size_t skillIndex = 0; skillIndex < trackedSkillCount; ++skillIndex) {
+			const auto skillId = trackedSkills[skillIndex].first;
+			const int32_t value = outfit->skills[skillId];
+			if (value) {
+				if (!vocationAllowsClassSkill(vocationId, skillId)) {
+					continue;
+				}
+				ss << "  +" << trackedSkills[skillIndex].second << ": " << value << "\n";
+				totalSkillValues[skillIndex] += value;
+			}
+		}
+
+		if (outfit->speed) {
+			ss << "  +Speed: " << outfit->speed << "\n";
+			totalSpeed += outfit->speed;
+		}
+		if (outfit->attackSpeed) {
+			ss << "  +Attack Speed: " << outfit->attackSpeed << "\n";
+			totalAttackSpeed += outfit->attackSpeed;
+		}
+		if (outfit->regeneration) {
+			regenCount++;
+		}
+		if (outfit->healthGain) {
+			ss << "  +Health Regen: " << outfit->healthGain << " every " << outfit->healthTicks << "ms\n";
+			totalHealthGain += outfit->healthGain;
+		}
+		if (outfit->manaGain) {
+			ss << "  +Mana Regen: " << outfit->manaGain << " every " << outfit->manaTicks << "ms\n";
+			totalManaGain += outfit->manaGain;
+		}
+		if (outfit->manaShield) {
+			ss << "  +Mana Shield: Active\n";
+			manaShieldCount++;
+		}
+		if (outfit->invisible) {
+			ss << "  +Invisibility: Active\n";
+			invisibleCount++;
+		}
+
+		if (outfit->lifeLeechChance > 0) {
+			ss << "  +Life Leech Chance: " << (outfit->lifeLeechChance / 100.0) << "%\n";
+			totalLifeLeechChance += outfit->lifeLeechChance;
+		}
+		if (outfit->lifeLeechAmount > 0) {
+			ss << "  +Life Leech Amount: " << (outfit->lifeLeechAmount / 100.0) << "%\n";
+			totalLifeLeechAmount += outfit->lifeLeechAmount;
+		}
+		if (outfit->manaLeechChance > 0) {
+			ss << "  +Mana Leech Chance: " << (outfit->manaLeechChance / 100.0) << "%\n";
+			totalManaLeechChance += outfit->manaLeechChance;
+		}
+		if (outfit->manaLeechAmount > 0) {
+			ss << "  +Mana Leech Amount: " << (outfit->manaLeechAmount / 100.0) << "%\n";
+			totalManaLeechAmount += outfit->manaLeechAmount;
+		}
+		if (outfit->criticalChance > 0) {
+			ss << "  +Critical Chance: " << (outfit->criticalChance / 100.0) << "%\n";
+			totalCriticalChance += outfit->criticalChance;
+		}
+		if (outfit->criticalDamage > 0) {
+			ss << "  +Critical Damage: " << (outfit->criticalDamage / 100.0) << "%\n";
+			totalCriticalDamage += outfit->criticalDamage;
+		}
+		if (outfit->experienceRate > 0.0) {
+			ss << "  +Experience Rate: " << fmt::format("{:.2f}%", outfit->experienceRate * 100.0) << "\n";
+			totalExperienceRate += outfit->experienceRate;
+		}
+	}
+
+	ss << "\n\n=== CUMULATIVE TOTALS ===\n";
+
+	if (totalMaxHealthPercent > 0) {
+		int32_t absoluteHp = static_cast<int32_t>(healthMax * totalMaxHealthPercent / 100);
+		ss << "Total Max Health: +" << totalMaxHealthPercent << "% (+" << absoluteHp << " HP)\n";
+	}
+	if (totalMaxManaPercent > 0) {
+		int32_t absoluteMana = static_cast<int32_t>(manaMax * totalMaxManaPercent / 100);
+		ss << "Total Max Mana: +" << totalMaxManaPercent << "% (+" << absoluteMana << " MP)\n";
+	}
+	if (totalCapacity > 0) {
+		ss << "Total Capacity: +" << totalCapacity << "\n";
+	}
+	if (totalMagicLevel > 0) {
+		ss << "Total Magic Level: +" << totalMagicLevel << "\n";
+	}
+	if (totalAttackSpeed > 0) {
+		ss << "Total Attack Speed: +" << totalAttackSpeed << "\n";
+	}
+	if (totalSpeed > 0) {
+		ss << "Total Speed (per outfit): +" << totalSpeed << " (applied only when wearing)\n";
+	}
+	if (totalExperienceRate > 0.0) {
+		ss << "Total Experience Rate: +" << fmt::format("{:.2f}%", totalExperienceRate * 100.0) << "\n";
+	}
+
+	bool anySkills = false;
+	for (size_t skillIndex = 0; skillIndex < trackedSkillCount; ++skillIndex) {
+		if (totalSkillValues[skillIndex] > 0) {
+			if (!anySkills) {
+				ss << "\nSkill Bonuses:\n";
+				anySkills = true;
+			}
+			ss << "  " << trackedSkills[skillIndex].second << ": +" << totalSkillValues[skillIndex] << "\n";
+		}
+	}
+
+	if (totalHealthGain > 0 || totalManaGain > 0) {
+		ss << "\nRegeneration (" << regenCount << " source(s)):\n";
+		if (totalHealthGain > 0) {
+			ss << "  Health: +" << totalHealthGain << " per tick\n";
+		}
+		if (totalManaGain > 0) {
+			ss << "  Mana: +" << totalManaGain << " per tick\n";
+		}
+	}
+
+	if (totalLifeLeechChance > 0 || totalManaLeechChance > 0) {
+		ss << "\nLeech Bonuses:\n";
+		if (totalLifeLeechChance > 0) {
+			ss << "  Life Leech Chance: +" << (totalLifeLeechChance / 100.0) << "%\n";
+		}
+		if (totalLifeLeechAmount > 0) {
+			ss << "  Life Leech Amount: +" << (totalLifeLeechAmount / 100.0) << "%\n";
+		}
+		if (totalManaLeechChance > 0) {
+			ss << "  Mana Leech Chance: +" << (totalManaLeechChance / 100.0) << "%\n";
+		}
+		if (totalManaLeechAmount > 0) {
+			ss << "  Mana Leech Amount: +" << (totalManaLeechAmount / 100.0) << "%\n";
+		}
+	}
+
+	if (totalCriticalChance > 0 || totalCriticalDamage > 0) {
+		ss << "\nCritical Hit Bonuses:\n";
+		if (totalCriticalChance > 0) {
+			ss << "  Chance: +" << (totalCriticalChance / 100.0) << "%\n";
+		}
+		if (totalCriticalDamage > 0) {
+			ss << "  Damage: +" << (totalCriticalDamage / 100.0) << "%\n";
+		}
+	}
+
+	if (manaShieldCount > 0) {
+		ss << "\nMana Shield: Active (" << manaShieldCount << " outfit(s))\n";
+	}
+	if (invisibleCount > 0) {
+		ss << "Invisibility: Active (" << invisibleCount << " outfit(s))\n";
+	}
+
+	if (!canUseMagicBonus && suppressedMagicLevel > 0) {
+		ss << "\nNote: +" << suppressedMagicLevel << " magic level from outfits only applies to sorcerers and druids.\n";
+	}
+
+	return ss.str();
+}
+
+std::string Player::getMountBonusDescription() const {
+	std::ostringstream ss;
+
+	std::vector<std::shared_ptr<Mount>> ownedMounts;
+
+	for (const auto &mountId : tamedMounts) {
+		auto mount = g_game().mounts->getMountByID(mountId);
+		if (mount) {
+			ownedMounts.push_back(mount);
+		}
+	}
+
+	if (ownedMounts.empty()) {
+		return "You don't have any mounts.";
+	}
+
+	static const std::pair<skills_t, const char*> trackedSkills[] = {
+		{ SKILL_FIST, "Fist" },
+		{ SKILL_CLUB, "Club" },
+		{ SKILL_SWORD, "Sword" },
+		{ SKILL_AXE, "Axe" },
+		{ SKILL_DISTANCE, "Distance" },
+		{ SKILL_SHIELD, "Shielding" },
+		{ SKILL_FISHING, "Fishing" },
+	};
+	constexpr size_t trackedSkillCount = sizeof(trackedSkills) / sizeof(trackedSkills[0]);
+
+	const uint16_t vocationId = getVocationId();
+	const bool canUseMagicBonus = (vocationId == 1 || vocationId == 2 || vocationId == 5 || vocationId == 6);
+
+	ss << "=== Your Mount Bonuses ===\n\n";
+	ss << "You have " << ownedMounts.size() << " mount(s).\n";
+	ss << "All bonuses are CUMULATIVE and ALWAYS ACTIVE!\n\n";
+
+	int32_t totalSpeed = 0;
+	int32_t totalAttackSpeed = 0;
+	int32_t totalHealthGain = 0, totalManaGain = 0;
+	float totalMaxHealthPercent = 0, totalMaxManaPercent = 0;
+	int32_t totalCapacity = 0, totalMagicLevel = 0;
+	int32_t totalSkillValues[trackedSkillCount] = { 0 };
+	double totalLifeLeechChance = 0, totalLifeLeechAmount = 0;
+	double totalManaLeechChance = 0, totalManaLeechAmount = 0;
+	double totalCriticalChance = 0, totalCriticalDamage = 0;
+	double totalExperienceRate = 0.0;
+	int manaShieldCount = 0, invisibleCount = 0, regenCount = 0;
+	int32_t suppressedMagicLevel = 0;
+
+	ss << "--- Owned Mounts ---\n";
+	for (const auto &mount : ownedMounts) {
+		ss << "\n[" << mount->name << " (ID: " << mount->id << ")]\n";
+
+		if (mount->statsPercent[STAT_MAXHITPOINTS] != 0.0f) {
+			ss << "  +Max Health: " << mount->statsPercent[STAT_MAXHITPOINTS] << "%\n";
+			totalMaxHealthPercent += mount->statsPercent[STAT_MAXHITPOINTS];
+		}
+		if (mount->statsPercent[STAT_MAXMANAPOINTS] != 0.0f) {
+			ss << "  +Max Mana: " << mount->statsPercent[STAT_MAXMANAPOINTS] << "%\n";
+			totalMaxManaPercent += mount->statsPercent[STAT_MAXMANAPOINTS];
+		}
+		if (mount->stats[STAT_CAPACITY]) {
+			int32_t cap = mount->stats[STAT_CAPACITY] / 100;
+			ss << "  +Capacity: " << cap << "\n";
+			totalCapacity += cap;
+		}
+		if (mount->stats[STAT_MAGICPOINTS]) {
+			if (canUseMagicBonus) {
+				ss << "  +Magic Level: " << mount->stats[STAT_MAGICPOINTS] << "\n";
+				totalMagicLevel += mount->stats[STAT_MAGICPOINTS];
+			} else {
+				suppressedMagicLevel += mount->stats[STAT_MAGICPOINTS];
+			}
+		}
+
+		for (size_t skillIndex = 0; skillIndex < trackedSkillCount; ++skillIndex) {
+			const auto skillId = trackedSkills[skillIndex].first;
+			const int32_t value = mount->skills[skillId];
+			if (value) {
+				if (!vocationAllowsClassSkill(vocationId, skillId)) {
+					continue;
+				}
+				ss << "  +" << trackedSkills[skillIndex].second << ": " << value << "\n";
+				totalSkillValues[skillIndex] += value;
+			}
+		}
+
+		if (mount->speed) {
+			ss << "  +Speed: " << mount->speed << "\n";
+			if (mount->speed > totalSpeed) {
+				totalSpeed = mount->speed;
+			}
+		}
+		if (mount->attackSpeed) {
+			ss << "  +Attack Speed: " << mount->attackSpeed << "\n";
+			totalAttackSpeed += mount->attackSpeed;
+		}
+		if (mount->regeneration) {
+			regenCount++;
+		}
+		if (mount->healthGain) {
+			ss << "  +Health Regen: " << mount->healthGain << " every " << mount->healthTicks << "ms\n";
+			totalHealthGain += mount->healthGain;
+		}
+		if (mount->manaGain) {
+			ss << "  +Mana Regen: " << mount->manaGain << " every " << mount->manaTicks << "ms\n";
+			totalManaGain += mount->manaGain;
+		}
+		if (mount->manaShield) {
+			ss << "  +Mana Shield: Active\n";
+			manaShieldCount++;
+		}
+		if (mount->invisible) {
+			ss << "  +Invisibility: Active\n";
+			invisibleCount++;
+		}
+
+		if (mount->lifeLeechChance > 0) {
+			ss << "  +Life Leech Chance: " << (mount->lifeLeechChance / 100.0) << "%\n";
+			totalLifeLeechChance += mount->lifeLeechChance;
+		}
+		if (mount->lifeLeechAmount > 0) {
+			ss << "  +Life Leech Amount: " << (mount->lifeLeechAmount / 100.0) << "%\n";
+			totalLifeLeechAmount += mount->lifeLeechAmount;
+		}
+		if (mount->manaLeechChance > 0) {
+			ss << "  +Mana Leech Chance: " << (mount->manaLeechChance / 100.0) << "%\n";
+			totalManaLeechChance += mount->manaLeechChance;
+		}
+		if (mount->manaLeechAmount > 0) {
+			ss << "  +Mana Leech Amount: " << (mount->manaLeechAmount / 100.0) << "%\n";
+			totalManaLeechAmount += mount->manaLeechAmount;
+		}
+		if (mount->criticalChance > 0) {
+			ss << "  +Critical Chance: " << (mount->criticalChance / 100.0) << "%\n";
+			totalCriticalChance += mount->criticalChance;
+		}
+		if (mount->criticalDamage > 0) {
+			ss << "  +Critical Damage: " << (mount->criticalDamage / 100.0) << "%\n";
+			totalCriticalDamage += mount->criticalDamage;
+		}
+		if (mount->experienceRate > 0.0) {
+			ss << "  +Experience Rate: " << fmt::format("{:.2f}%", mount->experienceRate * 100.0) << "\n";
+			totalExperienceRate += mount->experienceRate;
+		}
+	}
+
+	ss << "\n\n=== CUMULATIVE TOTALS ===\n";
+
+	if (totalMaxHealthPercent > 0) {
+		int32_t absoluteHp = static_cast<int32_t>(healthMax * totalMaxHealthPercent / 100);
+		ss << "Total Max Health: +" << totalMaxHealthPercent << "% (+" << absoluteHp << " HP)\n";
+	}
+	if (totalMaxManaPercent > 0) {
+		int32_t absoluteMana = static_cast<int32_t>(manaMax * totalMaxManaPercent / 100);
+		ss << "Total Max Mana: +" << totalMaxManaPercent << "% (+" << absoluteMana << " MP)\n";
+	}
+	if (totalCapacity > 0) {
+		ss << "Total Capacity: +" << totalCapacity << "\n";
+	}
+	if (totalMagicLevel > 0) {
+		ss << "Total Magic Level: +" << totalMagicLevel << "\n";
+	}
+	if (totalExperienceRate > 0.0) {
+		ss << "Total Experience Bonus: +" << fmt::format("{:.2f}%", totalExperienceRate * 100.0) << "\n";
+	}
+	if (totalSpeed > 0) {
+		ss << "Best Mount Speed: +" << totalSpeed << " (applied only when mounted)\n";
+	}
+	if (totalAttackSpeed > 0) {
+		ss << "Total Attack Speed: +" << totalAttackSpeed << "\n";
+	}
+
+	bool anySkills = false;
+	for (size_t skillIndex = 0; skillIndex < trackedSkillCount; ++skillIndex) {
+		if (totalSkillValues[skillIndex] > 0) {
+			if (!anySkills) {
+				ss << "\nSkill Bonuses:\n";
+				anySkills = true;
+			}
+			ss << "  " << trackedSkills[skillIndex].second << ": +" << totalSkillValues[skillIndex] << "\n";
+		}
+	}
+
+	if (totalHealthGain > 0 || totalManaGain > 0) {
+		ss << "\nRegeneration (" << regenCount << " source(s)):\n";
+		if (totalHealthGain > 0) {
+			ss << "  Health: +" << totalHealthGain << " per tick\n";
+		}
+		if (totalManaGain > 0) {
+			ss << "  Mana: +" << totalManaGain << " per tick\n";
+		}
+	}
+
+	if (manaShieldCount > 0) {
+		ss << "\nMana Shield: Active (" << manaShieldCount << " source(s))\n";
+	}
+	if (invisibleCount > 0) {
+		ss << "\nInvisibility: Active (" << invisibleCount << " source(s))\n";
+	}
+
+	if (totalLifeLeechChance > 0 || totalLifeLeechAmount > 0) {
+		ss << "\nLife Leech:\n";
+		ss << "  Chance: " << (totalLifeLeechChance / 100.0) << "%\n";
+		ss << "  Amount: " << (totalLifeLeechAmount / 100.0) << "%\n";
+	}
+
+	if (totalManaLeechChance > 0 || totalManaLeechAmount > 0) {
+		ss << "\nMana Leech:\n";
+		ss << "  Chance: " << (totalManaLeechChance / 100.0) << "%\n";
+		ss << "  Amount: " << (totalManaLeechAmount / 100.0) << "%\n";
+	}
+
+	if (totalCriticalChance > 0 || totalCriticalDamage > 0) {
+		ss << "\nCritical Hit:\n";
+		ss << "  Chance: " << (totalCriticalChance / 100.0) << "%\n";
+		ss << "  Damage: +" << (totalCriticalDamage / 100.0) << "%\n";
+	}
+
+	if (!canUseMagicBonus && suppressedMagicLevel > 0) {
+		ss << "\nNote: +" << suppressedMagicLevel << " magic level from mounts only applies to sorcerers and druids.\n";
+	}
+
+	return ss.str();
 }
 
 /* //////////////////////////////////////////////////////////////////////////////// */

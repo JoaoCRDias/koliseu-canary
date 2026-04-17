@@ -163,6 +163,9 @@ bool IOLoginData::loadPlayer(const std::shared_ptr<Player> &player, const DBResu
 		// load unlocked outfits
 		IOLoginDataLoad::loadPlayerOutfits(player);
 
+		// Apply cumulative outfit bonuses after all outfits are loaded
+		player->applyCumulativeOutfitBonuses();
+
 		// load vip
 		IOLoginDataLoad::loadPlayerVip(player, result);
 

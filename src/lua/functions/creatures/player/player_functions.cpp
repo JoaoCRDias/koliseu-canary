@@ -428,6 +428,9 @@ void PlayerFunctions::init(lua_State* L) {
 	Lua::registerMethod(L, "Player", "updateConcoction", PlayerFunctions::luaPlayerUpdateConcoction);
 	Lua::registerMethod(L, "Player", "clearSpellCooldowns", PlayerFunctions::luaPlayerClearSpellCooldowns);
 
+	Lua::registerMethod(L, "Player", "getOutfitBonusDescription", PlayerFunctions::luaPlayerGetOutfitBonusDescription);
+	Lua::registerMethod(L, "Player", "getMountBonusDescription", PlayerFunctions::luaPlayerGetMountBonusDescription);
+
 	Lua::registerMethod(L, "Player", "isVip", PlayerFunctions::luaPlayerIsVip);
 	Lua::registerMethod(L, "Player", "getVipDays", PlayerFunctions::luaPlayerGetVipDays);
 	Lua::registerMethod(L, "Player", "getVipTime", PlayerFunctions::luaPlayerGetVipTime);
@@ -5994,6 +5997,30 @@ int PlayerFunctions::luaPlayerSetWeeklyDeliveryUnknowns(lua_State* L) {
 	} else {
 		lua_pushnil(L);
 	}
+	return 1;
+}
+
+int PlayerFunctions::luaPlayerGetOutfitBonusDescription(lua_State* L) {
+	// player:getOutfitBonusDescription()
+	const auto &player = Lua::getUserdataShared<Player>(L, 1, "Player");
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	Lua::pushString(L, player->getOutfitBonusDescription());
+	return 1;
+}
+
+int PlayerFunctions::luaPlayerGetMountBonusDescription(lua_State* L) {
+	// player:getMountBonusDescription()
+	const auto &player = Lua::getUserdataShared<Player>(L, 1, "Player");
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	Lua::pushString(L, player->getMountBonusDescription());
 	return 1;
 }
 
