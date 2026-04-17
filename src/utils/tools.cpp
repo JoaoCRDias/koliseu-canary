@@ -1010,6 +1010,12 @@ std::string getSkillName(uint8_t skillid) {
 		case SKILL_MANA_LEECH_AMOUNT:
 			return "mana leech";
 
+		case SKILL_ATTACK_SPEED:
+			return "attack speed";
+
+		case SKILL_MINING:
+			return "mining";
+
 		case SKILL_MAGLEVEL:
 			return "magic level";
 

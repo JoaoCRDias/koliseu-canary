@@ -1068,6 +1068,8 @@ void LuaEnums::initSkillEnums(lua_State* L) {
 	registerEnum(L, SKILL_LIFE_LEECH_AMOUNT);
 	registerEnum(L, SKILL_MANA_LEECH_CHANCE);
 	registerEnum(L, SKILL_MANA_LEECH_AMOUNT);
+	registerEnum(L, SKILL_ATTACK_SPEED);
+	registerEnum(L, SKILL_MINING);
 	registerEnum(L, SKILL_MAGLEVEL);
 	registerEnum(L, SKILL_LEVEL);
 }

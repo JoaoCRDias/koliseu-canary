@@ -22,7 +22,7 @@ function AutoBroadCast.onThink(interval, lastExecution)
 
 	-- Envia a mensagem atual para todos os jogadores
 	for _, player in ipairs(players) do
-		player:sendColoredMessage(messages[currentMessageIndex], MESSAGE_EVENT_ADVANCE)
+		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, messages[currentMessageIndex])
 	end
 
 	-- Avança para a próxima mensagem

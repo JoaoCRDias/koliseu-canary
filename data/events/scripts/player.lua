@@ -613,6 +613,11 @@ function Player:onGainSkillTries(skill, tries)
 		return 0
 	end
 
+	-- Mining and attack speed use their own progression; skip stages.
+	if skill == SKILL_MINING or skill == SKILL_ATTACK_SPEED then
+		return tries
+	end
+
 	if not APPLY_SKILL_MULTIPLIER then
 		return tries
 	end

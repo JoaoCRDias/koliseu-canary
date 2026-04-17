@@ -171,6 +171,7 @@ bool ConfigManager::load() {
 	loadFloatConfig(L, FORGE_AMOUNT_MULTIPLIER, "forgeAmountMultiplier", 3.0);
 	loadFloatConfig(L, HAZARD_EXP_BONUS_MULTIPLIER, "hazardExpBonusMultiplier", 2.0);
 	loadFloatConfig(L, LOYALTY_BONUS_PERCENTAGE_MULTIPLIER, "loyaltyBonusPercentageMultiplier", 1.0);
+	loadFloatConfig(L, MINING_CHANCE_PER_LEVEL, "miningChancePerLevel", 0.25);
 	loadFloatConfig(L, MOMENTUM_CHANCE_FORMULA_A, "momentumChanceFormulaA", 0.05);
 	loadFloatConfig(L, MOMENTUM_CHANCE_FORMULA_B, "momentumChanceFormulaB", 1.9);
 	loadFloatConfig(L, MOMENTUM_CHANCE_FORMULA_C, "momentumChanceFormulaC", 0.05);
@@ -291,6 +292,9 @@ bool ConfigManager::load() {
 	loadIntConfig(L, MAX_DAMAGE_REFLECTION, "maxDamageReflection", 200);
 	loadIntConfig(L, MAX_ELEMENTAL_RESISTANCE, "maxElementalResistance", 200);
 	loadIntConfig(L, MAX_MARKET_OFFERS_AT_A_TIME_PER_PLAYER, "maxMarketOffersAtATimePerPlayer", 100);
+	loadIntConfig(L, MINING_BASE_SUCCESS_CHANCE, "miningBaseChance", 3);
+	loadIntConfig(L, MINING_TRIES_PER_ATTEMPT, "miningTriesPerAttempt", 1);
+	loadIntConfig(L, MINING_ATTACK_SPEED_TRIES, "miningAttackSpeedTries", 7);
 	loadIntConfig(L, MAX_MESSAGEBUFFER, "maxMessageBuffer", 4);
 	loadIntConfig(L, MAX_PACKETS_PER_SECOND, "maxPacketsPerSecond", 25);
 	loadIntConfig(L, MAX_PLAYERS_OUTSIDE_PZ_PER_ACCOUNT, "maxPlayersOutsidePZPerAccount", 1);

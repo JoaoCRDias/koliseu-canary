@@ -28,6 +28,7 @@ local Mining = dofile("data-koliseu/scripts/systems/mining/init.lua")
 -- Zone setup
 -- ============================================================
 _G.MiningZonePortalEntry = _G.MiningZonePortalEntry or {}
+_G.OnMiningZone = _G.OnMiningZone or {}
 
 local miningZone = Zone("mining.afk_zone")
 miningZone:addArea(MINING_ZONE_FROM, MINING_ZONE_TO)

@@ -1,50 +1,26 @@
 --[[
-	Mining System Initialization
-
-	This file initializes the mining system by:
-	1. Loading all mining modules (config, rewards, core)
-	2. Initializing each module in the correct order
-	3. Exporting the public API for use in other scripts
+	Mining System Initialization (AFK zone-based only)
 
 	Usage in other scripts:
-		local Mining = dofile('data-koliseu/scripts/systems/mining/init.lua')
-		Mining:attemptMining(player, target, toPosition)
+		local Mining = dofile(DATA_DIRECTORY .. '/scripts/systems/mining/init.lua')
+		Mining:attemptZoneMining(player, attempts)
 ]]
 
--- Get the directory path for this module
-local modulePath = "data-koliseu/scripts/systems/mining/"
+local modulePath = DATA_DIRECTORY .. "/scripts/systems/mining/"
 
--- Load all mining modules
 local MiningConfig = dofile(modulePath .. "config.lua")
 local MiningRewards = dofile(modulePath .. "rewards.lua")
 local MiningCore = dofile(modulePath .. "core.lua")
 
--- Mining System Public API
 local Mining = {}
 
--- Initialize the entire mining system
 function Mining:init()
-	-- Initialize configuration from config.lua
 	MiningConfig:init()
-
-	-- Initialize rewards system
 	MiningRewards:init()
-
-	-- Initialize core mining logic with dependencies
 	MiningCore:init(MiningConfig, MiningRewards)
-
 	logger.info("[MINING] Mining system fully initialized")
 end
 
--- Attempt to mine a target
--- Returns true if this was a mining attempt (success or failure)
--- Returns false if this was not a mining spot
-function Mining:attemptMining(player, target, toPosition)
-	return MiningCore:attemptMining(player, target, toPosition)
-end
-
--- Zone-based mining attempt (AFK, no target needed)
--- attempts: number of hits to simulate (default 1)
 function Mining:attemptZoneMining(player, attempts)
 	return MiningCore:attemptZoneMining(player, attempts)
 end

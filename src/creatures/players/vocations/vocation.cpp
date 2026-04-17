@@ -225,7 +225,7 @@ uint16_t Vocations::getPromotedVocation(uint16_t vocationId) const {
 	return VOCATION_NONE;
 }
 
-uint32_t Vocation::skillBase[SKILL_LAST + 1] = { 50, 50, 50, 50, 30, 100, 20 };
+uint32_t Vocation::skillBase[SKILL_LAST + 1] = { 50, 50, 50, 50, 30, 100, 20, 0, 0, 0, 0, 0, 0, 50, 50 };
 constexpr uint16_t minSkillLevel = 10;
 
 const std::string &Vocation::getVocName() const {
@@ -264,7 +264,16 @@ uint64_t Vocation::getReqSkillTries(uint8_t skill, uint16_t level) {
 		return it->second;
 	}
 
-	const auto tries = static_cast<uint64_t>(skillBase[skill] * std::pow(static_cast<double>(skillMultipliers[skill]), level - (minSkillLevel + 1)));
+	uint64_t tries;
+	if (skill == SKILL_MINING || skill == SKILL_ATTACK_SPEED) {
+		// Power 1.5 curve: req(L) = 50 + 34.32 * (L - 11)^1.5
+		// Tuned so skill 10→120 takes ~20 days at 1 try/s (24h AFK).
+		const double k = level - (minSkillLevel + 1);
+		tries = static_cast<uint64_t>(50.0 + 34.32 * std::pow(k, 1.5));
+	} else {
+		tries = static_cast<uint64_t>(skillBase[skill] * std::pow(static_cast<double>(skillMultipliers[skill]), level - (minSkillLevel + 1)));
+	}
+
 	cacheSkill[skill][level] = tries;
 	return tries;
 }

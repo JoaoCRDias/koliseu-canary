@@ -98,7 +98,6 @@ void DatabaseManager::updateDatabase() {
 
 	int32_t currentVersion = getDatabaseVersion();
 	std::string migrationDirectory = g_configManager().getString(DATA_DIRECTORY) + "/migrations/";
-	g_logger().info("[DB] currentVersion={}, migrationDirectory={}", currentVersion, migrationDirectory);
 
 	std::vector<std::pair<int32_t, std::string>> migrations;
 
@@ -111,13 +110,10 @@ void DatabaseManager::updateDatabase() {
 	}
 
 	std::sort(migrations.begin(), migrations.end());
-	g_logger().info("[DB] found {} migration files", migrations.size());
 
 	for (const auto &[fileVersion, scriptPath] : migrations) {
 		if (fileVersion > currentVersion) {
-			g_logger().info("[DB] running migration file version {} ({})", fileVersion, scriptPath);
 			if (!LuaScriptInterface::reserveScriptEnv()) {
-				g_logger().error("[DB] reserveScriptEnv failed; aborting migrations");
 				break;
 			}
 
@@ -143,9 +139,9 @@ void DatabaseManager::updateDatabase() {
 
 	double duration = bm.duration();
 	if (duration < 1000.0) {
-		g_logger().info("[DB] update completed in {:.2f} ms", duration);
+		g_logger().debug("Database update completed in {:.2f} ms", duration);
 	} else {
-		g_logger().info("[DB] update completed in {:.2f} seconds", duration / 1000.0);
+		g_logger().debug("Database update completed in {:.2f} seconds", duration / 1000.0);
 	}
 	lua_close(L);
 }

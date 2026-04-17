@@ -200,6 +200,9 @@ std::string Player::getDescription(int32_t lookDistance) {
 		if (isVip()) {
 			s << " You are VIP.";
 		}
+
+		s << "\nMining: " << skills[SKILL_MINING].level
+		  << " (" << static_cast<int>(skills[SKILL_MINING].percent) << "% to " << (skills[SKILL_MINING].level + 1) << ")";
 	} else {
 		s << name;
 		if (!group->access) {
@@ -227,6 +230,9 @@ std::string Player::getDescription(int32_t lookDistance) {
 		if (isVip()) {
 			s << " " << subjectPronoun << " " << getSubjectVerb() << " VIP.";
 		}
+
+		s << "\nMining: " << skills[SKILL_MINING].level
+		  << " (" << static_cast<int>(skills[SKILL_MINING].percent) << "% to " << (skills[SKILL_MINING].level + 1) << ")";
 	}
 
 	if (m_party) {
@@ -1078,7 +1084,6 @@ void Player::addSkillAdvance(skills_t skill, uint64_t count) {
 	uint64_t currReqTries = vocation->getReqSkillTries(skill, skills[skill].level);
 	uint64_t nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
 	if (currReqTries >= nextReqTries) {
-		// player has reached max skill
 		return;
 	}
 
