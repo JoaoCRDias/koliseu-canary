@@ -230,7 +230,23 @@ uint16_t Vocations::getPromotedVocation(uint16_t vocationId) const {
 	return VOCATION_NONE;
 }
 
-uint32_t Vocation::skillBase[SKILL_LAST + 1] = { 50, 50, 50, 50, 30, 100, 20, 0, 0, 0, 0, 0, 0, 50, 50 };
+uint32_t Vocation::skillBase[SKILL_LAST + 1] = {
+	50,     // SKILL_FIST
+	50,     // SKILL_CLUB
+	50,     // SKILL_SWORD
+	50,     // SKILL_AXE
+	30,     // SKILL_DISTANCE
+	100,    // SKILL_SHIELD
+	20,     // SKILL_FISHING
+	0,      // SKILL_CRITICAL_HIT_CHANCE
+	0,      // SKILL_CRITICAL_HIT_DAMAGE
+	0,      // SKILL_LIFE_LEECH_CHANCE
+	0,      // SKILL_LIFE_LEECH_AMOUNT
+	0,      // SKILL_MANA_LEECH_CHANCE
+	0,      // SKILL_MANA_LEECH_AMOUNT
+	532552, // SKILL_ATTACK_SPEED - smooth curve: 120d normal exercise to sk750, 40d boosted+best, ratio 9x (stage 10x)
+	6220    // SKILL_MINING - ~20 days to level 120 (24h/day AFK mining, mult=1.015, smooth curve)
+};
 constexpr uint16_t minSkillLevel = 10;
 
 const std::string &Vocation::getVocName() const {
@@ -269,16 +285,7 @@ uint64_t Vocation::getReqSkillTries(uint8_t skill, uint16_t level) {
 		return it->second;
 	}
 
-	uint64_t tries;
-	if (skill == SKILL_MINING || skill == SKILL_ATTACK_SPEED) {
-		// Power 1.5 curve: req(L) = 50 + 34.32 * (L - 11)^1.5
-		// Tuned so skill 10→120 takes ~20 days at 1 try/s (24h AFK).
-		const double k = level - (minSkillLevel + 1);
-		tries = static_cast<uint64_t>(50.0 + 34.32 * std::pow(k, 1.5));
-	} else {
-		tries = static_cast<uint64_t>(skillBase[skill] * std::pow(static_cast<double>(skillMultipliers[skill]), level - (minSkillLevel + 1)));
-	}
-
+	const uint64_t tries = static_cast<uint64_t>(skillBase[skill] * std::pow(static_cast<double>(skillMultipliers[skill]), level - (minSkillLevel + 1)));
 	cacheSkill[skill][level] = tries;
 	return tries;
 }

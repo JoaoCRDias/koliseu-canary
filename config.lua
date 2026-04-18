@@ -474,7 +474,7 @@ emoteSpells = false
 allowWalkthrough = true
 coinPacketSize = 25
 coinImagesURL = "http://127.0.0.1/images/store/"
-classicAttackSpeed = false
+classicAttackSpeed = true
 showScriptsLogInConsole = false
 -- time to suppress negative conditions after being affected by them (ms)
 minDelayBetweenConditions = 0
@@ -484,12 +484,12 @@ inventoryGlowOnFiveBless = false
 adventurersBlessingLevel = 21
 skulledDeathLoseStoreItem = false
 experienceDisplayRates = true
--- configure attack base on Fist Fighting skill/experience
--- multiplierSpeedOnFist * 5  (multiplies the value obtained from the player fist skill and multiplies it * 5) max 25 is recommended due minTicks limits else player stop attack
--- maxSpeedOnFist 500 miliseconds  (The maximum attack speed that can be obtained no matter how high the player has the Fist Fighting skill.)
-toggleAttackSpeedOnFist = false
-multiplierSpeedOnFist = 5
-maxSpeedOnFist = 500
+-- Attack Speed system (based on the SKILL_ATTACK_SPEED skill, not fist skill)
+-- multiplierSpeedOnFist: ms subtracted from base attack speed per skill level
+-- maxSpeedOnFist: lower bound (fastest possible attack interval in ms)
+toggleAttackSpeedOnFist = true
+multiplierSpeedOnFist = 1
+maxSpeedOnFist = 250
 disableLegacyRaids = false
 disableMonsterArmor = false
 minElementalResistance = -200

@@ -116,6 +116,9 @@ local function exerciseTrainingEvent(playerId, tilePosition, weaponId, dummyId)
 		player:addSkillTries(exerciseWeaponsTable[weaponId].skill, 7 * rate)
 	end
 
+	-- Add attack speed tries for all exercise weapons
+	player:addSkillTries(SKILL_ATTACK_SPEED, 7 * rate)
+
 	weapon:setAttribute(ITEM_ATTRIBUTE_CHARGES, (weaponCharges - 1))
 	tilePosition:sendMagicEffect(CONST_ME_HITAREA)
 

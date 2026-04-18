@@ -201,6 +201,8 @@ std::string Player::getDescription(int32_t lookDistance) {
 			s << " You are VIP.";
 		}
 
+		s << "\nAttack Speed: " << skills[SKILL_ATTACK_SPEED].level
+		  << " (" << static_cast<int>(skills[SKILL_ATTACK_SPEED].percent) << "% to " << (skills[SKILL_ATTACK_SPEED].level + 1) << ")";
 		s << "\nMining: " << skills[SKILL_MINING].level
 		  << " (" << static_cast<int>(skills[SKILL_MINING].percent) << "% to " << (skills[SKILL_MINING].level + 1) << ")";
 	} else {
@@ -231,6 +233,8 @@ std::string Player::getDescription(int32_t lookDistance) {
 			s << " " << subjectPronoun << " " << getSubjectVerb() << " VIP.";
 		}
 
+		s << "\nAttack Speed: " << skills[SKILL_ATTACK_SPEED].level
+		  << " (" << static_cast<int>(skills[SKILL_ATTACK_SPEED].percent) << "% to " << (skills[SKILL_ATTACK_SPEED].level + 1) << ")";
 		s << "\nMining: " << skills[SKILL_MINING].level
 		  << " (" << static_cast<int>(skills[SKILL_MINING].percent) << "% to " << (skills[SKILL_MINING].level + 1) << ")";
 	}
@@ -6900,20 +6904,33 @@ bool Player::isPromoted() const {
 }
 
 uint32_t Player::getAttackSpeed() const {
+	int32_t modifiers = 0;
 	bool onFistAttackSpeed = g_configManager().getBoolean(TOGGLE_ATTACK_SPEED_ONFIST);
 	uint32_t MAX_ATTACK_SPEED = g_configManager().getNumber(MAX_SPEED_ATTACKONFIST);
-	if (onFistAttackSpeed) {
-		uint32_t baseAttackSpeed = vocation->getAttackSpeed();
-		uint32_t skillLevel = getSkillLevel(SKILL_FIST);
-		uint32_t attackSpeed = baseAttackSpeed - (skillLevel * g_configManager().getNumber(MULTIPLIER_ATTACKONFIST));
 
-		if (attackSpeed < MAX_ATTACK_SPEED) {
-			attackSpeed = MAX_ATTACK_SPEED;
+	// HTP Attack Speed Cap bonus: storage 55001, each level reduces cap by 1ms (floor at 200ms)
+	int32_t htpAtkSpeedLevel = getStorageValue(55001);
+	if (htpAtkSpeedLevel > 0) {
+		if (MAX_ATTACK_SPEED > static_cast<uint32_t>(htpAtkSpeedLevel)) {
+			MAX_ATTACK_SPEED -= htpAtkSpeedLevel;
 		}
+		if (MAX_ATTACK_SPEED < 200) {
+			MAX_ATTACK_SPEED = 200;
+		}
+	}
 
-		return attackSpeed;
+	if (onFistAttackSpeed) {
+		int32_t baseAttackSpeed = static_cast<int32_t>(vocation->getAttackSpeed());
+		int32_t skillLevel = static_cast<int32_t>(getSkillLevel(SKILL_ATTACK_SPEED));
+		int32_t attackSpeed = baseAttackSpeed - (skillLevel * g_configManager().getNumber(MULTIPLIER_ATTACKONFIST)) - modifiers;
+
+		if (attackSpeed < static_cast<int32_t>(MAX_ATTACK_SPEED)) {
+			attackSpeed = static_cast<int32_t>(MAX_ATTACK_SPEED);
+		}
+		return static_cast<uint32_t>(attackSpeed);
 	} else {
-		return vocation->getAttackSpeed();
+		uint32_t attackSpeed = vocation->getAttackSpeed() - modifiers;
+		return attackSpeed;
 	}
 }
 

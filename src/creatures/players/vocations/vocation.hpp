@@ -86,7 +86,10 @@ private:
 	std::string name = "none";
 	std::string description;
 
-	float skillMultipliers[SKILL_LAST + 1] = { 1.5f, 2.0f, 2.0f, 2.0f, 2.0f, 1.5f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.1f, 1.1f };
+	// Index matches skills_t enum. For ATTACK_SPEED (13) the smooth curve (ratio ~9x first→last level)
+	// and the huge base give: 120 days normal exercise to reach skill 750 (40d boosted, 10x stage).
+	// MINING (14): mult=1.015 + base=6220 yields ~20 days 24h AFK to reach 120.
+	float skillMultipliers[SKILL_LAST + 1] = { 1.5f, 2.0f, 2.0f, 2.0f, 2.0f, 1.5f, 1.1f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.003f, 1.015f };
 	float manaMultiplier = 4.0f;
 
 	uint32_t gainHealthAmount = 1;

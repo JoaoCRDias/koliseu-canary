@@ -76,6 +76,7 @@ function offlineTraining.onLogin(player)
 
 	if updateSkills then
 		player:addOfflineTrainingTries(SKILL_SHIELD, trainingTime / 4)
+		player:addOfflineTrainingTries(SKILL_ATTACK_SPEED, trainingTime / 4)
 	end
 	return true
 end
