@@ -331,6 +331,9 @@ public:
 	uint8_t shootRange = 1;
 	uint8_t imbuementSlot = 0;
 	uint8_t stackSize = 100;
+	uint8_t chainTargets = 1;
+	uint8_t chainDistance = 2; // Default: 5 tiles
+	bool chainBacktracking = false; // Default: no backtracking
 
 	int8_t hitChance = 0;
 

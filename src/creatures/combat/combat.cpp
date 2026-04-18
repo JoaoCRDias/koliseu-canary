@@ -1158,36 +1158,13 @@ void Combat::addDistanceEffect(const std::shared_ptr<Creature> &caster, const Po
 	}
 }
 
-void Combat::doChainEffect(const Position &origin, const Position &dest, uint8_t effect) {
-	if (effect > 0) {
-		std::vector<Direction> dirList;
-
-		FindPathParams fpp;
-		fpp.minTargetDist = 0;
-		fpp.maxTargetDist = 1;
-		fpp.maxSearchDist = 9;
-		Position pos = origin;
-		if (g_game().map.getPathMatching(origin, dirList, FrozenPathingConditionCall(dest), fpp)) {
-			for (const auto &dir : dirList) {
-				pos = getNextPosition(dir, pos);
-				g_game().addMagicEffect(pos, effect);
-			}
-		}
-		g_game().addMagicEffect(dest, effect);
-	}
-}
-
 void Combat::setupChain(const std::shared_ptr<Weapon> &weapon) {
 	if (!weapon) {
 		return;
 	}
 
-	if (weapon->isChainDisabled()) {
-		return;
-	}
-
-	const auto &weaponType = weapon->getWeaponType();
-	if (weaponType == WEAPON_NONE || weaponType == WEAPON_FIST || weaponType == WEAPON_SHIELD || weaponType == WEAPON_AMMO || weaponType == WEAPON_DISTANCE || weaponType == WEAPON_MISSILE) {
+	// Chain system is ONLY for wands/rods.
+	if (weapon->getWeaponType() != WEAPON_WAND) {
 		return;
 	}
 
@@ -1207,53 +1184,22 @@ void Combat::setupChain(const std::shared_ptr<Weapon> &weapon) {
 	setArea(area);
 	g_logger().trace("Weapon: {}, element type: {}", Item::items[weapon->getID()].name, weapon->params.combatType);
 	setParam(COMBAT_PARAM_TYPE, weapon->params.combatType);
-	if (weaponType != WEAPON_WAND) {
-		setParam(COMBAT_PARAM_BLOCKARMOR, true);
+
+	// The chainCallback is configured by WeaponWand::configureWeapon with values from
+	// items.xml (chaintargets/chaindistance/chainbacktracking) when chaintargets > 1.
+	// If it's missing, the wand doesn't participate in the chain system.
+	if (!weapon->params.chainCallback) {
+		return;
 	}
 
-	weapon->params.chainCallback = std::make_unique<ChainCallback>();
+	uint8_t maxTargets = 0;
+	uint8_t chainDistance = 0;
+	bool backtracking = false;
+	weapon->params.chainCallback->getChainValues(nullptr, maxTargets, chainDistance, backtracking);
+	setChainCallback(maxTargets, chainDistance, backtracking);
 
-	auto setCommonValues = [this, weapon](double formula, SoundEffect_t impactSound, uint32_t effect) {
-		double weaponSkillFormula = weapon->getChainSkillValue();
-		setPlayerCombatValues(COMBAT_FORMULA_SKILL, 0, 0, weaponSkillFormula ? weaponSkillFormula : formula, 0);
-		setParam(COMBAT_PARAM_IMPACTSOUND, impactSound);
-		setParam(COMBAT_PARAM_EFFECT, effect);
-		setParam(COMBAT_PARAM_BLOCKARMOR, true);
-	};
-
-	setChainCallback(g_configManager().getNumber(COMBAT_CHAIN_TARGETS), 1, true);
-
-	switch (weaponType) {
-		case WEAPON_FIST:
-			setCommonValues(g_configManager().getFloat(COMBAT_CHAIN_SKILL_FORMULA_FIST), HUMAN_CLOSE_ATK_FIST, CONST_ME_HITAREA);
-			break;
-		case WEAPON_SWORD:
-			setCommonValues(g_configManager().getFloat(COMBAT_CHAIN_SKILL_FORMULA_SWORD), MELEE_ATK_SWORD, CONST_ME_SLASH);
-			break;
-		case WEAPON_CLUB:
-			setCommonValues(g_configManager().getFloat(COMBAT_CHAIN_SKILL_FORMULA_CLUB), MELEE_ATK_CLUB, CONST_ME_BLACK_BLOOD);
-			break;
-		case WEAPON_AXE:
-			setCommonValues(g_configManager().getFloat(COMBAT_CHAIN_SKILL_FORMULA_AXE), MELEE_ATK_AXE, CONST_ANI_WHIRLWINDAXE);
-			break;
-	}
-
-	if (weaponType == WEAPON_WAND) {
-		static const std::map<CombatType_t, std::pair<MagicEffectClasses, MagicEffectClasses>> elementEffects = {
-			{ COMBAT_DEATHDAMAGE, { CONST_ME_MORTAREA, CONST_ME_BLACK_BLOOD } },
-			{ COMBAT_ENERGYDAMAGE, { CONST_ME_ENERGYAREA, CONST_ME_PINK_ENERGY_SPARK } },
-			{ COMBAT_FIREDAMAGE, { CONST_ME_FIREATTACK, CONST_ME_FIREATTACK } },
-			{ COMBAT_ICEDAMAGE, { CONST_ME_ICEATTACK, CONST_ME_ICEATTACK } },
-			{ COMBAT_EARTHDAMAGE, { CONST_ME_STONES, CONST_ME_POISONAREA } },
-		};
-
-		auto it = elementEffects.find(weapon->getElementType());
-		if (it != elementEffects.end()) {
-			setPlayerCombatValues(COMBAT_FORMULA_SKILL, 0, 0, 1.0, 0);
-			setParam(COMBAT_PARAM_EFFECT, it->second.first);
-			setParam(COMBAT_PARAM_CHAIN_EFFECT, it->second.second);
-		}
-	}
+	// Keep impact/distance/chainEffect configured by WeaponWand::configureWeapon (from items.xml).
+	setPlayerCombatValues(COMBAT_FORMULA_SKILL, 0, 0, 1.0, 0);
 }
 
 bool Combat::doCombatChain(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &target, bool aggressive) const {
@@ -1268,31 +1214,37 @@ bool Combat::doCombatChain(const std::shared_ptr<Creature> &caster, const std::s
 	params.chainCallback->getChainValues(caster, maxTargets, chainDistance, backtracking);
 	auto targets = pickChainTargets(caster, params, chainDistance, maxTargets, aggressive, backtracking, target);
 
-	g_logger().debug("[{}] Chain targets: {}", __FUNCTION__, targets.size());
 	if (targets.empty() || (targets.size() == 1 && targets.begin()->second.empty())) {
 		return false;
 	}
 
-	auto affected = targets.size();
+	// Flatten all chain targets into a single list and process them all at once
+	// (like diamond arrow AoE) instead of scheduling separate delayed events.
+	struct ChainHit {
+		uint32_t targetId;
+		Position origin;
+		bool isSecondary;
+	};
+	std::vector<ChainHit> allHits;
+
 	int i = 0;
-	auto combat = this;
 	for (const auto &[from, toVector] : targets) {
-		auto delay = i * std::max<int32_t>(50, g_configManager().getNumber(COMBAT_CHAIN_DELAY));
+		bool isSecondary = (i > 0);
 		++i;
 		for (const auto &to : toVector) {
-			const auto &nextTarget = g_game().getCreatureByID(to);
-			if (!nextTarget) {
-				continue;
-			}
-			g_dispatcher().scheduleEvent(
-				delay, [combat, caster, nextTarget, from, affected]() {
-					if (combat && caster && nextTarget) {
-						Combat::doChainEffect(from, nextTarget->getPosition(), combat->params.chainEffect);
-						combat->doCombat(caster, nextTarget, from, affected);
-					}
-				},
-				"Combat::doCombatChain"
-			);
+			allHits.push_back({ to, from, isSecondary });
+		}
+	}
+
+	auto affected = allHits.size();
+
+	// Process all targets in the same tick — no delays, no scheduler overhead.
+	// All hits (primary and secondary) render only the weapon's missile + impact effect,
+	// matching the chain-disabled visuals.
+	for (const auto &hit : allHits) {
+		const auto &nextTarget = g_game().getCreatureByID(hit.targetId);
+		if (nextTarget && caster) {
+			doCombat(caster, nextTarget, hit.origin, affected, hit.isSecondary);
 		}
 	}
 
@@ -1307,11 +1259,12 @@ bool Combat::doCombat(const std::shared_ptr<Creature> &caster, const std::shared
 	return doCombat(caster, target, caster != nullptr ? caster->getPosition() : Position());
 }
 
-bool Combat::doCombat(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &target, const Position &origin, int affected /* = 1 */) const {
+bool Combat::doCombat(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &target, const Position &origin, int affected /* = 1 */, bool isSecondaryTarget /* = false */) const {
 	// target combat callback function
 	if (params.combatType != COMBAT_NONE) {
 		CombatDamage damage = getCombatDamage(caster, target);
 		damage.affected = affected;
+		damage.secondaryTarget = isSecondaryTarget;
 		if (damage.primary.type != COMBAT_MANADRAIN) {
 			doCombatHealth(caster, target, origin, damage, params);
 		} else {
@@ -1422,6 +1375,10 @@ void Combat::CombatFunc(const std::shared_ptr<Creature> &caster, const Position 
 
 	tmpDamage.affected = affectedTargets.size();
 
+	// Determine the primary target for collateral leech reduction.
+	// The creature being attacked by the caster is the primary target; all others are secondary.
+	std::shared_ptr<Creature> primaryTarget = caster ? caster->getAttackedCreature() : nullptr;
+
 	// The apply extensions can't modifify the damage value, so we need to create a copy of the damage value
 	auto extensionsDamage = tmpDamage;
 	applyExtensions(caster, affectedTargets, extensionsDamage, params);
@@ -1454,9 +1411,14 @@ void Combat::CombatFunc(const std::shared_ptr<Creature> &caster, const Position 
 						casterPlayer->wheel().updateBeamMasteryDamage(tmpDamage, beamAffectedTotal, beamAffectedCurrent);
 					}
 
+					// Mark as secondary target for collateral leech reduction.
+					// Primary target = the creature the caster is attacking; all others are secondary.
+					tmpDamage.secondaryTarget = (affectedTargets.size() > 1 && creature != primaryTarget);
+
 					if (func) {
 						auto creatureDamage = creature->getCombatDamage();
 						if (!creatureDamage.isEmpty()) {
+							creatureDamage.secondaryTarget = tmpDamage.secondaryTarget;
 							func(caster, creature, params, &creatureDamage);
 							// Reset the creature's combat damage
 							creature->setCombatDamage(CombatDamage());
@@ -1536,10 +1498,13 @@ void Combat::doCombatHealth(const std::shared_ptr<Creature> &caster, const std::
 			params.targetCallback->onTargetCombat(caster, target);
 		}
 
-		if (target && params.soundImpactEffect != SoundEffect_t::SILENCE) {
-			g_game().sendDoubleSoundEffect(target->getPosition(), params.soundCastEffect, params.soundImpactEffect, caster);
-		} else if (target && params.soundCastEffect != SoundEffect_t::SILENCE) {
-			g_game().sendSingleSoundEffect(target->getPosition(), params.soundCastEffect, caster);
+		// Skip sound effects for chain secondary targets to reduce packet spam.
+		if (!damage.secondaryTarget) {
+			if (target && params.soundImpactEffect != SoundEffect_t::SILENCE) {
+				g_game().sendDoubleSoundEffect(target->getPosition(), params.soundCastEffect, params.soundImpactEffect, caster);
+			} else if (target && params.soundCastEffect != SoundEffect_t::SILENCE) {
+				g_game().sendSingleSoundEffect(target->getPosition(), params.soundCastEffect, caster);
+			}
 		}
 	}
 }
@@ -1575,10 +1540,13 @@ void Combat::doCombatMana(const std::shared_ptr<Creature> &caster, const std::sh
 			params.targetCallback->onTargetCombat(caster, target);
 		}
 
-		if (target && params.soundImpactEffect != SoundEffect_t::SILENCE) {
-			g_game().sendDoubleSoundEffect(target->getPosition(), params.soundCastEffect, params.soundImpactEffect, caster);
-		} else if (target && params.soundCastEffect != SoundEffect_t::SILENCE) {
-			g_game().sendSingleSoundEffect(target->getPosition(), params.soundCastEffect, caster);
+		// Skip sound effects for chain secondary targets to reduce packet spam.
+		if (!damage.secondaryTarget) {
+			if (target && params.soundImpactEffect != SoundEffect_t::SILENCE) {
+				g_game().sendDoubleSoundEffect(target->getPosition(), params.soundCastEffect, params.soundImpactEffect, caster);
+			} else if (target && params.soundCastEffect != SoundEffect_t::SILENCE) {
+				g_game().sendSingleSoundEffect(target->getPosition(), params.soundCastEffect, caster);
+			}
 		}
 	}
 }
@@ -1700,6 +1668,9 @@ std::vector<std::pair<Position, std::vector<uint32_t>>> Combat::pickChainTargets
 	std::vector<std::shared_ptr<Creature>> targets;
 	phmap::flat_hash_set<uint32_t> visited;
 
+	// If the initial target is a monster, chain must never jump to players
+	const bool initialTargetIsMonster = initialTarget && initialTarget->getMonster();
+
 	if (initialTarget && initialTarget != caster) {
 		targets.emplace_back(initialTarget);
 		visited.insert(initialTarget->getID());
@@ -1708,6 +1679,11 @@ std::vector<std::pair<Position, std::vector<uint32_t>>> Combat::pickChainTargets
 		targets.emplace_back(caster);
 		maxTargets++;
 	}
+
+	// Cache caster type checks outside the loop (caster never changes)
+	const auto &casterPlayer = caster->getPlayer();
+	const auto &casterMonster = caster->getMonster();
+	const bool casterHasSecureMode = casterPlayer && casterPlayer->hasSecureMode();
 
 	int backtrackingAttempts = 10;
 	while (!targets.empty() && targets.size() <= maxTargets && backtrackingAttempts > 0) {
@@ -1721,6 +1697,62 @@ std::vector<std::pair<Position, std::vector<uint32_t>>> Combat::pickChainTargets
 			if (!spectator || visited.contains(spectator->getID())) {
 				continue;
 			}
+
+			if (spectator->getZoneType() == ZONE_PROTECTION) {
+				visited.insert(spectator->getID());
+				continue;
+			}
+
+			if (spectator->getNpc()) {
+				visited.insert(spectator->getID());
+				continue;
+			}
+
+			if (spectator == caster) {
+				visited.insert(spectator->getID());
+				continue;
+			}
+
+			const auto &spectatorPlayer = spectator->getPlayer();
+			const auto &spectatorSummon = spectator->isSummon();
+
+			// If initial target is a monster, chain only jumps to monsters (never players/pet-summons)
+			if (initialTargetIsMonster) {
+				if (spectatorPlayer) {
+					visited.insert(spectator->getID());
+					continue;
+				}
+				if (spectatorSummon && spectator->getMaster() && spectator->getMaster()->getPlayer()) {
+					visited.insert(spectator->getID());
+					continue;
+				}
+			}
+
+			if (casterPlayer) {
+				if (casterHasSecureMode) {
+					if (spectatorPlayer) {
+						visited.insert(spectator->getID());
+						continue;
+					}
+
+					if (spectatorSummon && spectator->getMaster() && spectator->getMaster()->getPlayer()) {
+						visited.insert(spectator->getID());
+						continue;
+					}
+				}
+			} else if (casterMonster) {
+				if (spectatorSummon) {
+					const auto &master = spectator->getMaster();
+					if (!master || !master->getPlayer()) {
+						visited.insert(spectator->getID());
+						continue;
+					}
+				} else if (!spectator->getPlayer()) {
+					visited.insert(spectator->getID());
+					continue;
+				}
+			}
+
 			if (!isValidChainTarget(caster, currentTarget, spectator, params, aggressive)) {
 				visited.insert(spectator->getID());
 				continue;

@@ -497,13 +497,8 @@ maxElementalResistance = 200
 maxDamageReflection = 200
 
 -- Chain system
--- NOTE: combatChainDelay: set to minimum 50 miliseconds
-toggleChainSystem = false
-combatChainDelay = 50
-combatChainTargets = 5
-combatChainSkillFormulaAxe = 0.9
-combatChainSkillFormulaClub = 0.7
-combatChainSkillFormulaSword = 1.1
+toggleChainSystem = true
+combatChainSkillFormulaWandsAndRods = 1.0
 
 -- Global server Save
 -- NOTE: globalServerSaveNotifyDuration in minutes

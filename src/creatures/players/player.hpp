@@ -597,6 +597,8 @@ public:
 
 	bool isVip() const;
 
+	bool checkChainSystem() const;
+
 	void setTibiaCoins(int32_t v);
 	void setTransferableTibiaCoins(int32_t v);
 
@@ -1743,6 +1745,10 @@ private:
 	int64_t lastWalking = 0;
 	int64_t loginProtectionTime = 0;
 	uint64_t asyncOngoingTasks = 0;
+
+	mutable bool chainSystemCached = false;
+	mutable bool chainSystemValue = false;
+	mutable int64_t chainSystemCacheTime = 0;
 
 	std::vector<Kill> unjustifiedKills;
 

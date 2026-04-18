@@ -8064,7 +8064,7 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 		);
 
 		if (attackerPlayer) {
-			if (!damage.extension && damage.origin != ORIGIN_CONDITION) {
+			if (damage.origin != ORIGIN_CONDITION && (!damage.extension || damage.secondaryTarget)) {
 				applyOffensiveCharmRune(targetMonster, attackerPlayer, target, realDamage);
 				applyLifeLeech(attackerPlayer, targetMonster, target, damage, realDamage);
 				applyManaLeech(attackerPlayer, targetMonster, target, damage, realDamage);
@@ -8343,6 +8343,12 @@ void Game::applyManaLeech(
 	tmpDamage.primary.type = COMBAT_MANADRAIN;
 	tmpDamage.primary.value = calculateLeechAmount(realDamage, manaSkill, affected);
 
+	// Secondary targets get 1/3 leech on auto attacks only (melee/ranged/cleave).
+	// Spells and runes (ORIGIN_SPELL) already pay a multi-target penalty through `affected`.
+	if (damage.secondaryTarget && (damage.origin == ORIGIN_MELEE || damage.origin == ORIGIN_RANGED)) {
+		tmpDamage.primary.value /= 3;
+	}
+
 	Combat::doCombatMana(nullptr, attackerPlayer, tmpDamage, tmpParams);
 }
 
@@ -8382,6 +8388,12 @@ void Game::applyLifeLeech(
 		if (bountyLeechBonus > 0) {
 			tmpDamage.primary.value += static_cast<int32_t>(std::ceil((realDamage * bountyLeechBonus) / 10000.0));
 		}
+	}
+
+	// Secondary targets get 1/3 leech on auto attacks only (melee/ranged/cleave).
+	// Spells and runes (ORIGIN_SPELL) already pay a multi-target penalty through `affected`.
+	if (damage.secondaryTarget && (damage.origin == ORIGIN_MELEE || damage.origin == ORIGIN_RANGED)) {
+		tmpDamage.primary.value /= 3;
 	}
 
 	if (tmpDamage.primary.value > 0) {

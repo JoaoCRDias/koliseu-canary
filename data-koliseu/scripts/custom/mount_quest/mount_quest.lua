@@ -42,7 +42,7 @@ local function countdownTick(pid, remaining)
 end
 
 -- Mount data (reuse from mount talkaction)
-local addonMountData = dofile(CORE_DIRECTORY .. "/libs/tables/addon_mounts.lua")
+local addonMountData = dofile(DATA_DIRECTORY .. "/lib/tables/addon_mounts.lua")
 local MOUNT_INFO = addonMountData.mounts or {}
 
 local function buildMountChoices()

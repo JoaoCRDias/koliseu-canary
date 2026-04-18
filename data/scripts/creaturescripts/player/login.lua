@@ -5,6 +5,13 @@ end
 local playerLoginGlobal = CreatureEvent("PlayerLoginGlobal")
 
 function playerLoginGlobal.onLogin(player)
+	-- Chain system: ON by default for all players (only set if never set before)
+	if configManager.getBoolean(configKeys.TOGGLE_CHAIN_SYSTEM) then
+		if player:getFeature(Features.ChainSystem) == nil then
+			player:setFeature(Features.ChainSystem, true)
+		end
+	end
+
 	-- Welcome
 	local loginStr
 	if player:getLastLoginSaved() == 0 then

@@ -1708,6 +1708,7 @@ struct CombatDamage {
 	bool critical = false;
 	int affected = 1;
 	bool extension = false;
+	bool secondaryTarget = false;
 	std::string exString;
 	bool fatal = false;
 	bool hazardDodge = false;

@@ -55,7 +55,7 @@ local State = {
 -- ============================================================
 -- Addon data (reused from !addon talkaction)
 -- ============================================================
-local addonMountData = dofile(CORE_DIRECTORY .. "/libs/tables/addon_mounts.lua")
+local addonMountData = dofile(DATA_DIRECTORY .. "/lib/tables/addon_mounts.lua")
 local ADDON_INFO_RAW = addonMountData.addons or {}
 
 -- Addons excluded from the quest reward pool

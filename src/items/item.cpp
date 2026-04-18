@@ -1487,6 +1487,16 @@ Item::getDescriptions(const ItemType &it, const std::shared_ptr<Item> &item /*= 
 				descriptions.emplace_back("Cleave", ss.str());
 			}
 
+			if (it.chainTargets > 1) {
+				ss.str("");
+				ss << static_cast<int>(it.chainTargets);
+				descriptions.emplace_back("Chain Targets", ss.str());
+
+				ss.str("");
+				ss << static_cast<int>(it.chainDistance);
+				descriptions.emplace_back("Chain Distance", ss.str());
+			}
+
 			if (it.abilities->conditionSuppressions[CONDITION_DRUNK] != 0) {
 				ss.str("");
 				ss << "Hard Drinking";
@@ -1883,6 +1893,16 @@ Item::getDescriptions(const ItemType &it, const std::shared_ptr<Item> &item /*= 
 				ss.str("");
 				ss << std::showpos << (it.abilities->cleavePercent) << std::noshowpos << "%";
 				descriptions.emplace_back("Cleave", ss.str());
+			}
+
+			if (it.chainTargets > 1) {
+				ss.str("");
+				ss << static_cast<int>(it.chainTargets);
+				descriptions.emplace_back("Chain Targets", ss.str());
+
+				ss.str("");
+				ss << static_cast<int>(it.chainDistance);
+				descriptions.emplace_back("Chain Distance", ss.str());
 			}
 
 			if (it.abilities->conditionSuppressions[CONDITION_DRUNK] != 0) {
@@ -2499,6 +2519,18 @@ std::string Item::parseShowAttributesDescription(const std::shared_ptr<Item> &it
 
 				itemDescription << "Cleave " << std::showpos << (itemType.abilities->cleavePercent) << std::noshowpos << "%";
 			}
+
+			if (itemType.chainTargets > 1) {
+				if (begin) {
+					begin = false;
+					itemDescription << " (";
+				} else {
+					itemDescription << ", ";
+				}
+
+				itemDescription << "Chain Targets +" << static_cast<int>(itemType.chainTargets)
+				                << ", Chain Distance " << static_cast<int>(itemType.chainDistance);
+			}
 		}
 
 		if (!begin) {
@@ -2803,6 +2835,18 @@ std::string Item::getDescription(const ItemType &it, int32_t lookDistance, const
 
 					s << "cleave " << std::showpos << (it.abilities->cleavePercent) << std::noshowpos << "%";
 				}
+
+				if (it.chainTargets > 1) {
+					if (begin) {
+						begin = false;
+						s << " (";
+					} else {
+						s << ", ";
+					}
+
+					s << "chain targets +" << static_cast<int>(it.chainTargets)
+					  << ", chain distance " << static_cast<int>(it.chainDistance);
+				}
 			}
 
 			if (!begin) {
@@ -3089,6 +3133,18 @@ std::string Item::getDescription(const ItemType &it, int32_t lookDistance, const
 					}
 
 					s << "Cleave " << std::showpos << (it.abilities->cleavePercent) << std::noshowpos << "%";
+				}
+
+				if (it.chainTargets > 1) {
+					if (begin) {
+						begin = false;
+						s << " (";
+					} else {
+						s << ", ";
+					}
+
+					s << "Chain Targets +" << static_cast<int>(it.chainTargets)
+					  << ", Chain Distance " << static_cast<int>(it.chainDistance);
 				}
 			}
 

@@ -214,7 +214,7 @@ public:
 	static void addDistanceEffect(const std::shared_ptr<Creature> &caster, const Position &fromPos, const Position &toPos, uint16_t effect);
 
 	bool doCombat(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &target) const;
-	bool doCombat(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &target, const Position &origin, int affected = 1) const;
+	bool doCombat(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &target, const Position &origin, int affected = 1, bool isSecondaryTarget = false) const;
 	bool doCombat(const std::shared_ptr<Creature> &caster, const Position &pos) const;
 
 	bool setCallback(CallBackParam_t key);
@@ -248,7 +248,6 @@ public:
 	bool doCombatChain(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &target, bool aggressive) const;
 
 private:
-	static void doChainEffect(const Position &origin, const Position &pos, uint8_t effect);
 	static std::vector<std::pair<Position, std::vector<uint32_t>>> pickChainTargets(const std::shared_ptr<Creature> &caster, const CombatParams &params, uint8_t chainDistance, uint8_t maxTargets, bool aggressive, bool backtracking, const std::shared_ptr<Creature> &initialTarget = nullptr);
 	static bool isValidChainTarget(const std::shared_ptr<Creature> &caster, const std::shared_ptr<Creature> &currentTarget, const std::shared_ptr<Creature> &potentialTarget, const CombatParams &params, bool aggressive);
 

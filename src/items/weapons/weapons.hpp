@@ -182,22 +182,6 @@ public:
 		return m_fromXML;
 	}
 
-	void setChainSkillValue(double value) {
-		m_chainSkillValue = value;
-	}
-
-	double getChainSkillValue() const {
-		return m_chainSkillValue;
-	}
-
-	void setDisabledChain() {
-		m_isDisabledChain = true;
-	}
-
-	bool isChainDisabled() const {
-		return m_isDisabledChain;
-	}
-
 	WeaponType_t getWeaponType() const {
 		return weaponType;
 	}
@@ -244,12 +228,10 @@ private:
 	uint32_t healthPercent = 0;
 	uint32_t soul = 0;
 	uint32_t wieldInfo = WIELDINFO_NONE;
-	double m_chainSkillValue = 0.0;
 	uint8_t breakChance = 0;
 	bool enabled = true;
 	bool premium = false;
 	bool wieldUnproperly = false;
-	bool m_isDisabledChain = false;
 	std::string vocationString;
 	std::string elementalBond;
 

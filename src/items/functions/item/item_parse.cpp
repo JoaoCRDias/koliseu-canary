@@ -83,6 +83,9 @@ void ItemParse::initParse(const std::string &stringValue, pugi::xml_node attribu
 	ItemParse::parseUnscriptedItems(stringValue, attributeNode, valueAttribute, itemType);
 	ItemParse::parseElementalBond(stringValue, valueAttribute, itemType);
 	ItemParse::parseMantra(stringValue, valueAttribute, itemType);
+	ItemParse::parseChainTargets(stringValue, valueAttribute, itemType);
+	ItemParse::parseChainDistance(stringValue, valueAttribute, itemType);
+	ItemParse::parseChainBacktracking(stringValue, valueAttribute, itemType);
 }
 
 void ItemParse::parseDummyRate(pugi::xml_node attributeNode, ItemType &itemType) {
@@ -1171,16 +1174,6 @@ void ItemParse::createAndRegisterScript(ItemType &itemType, pugi::xml_node attri
 				g_logger().warn("[{}] - wandtype '{}' does not exist", __FUNCTION__, elementName);
 			}
 
-		} else if (stringKey == "chain" && weapon) {
-			auto doubleValue = subValueAttribute.as_double();
-			if (doubleValue > 0) {
-				weapon->setChainSkillValue(doubleValue);
-				g_logger().trace("Found chain skill value '{}' for weapon: {}", doubleValue, itemType.name);
-			}
-			if (doubleValue < 0.1 && subValueAttribute.as_bool() == false) {
-				weapon->setDisabledChain();
-				g_logger().trace("Chain disabled for weapon: {}", itemType.name);
-			}
 		}
 	}
 
@@ -1301,5 +1294,23 @@ void ItemParse::parseMantra(const std::string &stringValue, pugi::xml_attribute 
 		abilities.mantraAbsorbValue[combatTypeToIndex(COMBAT_EARTHDAMAGE)] += value;
 		abilities.mantraAbsorbValue[combatTypeToIndex(COMBAT_ICEDAMAGE)] += value;
 		itemType.mantra = value;
+	}
+}
+
+void ItemParse::parseChainTargets(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
+	if (stringValue == "chaintargets") {
+		itemType.chainTargets = pugi::cast<uint8_t>(valueAttribute.value());
+	}
+}
+
+void ItemParse::parseChainDistance(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
+	if (stringValue == "chaindistance") {
+		itemType.chainDistance = pugi::cast<uint8_t>(valueAttribute.value());
+	}
+}
+
+void ItemParse::parseChainBacktracking(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
+	if (stringValue == "chainbacktracking") {
+		itemType.chainBacktracking = valueAttribute.as_bool();
 	}
 }

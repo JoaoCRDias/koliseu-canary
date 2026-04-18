@@ -327,6 +327,7 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 		uint16_t damagePercent = 100;
 		if (cleavePercent != 0) {
 			damage.extension = true;
+			damage.secondaryTarget = true;
 			damagePercent = cleavePercent;
 			if (!damage.exString.empty()) {
 				damage.exString += ", ";
@@ -343,12 +344,16 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 			g_game().addMagicEffect(target->getPosition(), attackEffect, player);
 		}
 
-		// Handle chain system
-		if (g_configManager().getBoolean(TOGGLE_CHAIN_SYSTEM) && params.chainCallback) {
+		// Handle chain system - ONLY for WANDS/RODS (disabled in PvP)
+		const bool isPvpTarget = target && target->getPlayer();
+		if (player->checkChainSystem() && params.chainCallback && getWeaponType() == WEAPON_WAND && !isPvpTarget) {
 			m_combat->doCombatChain(player, target, params.aggressive);
-			g_logger().debug("Weapon::internalUseWeapon - Chain callback executed.");
+			g_logger().debug("[Weapon::internalUseWeapon] Chain system executed for wand/rod");
 		} else {
 			Combat::doCombatHealth(player, target, damage, params);
+			if (params.chainCallback && getWeaponType() != WEAPON_WAND) {
+				g_logger().warn("[Weapon::internalUseWeapon] Chain callback exists but weapon is not a wand! Type: {}", getWeaponType());
+			}
 		}
 	}
 
@@ -1028,11 +1033,63 @@ void WeaponWand::configureWeapon(const ItemType &it) {
 	params.distanceEffect = it.shootType;
 	const_cast<ItemType &>(it).combatType = params.combatType;
 	const_cast<ItemType &>(it).maxHitChance = (minChange + maxChange) / 2;
+
+	// Configure chain system for wands/rods
+	if (it.chainTargets > 1) {
+		// Create chain callback with configured chain targets from item attributes
+		// Uses chainDistance and chainBacktracking from item definition, with defaults (5 tiles, no backtracking)
+		params.chainCallback = std::make_unique<ChainCallback>(it.chainTargets, it.chainDistance, it.chainBacktracking);
+
+		// Set chain effect; fallback to energy area if magicEffect not defined
+		params.chainEffect = static_cast<uint8_t>(it.magicEffect != CONST_ME_NONE ? it.magicEffect : CONST_ME_ENERGYAREA);
+
+		// Ensure combat object is created and configured for chain system
+		auto combat = getCombat();
+		if (combat) {
+			combat->setParam(COMBAT_PARAM_TYPE, params.combatType);
+			combat->setParam(COMBAT_PARAM_EFFECT, params.impactEffect);
+			combat->setParam(COMBAT_PARAM_DISTANCEEFFECT, params.distanceEffect);
+			combat->setParam(COMBAT_PARAM_CHAIN_EFFECT, params.chainEffect);
+
+			// Configure damage formula for wands using level + magic level
+			combat->setPlayerCombatValues(COMBAT_FORMULA_LEVELMAGIC, 0, 0, g_configManager().getFloat(COMBAT_CHAIN_SKILL_FORMULA_WANDS_AND_RODS), 0);
+		} else {
+			g_logger().error("[WeaponWand::configureWeapon] Failed to get combat object for item '{}'", it.name);
+		}
+	}
+
 	Weapon::configureWeapon(it);
 }
 
 int32_t WeaponWand::getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &, const std::shared_ptr<Item> &, bool maxDamage /* = false*/) const {
-	return maxDamage ? -maxChange : -normal_random(minChange, maxChange);
+	// Only apply custom ML-based formula when chain system is enabled for this player
+	if (!player || !player->checkChainSystem()) {
+		return maxDamage ? -maxChange : -normal_random(minChange, maxChange);
+	}
+
+	int32_t attackSkill = 0;
+	int32_t attackValue = 0;
+	float attackFactor = 0.0;
+	[[maybe_unused]] int16_t elementAttack = 0;
+	[[maybe_unused]] CombatDamage combatDamage;
+	calculateSkillFormula(player, attackSkill, attackValue, attackFactor, elementAttack, combatDamage);
+
+	const auto magLevel = player->getMagicLevel();
+	const auto level = player->getLevel();
+
+	// Wand: ML^1.15 * attack = 80%, level = 20%
+	const double effectiveML = std::pow(static_cast<double>(magLevel), 1.15);
+	const double magicAttackPart = 0.028512 * attackValue * effectiveML;
+	const double levelPart = level * 0.30;
+
+	const float vocationMultiplier = player->getVocation()->wandRodDamageMultiplier;
+	const double baseDamage = (magicAttackPart + levelPart) * vocationMultiplier;
+
+	// Variation of ±25%
+	const double minValue = std::max(10.0, baseDamage - (baseDamage * 0.25));
+	const double maxValue = baseDamage + (baseDamage * 0.25);
+
+	return maxDamage ? -static_cast<int32_t>(maxValue) : -normal_random(static_cast<int32_t>(minValue), static_cast<int32_t>(maxValue));
 }
 
 int16_t WeaponWand::getElementDamageValue() const {

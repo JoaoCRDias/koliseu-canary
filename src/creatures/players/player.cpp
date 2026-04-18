@@ -7135,6 +7135,31 @@ bool Player::isVip() const {
 	return g_configManager().getBoolean(VIP_SYSTEM_ENABLED) && (getPremiumDays() > 0 || getPremiumLastDay() > getTimeNow());
 }
 
+bool Player::checkChainSystem() const {
+	// Use cached value - refreshed every 5 seconds to pick up runtime changes (e.g. !settings toggle)
+	const int64_t now = OTSYS_TIME();
+	if (chainSystemCached && (now - chainSystemCacheTime) < 5000) {
+		return chainSystemValue;
+	}
+
+	chainSystemCached = true;
+	chainSystemCacheTime = now;
+
+	if (!g_configManager().getBoolean(TOGGLE_CHAIN_SYSTEM)) {
+		chainSystemValue = false;
+		return false;
+	}
+
+	auto featureKV = kv()->scoped("features")->get("chainSystem");
+	if (featureKV.has_value()) {
+		chainSystemValue = featureKV->get<bool>();
+	} else {
+		chainSystemValue = false;
+	}
+
+	return chainSystemValue;
+}
+
 void Player::setTibiaCoins(int32_t v) {
 	coinBalance = v;
 }

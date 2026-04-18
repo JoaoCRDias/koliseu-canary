@@ -161,6 +161,11 @@ bool Vocations::loadFromXml() {
 					voc->distDamageMultiplier = pugi::cast<float>(distDamageAttribute.value());
 				}
 
+				pugi::xml_attribute wandRodDamageAttribute = childNode.attribute("wandRodDamage");
+				if (wandRodDamageAttribute) {
+					voc->wandRodDamageMultiplier = pugi::cast<float>(wandRodDamageAttribute.value());
+				}
+
 				pugi::xml_attribute defenseAttribute = childNode.attribute("defense");
 				if (defenseAttribute) {
 					voc->defenseMultiplier = pugi::cast<float>(defenseAttribute.value());
