@@ -12,6 +12,11 @@ function playerLoginGlobal.onLogin(player)
 		end
 	end
 
+	-- Cleave system: ON by default for all players (only set if never set before)
+	if player:getFeature(Features.CleaveSystem) == nil then
+		player:setFeature(Features.CleaveSystem, true)
+	end
+
 	-- Welcome
 	local loginStr
 	if player:getLastLoginSaved() == 0 then

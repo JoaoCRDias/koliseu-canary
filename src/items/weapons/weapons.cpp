@@ -276,8 +276,9 @@ uint16_t Weapon::getWeaponAttackEffect(const std::shared_ptr<Item> &item, const 
 	}
 }
 
-void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Creature> &target, int32_t damageModifier, int32_t cleavePercent) const {
-	if (player) {
+void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Creature> &target, int32_t damageModifier, int32_t cleavePercent, int32_t overrideDamage) const {
+	// Only send sound effect for the main hit, not for cleave secondary targets
+	if (player && cleavePercent == 0) {
 		if (params.soundCastEffect == SoundEffect_t::SILENCE) {
 			g_game().sendDoubleSoundEffect(player->getPosition(), player->getHitSoundEffect(), player->getAttackSoundEffect(), player);
 		} else {
@@ -305,7 +306,10 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 		damage.primary.type = params.combatType;
 		damage.secondary.type = getElementType();
 
-		const int32_t totalDamage = (getWeaponDamage(player, target, item) * damageModifier) / 100;
+		// Cleave hits mirror the main hit's exact damage (no re-roll).
+		// overrideDamage holds the already-rolled main hit value (still negative sign).
+		const int32_t rolledDamage = overrideDamage != 0 ? overrideDamage : getWeaponDamage(player, target, item);
+		const int32_t totalDamage = (rolledDamage * damageModifier) / 100;
 		int32_t physicalAttack = item->getAttack();
 		const uint8_t extraProficiencyAttack = player->getEquippedWeaponProficiency().attack;
 		if (extraProficiencyAttack > 0) {
@@ -577,48 +581,46 @@ bool WeaponMelee::useWeapon(const std::shared_ptr<Player> &player, const std::sh
 	}
 
 	const int32_t cleavePercent = player->getCleavePercent(true);
+
+	// Roll the main hit damage a single time — cleave secondary hits will reuse this value
+	// (scaled by cleavePercent) so the log doesn't show wildly different numbers per target.
+	const int32_t mainRolledDamage = getWeaponDamage(player, target, item);
+
+	// Main target hit first, using the rolled damage as override.
+	internalUseWeapon(player, item, target, damageModifier, 0, mainRolledDamage);
+
 	if (cleavePercent > 0) {
-		const Position &targetPos = target->getPosition();
-		const Position &playerPos = player->getPosition();
-		if (playerPos != targetPos) {
-			Position firstCleaveTargetPos = targetPos;
-			Position secondCleaveTargetPos = targetPos;
-			if (targetPos.x == playerPos.x) {
-				firstCleaveTargetPos.x++;
-				secondCleaveTargetPos.x--;
-			} else if (targetPos.y == playerPos.y) {
-				firstCleaveTargetPos.y++;
-				secondCleaveTargetPos.y--;
-			} else {
-				if (targetPos.x > playerPos.x) {
-					firstCleaveTargetPos.x--;
-				} else {
-					firstCleaveTargetPos.x++;
-				}
+		// Per-player toggle: only apply cleave when Features.CleaveSystem is enabled.
+		auto cleaveKV = player->kv()->scoped("features")->get("cleaveSystem");
+		const bool cleaveEnabled = !cleaveKV.has_value() || cleaveKV->get<bool>() != false;
+		if (cleaveEnabled) {
+			const Position &playerPos = player->getPosition();
 
-				if (targetPos.y > playerPos.y) {
-					secondCleaveTargetPos.y--;
-				} else {
-					secondCleaveTargetPos.y++;
-				}
-			}
-			const auto &firstTile = g_game().map.getTile(firstCleaveTargetPos.x, firstCleaveTargetPos.y, firstCleaveTargetPos.z);
-			const auto &secondTile = g_game().map.getTile(secondCleaveTargetPos.x, secondCleaveTargetPos.y, secondCleaveTargetPos.z);
-
-			if (firstTile) {
-				if (const CreatureVector* tileCreatures = firstTile->getCreatures()) {
-					for (const auto &tileCreature : *tileCreatures) {
-						if (tileCreature->getMonster() || (tileCreature->getPlayer() && !player->hasSecureMode())) {
-							internalUseWeapon(player, item, tileCreature, damageModifier, cleavePercent);
-						}
+			// Hit all 8 surrounding SQMs plus the player's own SQM (stacked creatures).
+			for (int dx = -1; dx <= 1; ++dx) {
+				for (int dy = -1; dy <= 1; ++dy) {
+					const Position pos(playerPos.x + dx, playerPos.y + dy, playerPos.z);
+					const auto &tile = g_game().map.getTile(pos.x, pos.y, pos.z);
+					if (!tile) {
+						continue;
 					}
-				}
-			}
-			if (secondTile) {
-				if (const CreatureVector* tileCreatures = secondTile->getCreatures()) {
-					for (const auto &tileCreature : *tileCreatures) {
+
+					const CreatureVector* tileCreatures = tile->getCreatures();
+					if (!tileCreatures) {
+						continue;
+					}
+
+					// Copy to avoid iterator invalidation if a hit removes a creature.
+					const CreatureVector creaturesCopy = *tileCreatures;
+					for (const auto &tileCreature : creaturesCopy) {
+						if (!tileCreature || tileCreature == target || tileCreature == player) {
+							continue;
+						}
+						if (tileCreature->isRemoved() || !tileCreature->isAlive()) {
+							continue;
+						}
 						if (tileCreature->getMonster() || (tileCreature->getPlayer() && !player->hasSecureMode())) {
-							internalUseWeapon(player, item, tileCreature, damageModifier, cleavePercent);
+							internalUseWeapon(player, item, tileCreature, damageModifier, cleavePercent, mainRolledDamage);
 						}
 					}
 				}
@@ -626,7 +628,6 @@ bool WeaponMelee::useWeapon(const std::shared_ptr<Player> &player, const std::sh
 		}
 	}
 
-	internalUseWeapon(player, item, target, damageModifier);
 	return true;
 }
 

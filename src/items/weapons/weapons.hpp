@@ -204,7 +204,9 @@ public:
 	}
 
 protected:
-	void internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Creature> &target, int32_t damageModifier, int32_t cleavePercent = 0) const;
+	// overrideDamage > 0 bypasses getWeaponDamage() random and uses the supplied value
+	// (used by cleave secondary hits to mirror the main hit's exact damage × cleavePercent).
+	void internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Creature> &target, int32_t damageModifier, int32_t cleavePercent = 0, int32_t overrideDamage = 0) const;
 	void internalUseWeapon(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, const std::shared_ptr<Tile> &tile) const;
 
 private:
