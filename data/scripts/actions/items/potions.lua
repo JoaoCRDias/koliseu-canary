@@ -66,6 +66,25 @@ local potions = {
 
 local flaskPotion = Action()
 
+local function getPotionBadgeMultiplier(player)
+	if not player or not BadgeBag then
+		return 1
+	end
+
+	local potionBadgeTier = BadgeBag.getPlayerBadgeTier(player, "POTION")
+	if not potionBadgeTier or potionBadgeTier <= 0 then
+		return 1
+	end
+
+	local bonus
+	if potionBadgeTier <= 5 then
+		bonus = potionBadgeTier * 0.02
+	else
+		bonus = 0.10 + ((potionBadgeTier - 5) * 0.04)
+	end
+	return 1 + bonus
+end
+
 function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 	if not target or type(target) == "userdata" and not target:isPlayer() then
 		return false
@@ -78,12 +97,44 @@ function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHot
 	end
 
 	if potion.health or potion.mana or potion.combat then
+		local potionMultiplier = getPotionBadgeMultiplier(player)
+		local badgeBonusPercent = 0
+		if potionMultiplier > 1 then
+			badgeBonusPercent = math.floor((potionMultiplier - 1) * 100 + 0.5)
+		end
+
 		if potion.health then
-			doTargetCombatHealth(player, target, COMBAT_HEALING, potion.health[1], potion.health[2], CONST_ME_MAGIC_BLUE)
+			local baseMin = potion.health[1]
+			local baseMax = potion.health[2]
+			local minHealth = math.floor(baseMin * potionMultiplier)
+			local maxHealth = math.floor(baseMax * potionMultiplier)
+
+			local exString = ""
+			if badgeBonusPercent > 0 then
+				local avgBonus = math.floor(((minHealth + maxHealth) / 2) - ((baseMin + baseMax) / 2) + 0.5)
+				if avgBonus > 0 then
+					exString = string.format("badge +%d (%d%%)", avgBonus, badgeBonusPercent)
+				end
+			end
+
+			doTargetCombatHealth(player, target, COMBAT_HEALING, minHealth, maxHealth, CONST_ME_MAGIC_BLUE, ORIGIN_SPELL, exString)
 		end
 
 		if potion.mana then
-			doTargetCombatMana(0, target, potion.mana[1], potion.mana[2], CONST_ME_MAGIC_BLUE)
+			local baseMin = potion.mana[1]
+			local baseMax = potion.mana[2]
+			local minMana = math.floor(baseMin * potionMultiplier)
+			local maxMana = math.floor(baseMax * potionMultiplier)
+
+			local exString = ""
+			if badgeBonusPercent > 0 then
+				local avgBonus = math.floor(((minMana + maxMana) / 2) - ((baseMin + baseMax) / 2) + 0.5)
+				if avgBonus > 0 then
+					exString = string.format("badge +%d mana (%d%%)", avgBonus, badgeBonusPercent)
+				end
+			end
+
+			doTargetCombatMana(0, target, minMana, maxMana, CONST_ME_MAGIC_BLUE, ORIGIN_SPELL, exString)
 		end
 
 		if potion.combat then

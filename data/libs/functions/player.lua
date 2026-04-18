@@ -490,6 +490,26 @@ function Player:calculateLootFactor(monster)
 		suffix = string.format("vip bonus %d%%", math.floor(vipBoost * 100 + 0.5))
 	end
 
+	-- Badge progression - loot bonus
+	if BadgeBag then
+		local lootBadgeTier = BadgeBag.getPlayerBadgeTier(self, "LOOT")
+		if lootBadgeTier > 0 then
+			local lootBonus
+			if lootBadgeTier <= 5 then
+				lootBonus = lootBadgeTier * 0.02
+			else
+				lootBonus = 0.10 + ((lootBadgeTier - 5) * 0.04)
+			end
+			factor = factor * (1 + lootBonus)
+
+			local bonusPercent = lootBadgeTier <= 5 and (lootBadgeTier * 2) or (10 + ((lootBadgeTier - 5) * 4))
+			if #suffix > 0 then
+				suffix = suffix .. ", "
+			end
+			suffix = suffix .. string.format("badge +%d%%", bonusPercent)
+		end
+	end
+
 	return {
 		factor = factor,
 		msgSuffix = suffix,
@@ -860,4 +880,15 @@ function Player.findItemInInbox(self, itemId, name)
 		end
 	end
 	return nil
+end
+
+function Player:sendColoredMessage(message)
+	local grey = 3003
+	local blue = 3043
+	local green = 3415
+	local purple = 36792
+	local yellow = 34021
+
+	local msg = message:gsub("{grey|", "{" .. grey .. "|"):gsub("{blue|", "{" .. blue .. "|"):gsub("{green|", "{" .. green .. "|"):gsub("{purple|", "{" .. purple .. "|"):gsub("{yellow|", "{" .. yellow .. "|")
+	return self:sendTextMessage(MESSAGE_LOOT, msg)
 end

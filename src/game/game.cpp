@@ -7637,6 +7637,41 @@ static void applyImproveMonkHealing(CombatDamage &damage, const std::shared_ptr<
 	}
 }
 
+static void applyHealBadgeBonus(CombatDamage &damage, const std::shared_ptr<Player> &player) {
+	if (!player) {
+		return;
+	}
+
+	if (damage.primary.type != COMBAT_HEALING) {
+		return;
+	}
+
+	// Only apply to spells/runes (potions handled in Lua with their own badge formula)
+	if (damage.instantSpellName.empty() && damage.runeSpellName.empty()) {
+		return;
+	}
+
+	const uint8_t healBadgeTier = player->getBadgeTier(60630); // Heal Badge ID
+	if (healBadgeTier == 0) {
+		return;
+	}
+
+	const double healBonus = healBadgeTier <= 5
+		? healBadgeTier * 0.02
+		: 0.10 + ((healBadgeTier - 5) * 0.04);
+
+	const int32_t beforeValue = damage.primary.value;
+	damage.primary.value = static_cast<int32_t>(damage.primary.value * (1.0 + healBonus));
+	const int32_t badgeBonusHeal = damage.primary.value - beforeValue;
+	if (badgeBonusHeal > 0) {
+		const int32_t badgePercent = healBadgeTier <= 5 ? healBadgeTier * 2 : 10 + ((healBadgeTier - 5) * 4);
+		if (!damage.exString.empty()) {
+			damage.exString += ", ";
+		}
+		damage.exString += fmt::format("badge +{} ({}%)", badgeBonusHeal, badgePercent);
+	}
+}
+
 bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const std::shared_ptr<Creature> &target, CombatDamage &damage, bool isEvent /*= false*/) {
 	using namespace std;
 	const Position &targetPos = target->getPosition();
@@ -7674,6 +7709,9 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 		// Monk Virtue of Sustain
 		applyImproveMonkHealing(damage, attackerPlayer);
 
+		// Badge progression - heal bonus (spells/runes only)
+		applyHealBadgeBonus(damage, attackerPlayer);
+
 		auto realHealthChange = target->getHealth();
 		target->gainHealth(attacker, damage.primary.value);
 		realHealthChange = target->getHealth() - realHealthChange;
@@ -7709,6 +7747,9 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 				if (tmpPlayer == attackerPlayer && attackerPlayer != targetPlayer) {
 					ss.str({});
 					ss << "You heal " << target->getNameDescription() << " for " << damageString;
+					if (!damage.exString.empty()) {
+						ss << " (" << damage.exString << ")";
+					}
 					message.type = MESSAGE_HEALED;
 					message.text = ss.str();
 				} else if (tmpPlayer == targetPlayer) {
@@ -7721,6 +7762,9 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 						ss << "You were healed by " << attacker->getNameDescription();
 					}
 					ss << " for " << damageString;
+					if (!damage.exString.empty()) {
+						ss << " (" << damage.exString << ")";
+					}
 					message.type = MESSAGE_HEALED;
 					message.text = ss.str();
 				} else {
@@ -7737,6 +7781,9 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 							}
 						}
 						ss << " for " << damageString;
+						if (!damage.exString.empty()) {
+							ss << " (" << damage.exString << ")";
+						}
 						spectatorMessage = ss.str();
 					}
 					message.type = MESSAGE_HEALED_OTHERS;
@@ -7776,6 +7823,30 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 
 		damage.primary.value = std::abs(damage.primary.value);
 		damage.secondary.value = std::abs(damage.secondary.value);
+
+		// Badge progression - damage bonus (ALL damage except extensions like gem damage)
+		if (attackerPlayer && !damage.extension) {
+			const uint8_t damageBadgeTier = attackerPlayer->getBadgeTier(60526); // Damage Badge ID
+			if (damageBadgeTier > 0) {
+				// Tier 1-5: 2% each (2%, 4%, 6%, 8%, 10%)
+				// Tier 6-10: 10% base + 4% each (14%, 18%, 22%, 26%, 30%)
+				const double damageBonus = damageBadgeTier <= 5
+					? damageBadgeTier * 0.02
+					: 0.10 + ((damageBadgeTier - 5) * 0.04);
+				const int32_t beforePrimary = damage.primary.value;
+				const int32_t beforeSecondary = damage.secondary.value;
+				damage.primary.value = static_cast<int32_t>(damage.primary.value * (1.0 + damageBonus));
+				damage.secondary.value = static_cast<int32_t>(damage.secondary.value * (1.0 + damageBonus));
+				const int32_t badgeBonusDamage = (damage.primary.value - beforePrimary) + (damage.secondary.value - beforeSecondary);
+				if (badgeBonusDamage > 0) {
+					const int32_t badgePercent = damageBadgeTier <= 5 ? damageBadgeTier * 2 : 10 + ((damageBadgeTier - 5) * 4);
+					if (!damage.exString.empty()) {
+						damage.exString += ", ";
+					}
+					damage.exString += fmt::format("badge +{} ({}%)", badgeBonusDamage, badgePercent);
+				}
+			}
+		}
 
 		std::shared_ptr<Monster> targetMonster;
 		if (target && target->getMonster()) {
@@ -8183,7 +8254,7 @@ void Game::buildMessageAsSpectator(
 			}
 		}
 		ss << '.';
-		if (damage.extension) {
+		if (!damage.exString.empty()) {
 			ss << " " << damage.exString;
 		}
 		spectatorMessage = ss.str();
@@ -8213,7 +8284,7 @@ void Game::buildMessageAsTarget(
 	} else {
 		ss << " due to " << article << " " << attackMsg << "attack by " << attacker->getNameDescription() << '.';
 	}
-	if (damage.extension) {
+	if (!damage.exString.empty()) {
 		ss << " " << damage.exString;
 	}
 	if (handleSoulPit && damage.critical) {
@@ -8245,7 +8316,7 @@ void Game::buildMessageAsAttacker(
 		}
 	}
 
-	if (damage.extension) {
+	if (!damage.exString.empty()) {
 		ss << " " << damage.exString;
 	}
 
@@ -8462,6 +8533,8 @@ bool Game::combatChangeMana(const std::shared_ptr<Creature> &attacker, const std
 		if (realManaChange > 0 && !target->isInGhostMode()) {
 			std::string damageString = fmt::format("{} mana", realManaChange);
 
+			const std::string exSuffix = damage.exString.empty() ? "" : " (" + damage.exString + ")";
+
 			std::string spectatorMessage;
 			if (!attacker) {
 				spectatorMessage += ucfirst(target->getNameDescription());
@@ -8476,6 +8549,7 @@ bool Game::combatChangeMana(const std::shared_ptr<Creature> &attacker, const std
 				}
 				spectatorMessage += " for " + damageString;
 			}
+			spectatorMessage += exSuffix;
 
 			TextMessage message;
 			message.position = targetPos;
@@ -8490,15 +8564,15 @@ bool Game::combatChangeMana(const std::shared_ptr<Creature> &attacker, const std
 
 				if (tmpPlayer == attackerPlayer && attackerPlayer != targetPlayer) {
 					message.type = MESSAGE_HEALED;
-					message.text = "You restored " + target->getNameDescription() + " for " + damageString;
+					message.text = "You restored " + target->getNameDescription() + " for " + damageString + exSuffix;
 				} else if (tmpPlayer == targetPlayer) {
 					message.type = MESSAGE_HEALED;
 					if (!attacker) {
-						message.text = "You were restored for " + damageString;
+						message.text = "You were restored for " + damageString + exSuffix;
 					} else if (targetPlayer == attackerPlayer) {
-						message.text = "You restore yourself for " + damageString;
+						message.text = "You restore yourself for " + damageString + exSuffix;
 					} else {
-						message.text = "You were restored by " + attacker->getNameDescription() + " for " + damageString;
+						message.text = "You were restored by " + attacker->getNameDescription() + " for " + damageString + exSuffix;
 					}
 				} else {
 					message.type = MESSAGE_HEALED_OTHERS;

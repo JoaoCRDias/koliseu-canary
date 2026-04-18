@@ -3376,6 +3376,15 @@ void Player::addExperience(const std::shared_ptr<Creature> &target, uint64_t exp
 		exp *= animusMasteryMultiplier;
 	}
 
+	// Badge progression - experience bonus
+	const uint8_t expBadgeTier = getBadgeTier(60524); // Experience Badge ID
+	if (expBadgeTier > 0) {
+		const double expBonus = expBadgeTier <= 5
+			? expBadgeTier * 0.02
+			: 0.10 + ((expBadgeTier - 5) * 0.04);
+		exp = static_cast<uint64_t>(exp * (1.0 + expBonus));
+	}
+
 	experience += exp;
 
 	if (sendText) {
@@ -3389,6 +3398,11 @@ void Player::addExperience(const std::shared_ptr<Creature> &target, uint64_t exp
 
 		if (handleAnimusMastery) {
 			expString = fmt::format("{} (animus mastery bonus {:.1f}%)", expString, (animusMasteryMultiplier - 1) * 100);
+		}
+
+		if (expBadgeTier > 0) {
+			const double badgePercent = expBadgeTier <= 5 ? expBadgeTier * 2 : 10 + ((expBadgeTier - 5) * 4);
+			expString = fmt::format("{} (badge +{:.0f}%)", expString, badgePercent);
 		}
 
 		TextMessage message(MESSAGE_EXPERIENCE, "You gained " + expString + (handleHazardExperience ? " (Hazard)" : ""));
@@ -7175,6 +7189,30 @@ bool Player::checkChainSystem() const {
 	}
 
 	return chainSystemValue;
+}
+
+uint8_t Player::getBadgeTier(uint16_t badgeItemId) {
+	// Search inventory slots and their containers (e.g. Store Inbox → Badge Bag).
+	for (int32_t i = CONST_SLOT_FIRST; i <= CONST_SLOT_LAST; i++) {
+		const auto &item = inventory[i];
+		if (!item) {
+			continue;
+		}
+
+		if (item->getID() == badgeItemId) {
+			return item->getTier();
+		}
+
+		if (const auto &container = item->getContainer()) {
+			for (ContainerIterator it = container->iterator(); it.hasNext(); it.advance()) {
+				if ((*it)->getID() == badgeItemId) {
+					return (*it)->getTier();
+				}
+			}
+		}
+	}
+
+	return 0;
 }
 
 void Player::setTibiaCoins(int32_t v) {

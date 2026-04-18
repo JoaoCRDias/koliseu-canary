@@ -345,7 +345,7 @@ int GlobalFunctions::luaDoAreaCombatHealth(lua_State* L) {
 }
 
 int GlobalFunctions::luaDoTargetCombatHealth(lua_State* L) {
-	// doTargetCombatHealth(cid, target, type, min, max, effect[, origin = ORIGIN_SPELL])
+	// doTargetCombatHealth(cid, target, type, min, max, effect[, origin = ORIGIN_SPELL[, exString = ""[, instantSpellName[, runeSpellName]]]])
 	const auto &creature = Lua::getCreature(L, 1);
 	if (!creature && (!Lua::isNumber(L, 1) || Lua::getNumber<uint32_t>(L, 1) != 0)) {
 		Lua::reportErrorFunc(Lua::getErrorDesc(LUA_ERROR_CREATURE_NOT_FOUND));
@@ -371,6 +371,7 @@ int GlobalFunctions::luaDoTargetCombatHealth(lua_State* L) {
 	damage.primary.type = combatType;
 	damage.primary.value = normal_random(Lua::getNumber<int32_t>(L, 4), Lua::getNumber<int32_t>(L, 5));
 
+	damage.exString = Lua::getString(L, 8);
 	damage.instantSpellName = Lua::getString(L, 9);
 	damage.runeSpellName = Lua::getString(L, 10);
 	if (creature) {
@@ -428,7 +429,7 @@ int GlobalFunctions::luaDoAreaCombatMana(lua_State* L) {
 }
 
 int GlobalFunctions::luaDoTargetCombatMana(lua_State* L) {
-	// doTargetCombatMana(cid, target, min, max, effect[, origin = ORIGIN_SPELL)
+	// doTargetCombatMana(cid, target, min, max, effect[, origin = ORIGIN_SPELL[, exString = ""[, instantSpellName[, runeSpellName]]]])
 	const auto &creature = Lua::getCreature(L, 1);
 	if (!creature && (!Lua::isNumber(L, 1) || Lua::getNumber<uint32_t>(L, 1) != 0)) {
 		Lua::reportErrorFunc(Lua::getErrorDesc(LUA_ERROR_CREATURE_NOT_FOUND));
@@ -454,8 +455,9 @@ int GlobalFunctions::luaDoTargetCombatMana(lua_State* L) {
 	damage.primary.type = COMBAT_MANADRAIN;
 	damage.primary.value = normal_random(minval, maxval);
 
-	damage.instantSpellName = Lua::getString(L, 7);
-	damage.runeSpellName = Lua::getString(L, 8);
+	damage.exString = Lua::getString(L, 7);
+	damage.instantSpellName = Lua::getString(L, 8);
+	damage.runeSpellName = Lua::getString(L, 9);
 	if (creature) {
 		if (const auto &player = creature->getPlayer()) {
 			player->wheel().getCombatDataSpell(damage);

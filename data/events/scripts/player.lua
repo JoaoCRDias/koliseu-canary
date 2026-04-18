@@ -239,10 +239,35 @@ end
 
 local exhaust = {}
 
+-- Items that must never leave the store inbox
+local STORE_INBOX_LOCKED_ITEMS = {
+	[60402] = true, -- badge bag
+}
+
 function Player:onMoveItem(item, count, fromPosition, toPosition, fromCylinder, toCylinder)
 	if item:getActionId() == IMMOVABLE_ACTION_ID then
 		self:sendCancelMessage(RETURNVALUE_NOTPOSSIBLE)
 		return false
+	end
+
+	-- Block moving locked items out of the store inbox
+	if STORE_INBOX_LOCKED_ITEMS[item:getId()] then
+		local parent = item:getParent()
+		if parent and parent:isContainer() then
+			local topParent = item:getTopParent()
+			local storeInbox = self:getStoreInbox()
+			if storeInbox and (parent:getId() == 23396 or topParent == storeInbox or (topParent and topParent:getId() == 23396)) then
+				self:sendCancelMessage("You cannot move this item out of the store inbox.")
+				return false
+			end
+		end
+	end
+
+	if BadgeBag then
+		local allowed = BadgeBag.onMoveItem(self, item, fromPosition, toPosition, fromCylinder, toCylinder)
+		if allowed == false then
+			return false
+		end
 	end
 
 	-- No move if tile item count > 20 items

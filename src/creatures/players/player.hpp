@@ -599,6 +599,9 @@ public:
 
 	bool checkChainSystem() const;
 
+	// Returns the tier of a badge item (searched in inventory + containers, e.g. Store Inbox → Badge Bag).
+	uint8_t getBadgeTier(uint16_t badgeItemId);
+
 	void setTibiaCoins(int32_t v);
 	void setTransferableTibiaCoins(int32_t v);
 
