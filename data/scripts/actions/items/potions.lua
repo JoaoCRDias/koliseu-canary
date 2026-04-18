@@ -108,14 +108,33 @@ function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHot
 			local baseMax = potion.health[2]
 			local minHealth = math.floor(baseMin * potionMultiplier)
 			local maxHealth = math.floor(baseMax * potionMultiplier)
+			-- Snapshot post-badge range so we can attribute each bonus separately in the message
+			local afterBadgeMin = minHealth
+			local afterBadgeMax = maxHealth
 
-			local exString = ""
+			-- Relic: Potion healing bonus (storage 920030, value stored as bps, 10000 = 100%)
+			local relicBonus = player:getStorageValue(920030)
+			if relicBonus and relicBonus > 0 then
+				local extraMin = math.floor(minHealth * relicBonus / 10000)
+				local extraMax = math.floor(maxHealth * relicBonus / 10000)
+				minHealth = minHealth + extraMin
+				maxHealth = maxHealth + extraMax
+			end
+
+			local parts = {}
 			if badgeBonusPercent > 0 then
-				local avgBonus = math.floor(((minHealth + maxHealth) / 2) - ((baseMin + baseMax) / 2) + 0.5)
+				local avgBonus = math.floor(((afterBadgeMin + afterBadgeMax) / 2) - ((baseMin + baseMax) / 2) + 0.5)
 				if avgBonus > 0 then
-					exString = string.format("badge +%d (%d%%)", avgBonus, badgeBonusPercent)
+					parts[#parts + 1] = string.format("badge +%d (%d%%)", avgBonus, badgeBonusPercent)
 				end
 			end
+			if relicBonus and relicBonus > 0 then
+				local avgRelicBonus = math.floor(((minHealth + maxHealth) / 2) - ((afterBadgeMin + afterBadgeMax) / 2) + 0.5)
+				if avgRelicBonus > 0 then
+					parts[#parts + 1] = string.format("+%d from relic", avgRelicBonus)
+				end
+			end
+			local exString = table.concat(parts, ", ")
 
 			doTargetCombatHealth(player, target, COMBAT_HEALING, minHealth, maxHealth, CONST_ME_MAGIC_BLUE, ORIGIN_SPELL, exString)
 		end
@@ -125,14 +144,32 @@ function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHot
 			local baseMax = potion.mana[2]
 			local minMana = math.floor(baseMin * potionMultiplier)
 			local maxMana = math.floor(baseMax * potionMultiplier)
+			local afterBadgeMin = minMana
+			local afterBadgeMax = maxMana
 
-			local exString = ""
+			-- Relic: Potion healing bonus (storage 920030) also boosts mana potions
+			local relicBonus = player:getStorageValue(920030)
+			if relicBonus and relicBonus > 0 then
+				local extraMin = math.floor(minMana * relicBonus / 10000)
+				local extraMax = math.floor(maxMana * relicBonus / 10000)
+				minMana = minMana + extraMin
+				maxMana = maxMana + extraMax
+			end
+
+			local parts = {}
 			if badgeBonusPercent > 0 then
-				local avgBonus = math.floor(((minMana + maxMana) / 2) - ((baseMin + baseMax) / 2) + 0.5)
+				local avgBonus = math.floor(((afterBadgeMin + afterBadgeMax) / 2) - ((baseMin + baseMax) / 2) + 0.5)
 				if avgBonus > 0 then
-					exString = string.format("badge +%d mana (%d%%)", avgBonus, badgeBonusPercent)
+					parts[#parts + 1] = string.format("badge +%d mana (%d%%)", avgBonus, badgeBonusPercent)
 				end
 			end
+			if relicBonus and relicBonus > 0 then
+				local avgRelicBonus = math.floor(((minMana + maxMana) / 2) - ((afterBadgeMin + afterBadgeMax) / 2) + 0.5)
+				if avgRelicBonus > 0 then
+					parts[#parts + 1] = string.format("+%d mana from relic", avgRelicBonus)
+				end
+			end
+			local exString = table.concat(parts, ", ")
 
 			doTargetCombatMana(0, target, minMana, maxMana, CONST_ME_MAGIC_BLUE, ORIGIN_SPELL, exString)
 		end

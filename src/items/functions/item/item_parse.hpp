@@ -164,6 +164,9 @@ const phmap::flat_hash_map<std::string, ItemParseAttributes_t> ItemParseAttribut
 	{ "chaintargets", ITEM_PARSE_CHAINTARGETS },
 	{ "chaindistance", ITEM_PARSE_CHAINDISTANCE },
 	{ "chainbacktracking", ITEM_PARSE_CHAINBACKTRACKING },
+	{ "isreliquary", ITEM_PARSE_ISRELIQUARY },
+	{ "isrelic", ITEM_PARSE_ISRELIC },
+	{ "isrelicaltar", ITEM_PARSE_ISRELICALTAR },
 };
 
 const phmap::flat_hash_map<std::string, ItemTypes_t> ItemTypesMap = {
@@ -339,6 +342,9 @@ private:
 	static void parseChainTargets(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType);
 	static void parseChainDistance(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType);
 	static void parseChainBacktracking(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType);
+	static void parseIsReliquary(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType);
+	static void parseIsRelic(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType);
+	static void parseIsRelicAltar(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType);
 
 private:
 	// Parent of the function: static void parseField

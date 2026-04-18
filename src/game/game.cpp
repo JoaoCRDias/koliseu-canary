@@ -7637,6 +7637,40 @@ static void applyImproveMonkHealing(CombatDamage &damage, const std::shared_ptr<
 	}
 }
 
+static void applyRelicHealBonus(CombatDamage &damage, const std::shared_ptr<Player> &player) {
+	if (!player || damage.primary.type != COMBAT_HEALING || damage.instantSpellName.empty()) {
+		return;
+	}
+
+	static const std::unordered_map<std::string, int32_t> relicHealStorages = {
+		{ "Fair Wound Cleansing", 920018 },
+		{ "Salvation", 920019 },
+		{ "Ultimate Healing", 920020 },
+		{ "Spirit Mend", 920027 },
+	};
+
+	auto it = relicHealStorages.find(damage.instantSpellName);
+	if (it == relicHealStorages.end()) {
+		return;
+	}
+
+	const int32_t relicBonus = player->getStorageValue(it->second);
+	if (relicBonus <= 0) {
+		return;
+	}
+
+	const int32_t healExtra = static_cast<int32_t>((damage.primary.value * relicBonus) / 10000.0);
+	if (healExtra <= 0) {
+		return;
+	}
+
+	damage.primary.value += healExtra;
+	if (!damage.exString.empty()) {
+		damage.exString += ", ";
+	}
+	damage.exString += fmt::format("+{} from relic", healExtra);
+}
+
 static void applyHealBadgeBonus(CombatDamage &damage, const std::shared_ptr<Player> &player) {
 	if (!player) {
 		return;
@@ -7711,6 +7745,9 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 
 		// Badge progression - heal bonus (spells/runes only)
 		applyHealBadgeBonus(damage, attackerPlayer);
+
+		// Relic system - heal spell bonuses
+		applyRelicHealBonus(damage, attackerPlayer);
 
 		auto realHealthChange = target->getHealth();
 		target->gainHealth(attacker, damage.primary.value);

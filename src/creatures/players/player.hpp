@@ -602,6 +602,9 @@ public:
 	// Returns the tier of a badge item (searched in inventory + containers, e.g. Store Inbox → Badge Bag).
 	uint8_t getBadgeTier(uint16_t badgeItemId);
 
+	// Relic system - elemental resistance read from storage 920040-920046 (value is % × 100, e.g. 550 = 5.5%)
+	double getRelicResistBonus(CombatType_t combat) const;
+
 	void setTibiaCoins(int32_t v);
 	void setTransferableTibiaCoins(int32_t v);
 

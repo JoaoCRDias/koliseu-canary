@@ -270,6 +270,25 @@ function Player:onMoveItem(item, count, fromPosition, toPosition, fromCylinder, 
 		end
 	end
 
+	-- Reliquary: block duplicate bonus relics
+	if RelicSystem and RelicSystem.isRelic(item) and toCylinder and toCylinder:isContainer() then
+		if RelicSystem.isReliquary(toCylinder) then
+			local newData = RelicSystem.getRelicData(item)
+			if newData then
+				for i = 0, toCylinder:getSize() - 1 do
+					local existing = toCylinder:getItem(i)
+					if existing and existing:getUniqueId() ~= item:getUniqueId() then
+						local existingData = RelicSystem.getRelicData(existing)
+						if existingData and existingData.bonusId == newData.bonusId then
+							self:sendCancelMessage("You cannot equip two relics with the same bonus.")
+							return false
+						end
+					end
+				end
+			end
+		end
+	end
+
 	-- No move if tile item count > 20 items
 	local tile = Tile(toPosition)
 	if tile and tile:getItemCount() > 20 then
@@ -447,6 +466,12 @@ function Player:onItemMoved(item, count, fromPosition, toPosition, fromCylinder,
 		end
 		-- Cults of Tibia end
 	end
+
+	-- RelicBonus: recalculate passive bonuses when relics/reliquary are moved
+	if RelicBonus then
+		RelicBonus.onItemMoved(self, item, fromPosition, toPosition, fromCylinder, toCylinder)
+	end
+
 	return true
 end
 

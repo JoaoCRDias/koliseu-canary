@@ -3710,6 +3710,12 @@ BlockType_t Player::blockHit(const std::shared_ptr<Creature> &attacker, const Co
 			}
 		}
 
+		// Relic system - elemental protection (storage 920040-920046)
+		const double relicResistBonus = getRelicResistBonus(combatType);
+		if (relicResistBonus > 0.0) {
+			damage -= static_cast<int32_t>(std::round(damage * (relicResistBonus / 100.0)));
+		}
+
 		// Wheel of destiny - apply resistance
 		wheel().adjustDamageBasedOnResistanceAndSkill(damage, combatType);
 
@@ -7213,6 +7219,39 @@ uint8_t Player::getBadgeTier(uint16_t badgeItemId) {
 	}
 
 	return 0;
+}
+
+double Player::getRelicResistBonus(CombatType_t combat) const {
+	int32_t storageId = -1;
+	switch (combat) {
+		case COMBAT_FIREDAMAGE:
+			storageId = 920040;
+			break;
+		case COMBAT_ICEDAMAGE:
+			storageId = 920041;
+			break;
+		case COMBAT_EARTHDAMAGE:
+			storageId = 920042;
+			break;
+		case COMBAT_ENERGYDAMAGE:
+			storageId = 920043;
+			break;
+		case COMBAT_HOLYDAMAGE:
+			storageId = 920044;
+			break;
+		case COMBAT_DEATHDAMAGE:
+			storageId = 920045;
+			break;
+		case COMBAT_PHYSICALDAMAGE:
+			storageId = 920046;
+			break;
+		default:
+			return 0.0;
+	}
+
+	const int32_t value = getStorageValue(storageId);
+	// Storage value is stored multiplied by 100 (e.g., 550 = 5.5%)
+	return value > 0 ? (value / 100.0) : 0.0;
 }
 
 void Player::setTibiaCoins(int32_t v) {

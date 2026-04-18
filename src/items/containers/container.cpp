@@ -558,6 +558,11 @@ ReturnValue Container::queryAdd(int32_t addIndex, const std::shared_ptr<Thing> &
 		return RETURNVALUE_ONLYAMMOINQUIVER;
 	}
 
+	// Block non-relic items from being placed in Reliquary containers
+	if (Item::items[getID()].isReliquary && !Item::items[item->getID()].isRelic) {
+		return RETURNVALUE_ONLYRELICSINRELIQUARY;
+	}
+
 	const std::shared_ptr<Cylinder> &topParent = getTopParent();
 	if (topParent != getContainer()) {
 		return topParent->queryAdd(INDEX_WHEREEVER, item, addCount, flags | FLAG_CHILDISOWNER, actor);

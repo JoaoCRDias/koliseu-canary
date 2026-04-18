@@ -86,6 +86,9 @@ void ItemParse::initParse(const std::string &stringValue, pugi::xml_node attribu
 	ItemParse::parseChainTargets(stringValue, valueAttribute, itemType);
 	ItemParse::parseChainDistance(stringValue, valueAttribute, itemType);
 	ItemParse::parseChainBacktracking(stringValue, valueAttribute, itemType);
+	ItemParse::parseIsReliquary(stringValue, valueAttribute, itemType);
+	ItemParse::parseIsRelic(stringValue, valueAttribute, itemType);
+	ItemParse::parseIsRelicAltar(stringValue, valueAttribute, itemType);
 }
 
 void ItemParse::parseDummyRate(pugi::xml_node attributeNode, ItemType &itemType) {
@@ -1312,5 +1315,23 @@ void ItemParse::parseChainDistance(const std::string &stringValue, pugi::xml_att
 void ItemParse::parseChainBacktracking(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
 	if (stringValue == "chainbacktracking") {
 		itemType.chainBacktracking = valueAttribute.as_bool();
+	}
+}
+
+void ItemParse::parseIsReliquary(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
+	if (stringValue == "isreliquary") {
+		itemType.isReliquary = valueAttribute.as_bool();
+	}
+}
+
+void ItemParse::parseIsRelic(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
+	if (stringValue == "isrelic") {
+		itemType.isRelic = valueAttribute.as_bool();
+	}
+}
+
+void ItemParse::parseIsRelicAltar(const std::string &stringValue, pugi::xml_attribute valueAttribute, ItemType &itemType) {
+	if (stringValue == "isrelicaltar") {
+		itemType.isRelicAltar = valueAttribute.as_bool();
 	}
 }

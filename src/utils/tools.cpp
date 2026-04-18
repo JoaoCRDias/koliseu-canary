@@ -1359,6 +1359,9 @@ const char* getReturnMessage(ReturnValue value) {
 		case RETURNVALUE_ONLYAMMOINQUIVER:
 			return "This quiver only holds arrows and bolts.\nYou cannot put any other items in it.";
 
+		case RETURNVALUE_ONLYRELICSINRELIQUARY:
+			return "This reliquary only holds relics.\nYou cannot put any other items in it.";
+
 		case RETURNVALUE_CREATUREBLOCK:
 		case RETURNVALUE_NEEDEXCHANGE:
 		case RETURNVALUE_NOTENOUGHROOM:

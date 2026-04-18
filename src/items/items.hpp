@@ -335,6 +335,11 @@ public:
 	uint8_t chainDistance = 2; // Default: 5 tiles
 	bool chainBacktracking = false; // Default: no backtracking
 
+	// Relic system markers (parsed from items.xml)
+	bool isReliquary = false;
+	bool isRelic = false;
+	bool isRelicAltar = false;
+
 	int8_t hitChance = 0;
 
 	std::vector<std::shared_ptr<AugmentInfo>> augments;

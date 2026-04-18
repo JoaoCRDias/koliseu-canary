@@ -191,6 +191,11 @@ function playerLoginGlobal.onLogin(player)
 		player:addCondition(condition)
 	end
 
+	-- Relic system: recalculate passive bonuses from equipped reliquary on login
+	if RelicBonus then
+		RelicBonus.onLogin(player)
+	end
+
 	return true
 end
 
