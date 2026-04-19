@@ -2502,17 +2502,29 @@ void Combat::applyExtensions(const std::shared_ptr<Creature> &caster, const std:
 		const int32_t rand = uniform_random(1, 100) * 100;
 		bool canApplyCritical = (baseCriticalHitChance != 0 && rand <= baseCriticalHitChance);
 
-		// Bonus Fatal - Tier
+		// Bonus Fatal - Tier + GemBag Onslaught/Amplification
 		bool canApplyFatal = false;
+		double fatalChance = 0.0;
 		if (const auto &playerWeapon = player->getInventoryItem(CONST_SLOT_LEFT); playerWeapon && playerWeapon->getTier() > 0) {
-			double fatalChance = playerWeapon->getFatalChance();
+			fatalChance = playerWeapon->getFatalChance();
+		}
+		// GemBag onslaught stacks with weapon tier fatal chance (storage 910003, value % × 100)
+		fatalChance += player->getGemBagOnslaughtBonus();
+
+		if (fatalChance > 0.0) {
+			double amplifiedChance = 0.0;
 			if (const auto &playerBoots = player->getInventoryItem(CONST_SLOT_FEET); playerBoots && playerBoots->getTier() > 0) {
-				double amplifiedChance = playerBoots->getAmplificationChance();
+				amplifiedChance = playerBoots->getAmplificationChance();
+			}
+			// GemBag amplification stacks with boots tier amplification (storage 910006)
+			amplifiedChance += player->getGemBagAmplificationBonus();
+
+			if (amplifiedChance > 0.0) {
 				fatalChance *= (amplifiedChance / 100.0) + 1.0;
 			}
 
-			double randomRoll = uniform_random(1, 100) / 1.0;
-			canApplyFatal = (fatalChance > 0 && randomRoll < fatalChance);
+			const double randomRoll = uniform_random(1, 100) / 1.0;
+			canApplyFatal = randomRoll < fatalChance;
 		}
 
 		// Bonus Low Blow Charm

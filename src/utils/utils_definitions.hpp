@@ -543,6 +543,11 @@ enum ItemID_t : uint16_t {
 
 	ITEM_GOLD_POUCH = 60300,
 
+	// GemBag system (container + placeholder + fixed-slot lock visuals)
+	ITEM_GEM_BAG = 60165,
+	ITEM_GEM_PLACEHOLDER = 60325,
+	ITEM_GEM_LOCK = 60327,
+
 	ITEM_DEPOT_I = 22797,
 	ITEM_DEPOT_II = 22798,
 	ITEM_DEPOT_III = 22799,

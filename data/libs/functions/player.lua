@@ -530,6 +530,21 @@ function Player:calculateLootFactor(monster)
 		end
 	end
 
+	-- GemBag Ruse loot bonus (cached via GemBag.getCachedBonuses)
+	if GemBag then
+		local bonuses = GemBag.getCachedBonuses(self)
+		if bonuses and bonuses.totals then
+			local lootBonus = bonuses.totals.lootPercent or 0
+			if lootBonus > 0 then
+				factor = factor * (1 + lootBonus / 100)
+				if #suffix > 0 then
+					suffix = suffix .. ", "
+				end
+				suffix = suffix .. string.format("gems +%d%%", math.floor(lootBonus + 0.5))
+			end
+		end
+	end
+
 	return {
 		factor = factor,
 		msgSuffix = suffix,

@@ -624,6 +624,34 @@ uint32_t MoveEvent::EquipItem(const std::shared_ptr<MoveEvent> &moveEvent, const
 		}
 	}
 
+	// Skill Gem bonuses from custom attributes (applied on equip)
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_magic_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarStats(STAT_MAGICPOINTS, bonus);
+		}
+	}
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_distance_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarSkill(SKILL_DISTANCE, bonus);
+		}
+	}
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_fist_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarSkill(SKILL_FIST, bonus);
+		}
+	}
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_melee_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarSkill(SKILL_SWORD, bonus);
+			player->setVarSkill(SKILL_AXE, bonus);
+			player->setVarSkill(SKILL_CLUB, bonus);
+		}
+	}
+
 	// Updates the main backpack as unasigned if there is no item equipped
 	if (slot == CONST_SLOT_BACKPACK) {
 		g_logger().debug("[{}] does not have backpack, trying to add new container as unasigned", __FUNCTION__);
@@ -703,6 +731,34 @@ uint32_t MoveEvent::DeEquipItem(const std::shared_ptr<MoveEvent> &, const std::s
 	for (int32_t s = STAT_FIRST; s <= STAT_LAST; ++s) {
 		if (item->getStat(static_cast<stats_t>(s))) {
 			player->setVarStats(static_cast<stats_t>(s), -item->getStat(static_cast<stats_t>(s)));
+		}
+	}
+
+	// Skill Gem bonus removal from custom attributes (mirror of EquipItem)
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_magic_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarStats(STAT_MAGICPOINTS, -bonus);
+		}
+	}
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_distance_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarSkill(SKILL_DISTANCE, -bonus);
+		}
+	}
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_fist_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarSkill(SKILL_FIST, -bonus);
+		}
+	}
+	if (const auto* gemAttr = item->getCustomAttribute("skill_gem_melee_level")) {
+		const auto bonus = static_cast<int32_t>(gemAttr->getInteger());
+		if (bonus > 0) {
+			player->setVarSkill(SKILL_SWORD, -bonus);
+			player->setVarSkill(SKILL_AXE, -bonus);
+			player->setVarSkill(SKILL_CLUB, -bonus);
 		}
 	}
 

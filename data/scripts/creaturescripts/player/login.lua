@@ -178,6 +178,8 @@ function playerLoginGlobal.onLogin(player)
 	player:registerEvent("DropLoot")
 	player:registerEvent("BossParticipation")
 	player:registerEvent("UpdatePlayerOnAdvancedLevel")
+	player:registerEvent("GemBagAutoCreate")
+	player:registerEvent("GemBagSchemaReset")
 
 	-- Regeneration
 	local regenCondition = player:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
@@ -194,6 +196,11 @@ function playerLoginGlobal.onLogin(player)
 	-- Relic system: recalculate passive bonuses from equipped reliquary on login
 	if RelicBonus then
 		RelicBonus.onLogin(player)
+	end
+
+	-- GemBag: recalculate cached bonuses from equipped gem bag on login
+	if GemBag then
+		GemBag.onPlayerLogin(player)
 	end
 
 	return true

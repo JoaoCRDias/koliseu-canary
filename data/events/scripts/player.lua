@@ -242,6 +242,7 @@ local exhaust = {}
 -- Items that must never leave the store inbox
 local STORE_INBOX_LOCKED_ITEMS = {
 	[60402] = true, -- badge bag
+	[60165] = true, -- gem bag
 }
 
 function Player:onMoveItem(item, count, fromPosition, toPosition, fromCylinder, toCylinder)
@@ -269,6 +270,9 @@ function Player:onMoveItem(item, count, fromPosition, toPosition, fromCylinder, 
 			return false
 		end
 	end
+
+	-- GemBag move validation is handled entirely in C++ (Game::playerMoveItem).
+	-- The Lua side only keeps the onItemMoved recalculation callback at the end of this function.
 
 	-- Reliquary: block duplicate bonus relics
 	if RelicSystem and RelicSystem.isRelic(item) and toCylinder and toCylinder:isContainer() then
@@ -472,6 +476,11 @@ function Player:onItemMoved(item, count, fromPosition, toPosition, fromCylinder,
 		RelicBonus.onItemMoved(self, item, fromPosition, toPosition, fromCylinder, toCylinder)
 	end
 
+	-- GemBag: recalculate cached bonuses when gems/gem-bag move
+	if GemBag then
+		GemBag.onItemMoved(self, item, fromPosition, toPosition, fromCylinder, toCylinder)
+	end
+
 	return true
 end
 
@@ -641,6 +650,22 @@ function Player:onGainExperience(target, exp, rawExp)
 		end
 	end
 
+	-- GemBag XP bonus (writes storage 53404 for C++ display)
+	local gemBagXpBonus = 0
+	if GemBag then
+		local bonuses = GemBag.getCachedBonuses(self)
+		if bonuses and bonuses.totals then
+			gemBagXpBonus = bonuses.totals.xpPercent or 0
+			if gemBagXpBonus ~= 0 then
+				exp = math.floor(exp * (1 + gemBagXpBonus / 100))
+			end
+		end
+	end
+	local newGemBagStorage = gemBagXpBonus > 0 and gemBagXpBonus or -1
+	if self:getStorageValue(53404) ~= newGemBagStorage then
+		self:setStorageValue(53404, newGemBagStorage)
+	end
+
 	-- Soul War Experience by Taint
 	if SoulWarQuest then
 		local monsterType = target:getType()
@@ -753,4 +778,8 @@ function Player:onChangeZone(zone)
 	return false
 end
 
-function Player:onInventoryUpdate(item, slot, equip) end
+function Player:onInventoryUpdate(item, slot, equip)
+	if GemBag then
+		GemBag.onInventoryUpdate(self, item)
+	end
+end

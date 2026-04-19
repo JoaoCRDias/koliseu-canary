@@ -1727,6 +1727,11 @@ struct CombatDamage {
 	std::string instantSpellName;
 	std::string runeSpellName;
 
+	// GemBag: extra elemental damage applied by the attacker's gem bag weapon bonus.
+	// Key = element combat type, value = actual damage dealt after resistances.
+	// Rendered in the attacker's combat log (e.g. "(+23 fire, +15 ice)").
+	std::map<CombatType_t, int32_t> appliedGemDamage;
+
 	CombatDamage() = default;
 
 	bool isEmpty() const {

@@ -602,6 +602,15 @@ public:
 	// Returns the tier of a badge item (searched in inventory + containers, e.g. Store Inbox → Badge Bag).
 	uint8_t getBadgeTier(uint16_t badgeItemId);
 
+	// GemBag system — passive bonuses from gems inside the equipped gem bag (storage 910xxx range, values are % × 100)
+	double getGemBagWeaponBonus(CombatType_t combat) const;
+	double getGemBagShieldBonus(CombatType_t combat) const;
+	double getGemBagMomentumBonus() const;
+	double getGemBagOnslaughtBonus() const;
+	double getGemBagTranscendenceBonus() const;
+	double getGemBagRuseBonus() const;
+	double getGemBagAmplificationBonus() const;
+
 	// Relic system - elemental resistance read from storage 920040-920046 (value is % × 100, e.g. 550 = 5.5%)
 	double getRelicResistBonus(CombatType_t combat) const;
 

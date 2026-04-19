@@ -1362,6 +1362,9 @@ const char* getReturnMessage(ReturnValue value) {
 		case RETURNVALUE_ONLYRELICSINRELIQUARY:
 			return "This reliquary only holds relics.\nYou cannot put any other items in it.";
 
+		case RETURNVALUE_CANNOTMOVEALTARITEMS:
+			return "You cannot move items from the relic altar.";
+
 		case RETURNVALUE_CREATUREBLOCK:
 		case RETURNVALUE_NEEDEXCHANGE:
 		case RETURNVALUE_NOTENOUGHROOM:

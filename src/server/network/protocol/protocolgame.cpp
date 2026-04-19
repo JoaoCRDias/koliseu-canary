@@ -219,6 +219,17 @@ namespace {
 				damageModifiers[i] -= player->wheel().getResistance(indexToCombatType(i));
 			}
 
+			// GemBag shield + Relic resist bonuses (elemental protection from gems + relics)
+			const CombatType_t combatType = indexToCombatType(i);
+			const double gemShieldBonus = player->getGemBagShieldBonus(combatType);
+			if (gemShieldBonus > 0.0) {
+				damageModifiers[i] -= static_cast<uint16_t>(gemShieldBonus * 100);
+			}
+			const double relicResistBonus = player->getRelicResistBonus(combatType);
+			if (relicResistBonus > 0.0) {
+				damageModifiers[i] -= static_cast<uint16_t>(relicResistBonus * 100);
+			}
+
 			if (damageModifiers[i] != 10000) {
 				double clientModifier = (10000 - static_cast<int16_t>(damageModifiers[i])) / 10000.;
 				g_logger().debug("[{}] CombatType: {}, Damage Modifier: {}, Resulting Client Modifier: {}", __FUNCTION__, i, damageModifiers[i], clientModifier);
@@ -10016,10 +10027,26 @@ double ProtocolGame::getForgeSkillStat(Slots_t slot, bool applyAmplification /*=
 		}
 	}
 
-	if (applyAmplification) {
-		const auto &boots = player->getInventoryItem(CONST_SLOT_FEET);
-		if (slot != CONST_SLOT_FEET && boots) {
-			skill *= 1 + (boots->getAmplificationChance() / 100);
+	// GemBag bonuses by slot (same mapping as koliseuot)
+	if (slot == CONST_SLOT_LEFT) {
+		skill += player->getGemBagOnslaughtBonus();
+	} else if (slot == CONST_SLOT_ARMOR) {
+		skill += player->getGemBagRuseBonus();
+	} else if (slot == CONST_SLOT_HEAD) {
+		skill += player->getGemBagMomentumBonus();
+	} else if (slot == CONST_SLOT_LEGS) {
+		skill += player->getGemBagTranscendenceBonus();
+	} else if (slot == CONST_SLOT_FEET) {
+		skill += player->getGemBagAmplificationBonus();
+	}
+
+	if (applyAmplification && slot != CONST_SLOT_FEET) {
+		double amplificationChance = player->getGemBagAmplificationBonus();
+		if (const auto &boots = player->getInventoryItem(CONST_SLOT_FEET)) {
+			amplificationChance += boots->getAmplificationChance();
+		}
+		if (amplificationChance > 0) {
+			skill *= 1 + (amplificationChance / 100);
 		}
 	}
 

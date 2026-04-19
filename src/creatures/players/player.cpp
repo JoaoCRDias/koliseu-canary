@@ -3421,6 +3421,12 @@ void Player::addExperience(const std::shared_ptr<Creature> &target, uint64_t exp
 			expString = fmt::format("{} (badge +{:.0f}%)", expString, badgePercent);
 		}
 
+		// GemBag XP bonus (storage 53404 set by Lua gembag.lua on recalculation)
+		const int32_t gemBagXpBonus = getStorageValue(53404);
+		if (gemBagXpBonus > 0) {
+			expString = fmt::format("{} (gems +{}%)", expString, gemBagXpBonus);
+		}
+
 		TextMessage message(MESSAGE_EXPERIENCE, "You gained " + expString + (handleHazardExperience ? " (Hazard)" : ""));
 		message.position = position;
 		message.primary.value = exp;
@@ -3724,6 +3730,12 @@ BlockType_t Player::blockHit(const std::shared_ptr<Creature> &attacker, const Co
 					}
 				}
 			}
+		}
+
+		// GemBag system - shield elemental protection (storage 910010-910016, value % × 100)
+		const double gemShieldBonus = getGemBagShieldBonus(combatType);
+		if (gemShieldBonus > 0.0) {
+			damage -= static_cast<int32_t>(std::round(damage * (gemShieldBonus / 100.0)));
 		}
 
 		// Relic system - elemental protection (storage 920040-920046)
@@ -7237,6 +7249,98 @@ uint8_t Player::getBadgeTier(uint16_t badgeItemId) {
 	return 0;
 }
 
+// GemBag system — weapon bonus (offensive element boost from gems equipped in the gem bag)
+// Storage values are stored as % × 100 (e.g., 1000 = 10%). Returns decimal percentage (10.0 for 10%).
+double Player::getGemBagWeaponBonus(CombatType_t combat) const {
+	int32_t storageId = -1;
+	switch (combat) {
+		case COMBAT_FIREDAMAGE:
+			storageId = 910020;
+			break;
+		case COMBAT_ENERGYDAMAGE:
+			storageId = 910021;
+			break;
+		case COMBAT_EARTHDAMAGE:
+			storageId = 910022;
+			break;
+		case COMBAT_ICEDAMAGE:
+			storageId = 910023;
+			break;
+		case COMBAT_HOLYDAMAGE:
+			storageId = 910024;
+			break;
+		case COMBAT_DEATHDAMAGE:
+			storageId = 910025;
+			break;
+		case COMBAT_PHYSICALDAMAGE:
+			storageId = 910026;
+			break;
+		default:
+			return 0.0;
+	}
+
+	const int32_t value = getStorageValue(storageId);
+	return value > 0 ? (value / 100.0) : 0.0;
+}
+
+// GemBag system — shield bonus (elemental damage resistance from gems equipped in the gem bag)
+double Player::getGemBagShieldBonus(CombatType_t combat) const {
+	int32_t storageId = -1;
+	switch (combat) {
+		case COMBAT_FIREDAMAGE:
+			storageId = 910010;
+			break;
+		case COMBAT_ENERGYDAMAGE:
+			storageId = 910011;
+			break;
+		case COMBAT_EARTHDAMAGE:
+			storageId = 910012;
+			break;
+		case COMBAT_ICEDAMAGE:
+			storageId = 910013;
+			break;
+		case COMBAT_HOLYDAMAGE:
+			storageId = 910014;
+			break;
+		case COMBAT_DEATHDAMAGE:
+			storageId = 910015;
+			break;
+		case COMBAT_PHYSICALDAMAGE:
+			storageId = 910016;
+			break;
+		default:
+			return 0.0;
+	}
+
+	const int32_t value = getStorageValue(storageId);
+	return value > 0 ? (value / 100.0) : 0.0;
+}
+
+double Player::getGemBagMomentumBonus() const {
+	const int32_t value = getStorageValue(910002);
+	return value > 0 ? (value / 100.0) : 0.0;
+}
+
+double Player::getGemBagOnslaughtBonus() const {
+	const int32_t value = getStorageValue(910003);
+	return value > 0 ? (value / 100.0) : 0.0;
+}
+
+double Player::getGemBagTranscendenceBonus() const {
+	const int32_t value = getStorageValue(910004);
+	return value > 0 ? (value / 100.0) : 0.0;
+}
+
+double Player::getGemBagRuseBonus() const {
+	const int32_t value = getStorageValue(910005);
+	return value > 0 ? (value / 100.0) : 0.0;
+}
+
+double Player::getGemBagAmplificationBonus() const {
+	const int32_t value = getStorageValue(910006);
+	return value > 0 ? (value / 100.0) : 0.0;
+}
+
 double Player::getRelicResistBonus(CombatType_t combat) const {
 	int32_t storageId = -1;
 	switch (combat) {
@@ -10166,9 +10270,20 @@ void Player::triggerMomentum() {
 	double_t chance = 0;
 	if (const auto &playerHelmet = getInventoryItem(CONST_SLOT_HEAD); playerHelmet && playerHelmet->getTier() > 0) {
 		chance += playerHelmet->getMomentumChance();
+	}
+
+	// GemBag momentum bonus stacks even when helmet has no tier
+	chance += getGemBagMomentumBonus();
+
+	if (chance > 0) {
+		double_t amplificationChange = 0;
 		if (const auto &playerBoots = getInventoryItem(CONST_SLOT_FEET); playerBoots && playerBoots->getTier() > 0) {
-			double_t amplificationChange = playerBoots->getAmplificationChance() / 100;
-			chance *= 1 + amplificationChange;
+			amplificationChange = playerBoots->getAmplificationChance();
+		}
+		amplificationChange += getGemBagAmplificationBonus();
+
+		if (amplificationChange > 0) {
+			chance *= 1 + (amplificationChange / 100);
 		}
 	}
 
@@ -10228,9 +10343,20 @@ void Player::triggerTranscendence() {
 	double_t chance = 0;
 	if (const auto &playerLegs = getInventoryItem(CONST_SLOT_LEGS); playerLegs && playerLegs->getTier() > 0) {
 		chance += playerLegs->getTranscendenceChance();
+	}
+
+	// GemBag transcendence bonus (can trigger avatar even without tiered legs)
+	chance += getGemBagTranscendenceBonus();
+
+	if (chance > 0) {
+		double_t amplificationChange = 0;
 		if (const auto &playerBoots = getInventoryItem(CONST_SLOT_FEET); playerBoots && playerBoots->getTier() > 0) {
-			double_t amplificationChange = playerBoots->getAmplificationChance() / 100;
-			chance *= 1 + amplificationChange;
+			amplificationChange = playerBoots->getAmplificationChance();
+		}
+		amplificationChange += getGemBagAmplificationBonus();
+
+		if (amplificationChange > 0) {
+			chance *= 1 + (amplificationChange / 100);
 		}
 
 		const double_t randomChance = uniform_random(1, 100) / 1.0;

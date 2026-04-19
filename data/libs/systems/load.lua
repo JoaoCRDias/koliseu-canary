@@ -1,6 +1,9 @@
 -- Load systems functions
 dofile(CORE_DIRECTORY .. "/libs/systems/badgebag.lua")
 dofile(CORE_DIRECTORY .. "/libs/systems/badge_upgrade.lua")
+dofile(CORE_DIRECTORY .. "/libs/systems/gembag.lua")
+dofile(CORE_DIRECTORY .. "/libs/systems/gem_upgrade.lua")
+dofile(CORE_DIRECTORY .. "/libs/systems/skill_gems.lua")
 dofile(CORE_DIRECTORY .. "/libs/systems/tier_transfer.lua")
 dofile(CORE_DIRECTORY .. "/libs/systems/relic_system.lua")
 dofile(CORE_DIRECTORY .. "/libs/systems/relic_reveal.lua")

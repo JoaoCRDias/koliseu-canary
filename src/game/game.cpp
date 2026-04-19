@@ -1947,6 +1947,160 @@ void Game::playerMoveItem(const std::shared_ptr<Player> &player, const Position 
 		return;
 	}
 
+	// --- GemBag system: fixed-slot validation & placeholder swap (ported from koliseuot) ---
+	const bool fromIsGemBag = fromContainer && fromContainer->getID() == ITEM_GEM_BAG;
+	const bool toIsGemBag = toContainer && toContainer->getID() == ITEM_GEM_BAG;
+	const bool gemBagTouched = fromIsGemBag || toIsGemBag;
+
+	static constexpr uint16_t GEM_BAG_INDICATOR_ACTION_ID_FIRST = static_cast<uint16_t>(910101);
+	static constexpr uint16_t GEM_BAG_INDICATOR_ACTION_ID_LAST = static_cast<uint16_t>(910106);
+	const bool hasActionId = item->hasAttribute(ItemAttribute_t::ACTIONID);
+	const uint16_t itemActionId = hasActionId ? item->getAttribute<uint16_t>(ItemAttribute_t::ACTIONID) : 0;
+	const bool isGemBagIndicator = hasActionId && itemActionId >= GEM_BAG_INDICATOR_ACTION_ID_FIRST && itemActionId <= GEM_BAG_INDICATOR_ACTION_ID_LAST;
+
+	// Fixed scaffold items inside a gem bag (indicators, placeholders, locks) must never leave the bag
+	if (fromIsGemBag) {
+		const uint16_t movedId = item->getID();
+		if (isGemBagIndicator || movedId == ITEM_GEM_PLACEHOLDER || movedId == ITEM_GEM_LOCK) {
+			player->sendCancelMessage("This slot is fixed.");
+			return;
+		}
+	}
+
+	const auto refreshGemBagStatus = [playerId = player->getID(), gemBagTouched]() {
+		if (!gemBagTouched || playerId == 0) {
+			return;
+		}
+		g_dispatcher().addEvent(
+			[playerId]() {
+				const auto &threadPlayer = g_game().getPlayerByID(playerId);
+				if (!threadPlayer) {
+					return;
+				}
+				threadPlayer->sendStats();
+				threadPlayer->sendSkills();
+				threadPlayer->sendCyclopediaCharacterGeneralStats();
+				threadPlayer->sendCyclopediaCharacterOffenceStats();
+				threadPlayer->sendCyclopediaCharacterDefenceStats();
+				threadPlayer->sendCyclopediaCharacterMiscStats();
+			},
+			"refreshGemBagStatus"
+		);
+	};
+
+	// Block moving gems within the same gem bag (must remove first, then re-insert)
+	if (fromIsGemBag && toIsGemBag) {
+		player->sendCancelMessage("You cannot move gems within gem bags. Remove the gem first, then insert it into an empty slot.");
+		return;
+	}
+
+	// Insert gem → replace placeholder at exact index, with compatibility validation
+	if (toIsGemBag && toIndex < toContainer->size()) {
+		const auto slotItem = toContainer->getItemByIndex(toIndex);
+
+		if (slotItem && slotItem->getID() != ITEM_GEM_PLACEHOLDER) {
+			player->sendCancelMessage("This slot already contains a gem. Remove it first.");
+			return;
+		}
+
+		if (slotItem && slotItem->getID() == ITEM_GEM_PLACEHOLDER) {
+			// Validate gem compatibility with slot (4 cols × 6 rows)
+			// Row order: weapon(1), shield(2), helmet(3), armor(4), legs(5), boots(6)
+			// Upgrade gems (momentum/onslaught/transcendence/ruse): rows 3-6
+			// Elemental gems (death/energy/fire/holy/ice/physical/earth): rows 1-2
+			const uint32_t row = (toIndex / 4) + 1;
+			const uint32_t gemId = item->getID();
+
+			const bool isUpgradeGem = (gemId >= 60338 && gemId <= 60347) || // momentum
+				(gemId >= 60348 && gemId <= 60357) || // onslaught
+				(gemId >= 60358 && gemId <= 60367) || // transcendence
+				(gemId >= 60368 && gemId <= 60377); // ruse
+
+			const bool isElementalGem = (gemId >= 60167 && gemId <= 60176) || // death
+				(gemId >= 60177 && gemId <= 60186) || // energy
+				(gemId >= 60187 && gemId <= 60196) || // fire
+				(gemId >= 60197 && gemId <= 60206) || // holy
+				(gemId >= 60207 && gemId <= 60216) || // ice
+				(gemId >= 60217 && gemId <= 60226) || // physical
+				((gemId >= 60227 && gemId <= 60235) || gemId == 60166); // earth
+
+			static const char* slotNames[] = { "", "weapon", "shield", "helmet", "armor", "legs", "boots" };
+			const char* slotName = (row >= 1 && row <= 6) ? slotNames[row] : "unknown";
+
+			bool isCompatible = false;
+			if (isUpgradeGem && row >= 3 && row <= 6) {
+				isCompatible = true;
+			} else if (isElementalGem && row >= 1 && row <= 2) {
+				isCompatible = true;
+			}
+
+			if (!isCompatible) {
+				player->sendCancelMessage(std::string("This gem is not compatible with the ") + slotName + " slot.");
+				return;
+			}
+
+			// Move only 1 gem to the bag, preserving exact slot index (clone + remove original)
+			std::shared_ptr<Item> gemToInsert = item->clone();
+			if (!gemToInsert) {
+				player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+				return;
+			}
+			gemToInsert->setItemCount(1);
+
+			const auto removeRet = internalRemoveItem(item, 1);
+			if (removeRet != RETURNVALUE_NOERROR) {
+				player->sendCancelMessage(removeRet);
+				return;
+			}
+
+			// Replace placeholder with gem at exact index
+			toContainer->replaceThing(toIndex, gemToInsert);
+			toContainer->postAddNotification(gemToInsert, fromCylinder, toIndex);
+
+			g_events().eventPlayerOnItemMoved(player, gemToInsert, 1, fromPos, toPos, fromCylinder, toCylinder);
+			g_callbacks().executeCallback(EventCallback_t::playerOnItemMoved, player, gemToInsert, 1, fromPos, toPos, fromCylinder, toCylinder);
+
+			player->cancelPush();
+			gemToInsert->checkDecayMapItemOnMove();
+			refreshGemBagStatus();
+			return;
+		}
+	}
+
+	// Remove gem → swap with placeholder at exact index (preserves slot position)
+	if (fromIsGemBag) {
+		const int32_t fromIndexInBag = fromContainer->getThingIndex(item);
+		if (fromIndexInBag >= 0) {
+			const auto placeholder = Item::CreateItem(ITEM_GEM_PLACEHOLDER, 1);
+			if (!placeholder) {
+				player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
+				return;
+			}
+
+			// Swap gem with placeholder first
+			fromContainer->replaceThing(static_cast<uint32_t>(fromIndexInBag), placeholder);
+			fromContainer->postAddNotification(placeholder, nullptr, fromIndexInBag);
+
+			// Add gem to destination
+			const auto addRet = internalAddItem(toCylinder, item, toIndex, 0);
+			if (addRet != RETURNVALUE_NOERROR) {
+				// Rollback: put gem back in bag
+				fromContainer->replaceThing(static_cast<uint32_t>(fromIndexInBag), item);
+				player->sendCancelMessage(addRet);
+				return;
+			}
+
+			g_events().eventPlayerOnItemMoved(player, item, count, fromPos, toPos, fromCylinder, toCylinder);
+			g_callbacks().executeCallback(EventCallback_t::playerOnItemMoved, player, item, count, fromPos, toPos, fromCylinder, toCylinder);
+
+			player->cancelPush();
+			item->checkDecayMapItemOnMove();
+			refreshGemBagStatus();
+			return;
+		}
+	}
+	// --- end GemBag system ---
+
 	const uint32_t moveFlags = isLootPouchStoreInboxReorder ? FLAG_IGNORENOTMOVABLE : 0;
 	const auto ret = internalMoveItem(fromCylinder, toCylinder, toIndex, item, count, nullptr, moveFlags, player);
 	if (ret != RETURNVALUE_NOERROR) {
@@ -1961,6 +2115,9 @@ void Game::playerMoveItem(const std::shared_ptr<Player> &player, const Position 
 
 	g_events().eventPlayerOnItemMoved(player, item, count, fromPos, toPos, fromCylinder, toCylinder);
 	g_callbacks().executeCallback(EventCallback_t::playerOnItemMoved, player, item, count, fromPos, toPos, fromCylinder, toCylinder);
+
+	// Refresh gem bag display if any move touched it
+	refreshGemBagStatus();
 }
 
 bool Game::isTryingToStow(const Position &toPos, const std::shared_ptr<Cylinder> &toCylinder) const {
@@ -2021,7 +2178,35 @@ ReturnValue Game::checkMoveItemToCylinder(const std::shared_ptr<Player> &player,
 			}
 		}
 
-		if (!item->canBeMovedToStore()) {
+		// --- Exceptions for special containers inside Store Inbox (ported from koliseuot) ---
+		const uint16_t destContainerId = containerID;
+		const uint16_t itemId = item->getID();
+
+		// Gems can be moved into Gem Bag even if Gem Bag is in Store Inbox
+		bool isMovingGemToGemBag = false;
+		if (destContainerId == ITEM_GEM_BAG) {
+			// Gem ranges: 60338-60377 (upgrade gems), 60167-60235 (element gems), 60166 (earth tier 10)
+			if ((itemId >= 60338 && itemId <= 60377) || (itemId >= 60167 && itemId <= 60235) || itemId == 60166) {
+				isMovingGemToGemBag = true;
+			}
+		}
+
+		// Relic can be moved into Reliquary even if it's in Store Inbox (also blocks non-relics)
+		bool isMovingRelicToReliquary = false;
+		if (Item::items[destContainerId].isReliquary) {
+			if (Item::items[itemId].isRelic) {
+				isMovingRelicToReliquary = true;
+			} else {
+				return RETURNVALUE_ONLYRELICSINRELIQUARY;
+			}
+		}
+
+		// Block ALL items from being placed into a Relic Altar container
+		if (Item::items[destContainerId].isRelicAltar) {
+			return RETURNVALUE_CANNOTMOVEALTARITEMS;
+		}
+
+		if (!item->canBeMovedToStore() && !isMovingGemToGemBag && !isMovingRelicToReliquary) {
 			if (directIsStoreInbox) {
 				if (!(fromIsStoreInbox && (item->isMovable() || item->getID() == ITEM_GOLD_POUCH))) {
 					return RETURNVALUE_NOTBOUGHTINSTORE;
@@ -7698,11 +7883,10 @@ static void applyHealBadgeBonus(CombatDamage &damage, const std::shared_ptr<Play
 	damage.primary.value = static_cast<int32_t>(damage.primary.value * (1.0 + healBonus));
 	const int32_t badgeBonusHeal = damage.primary.value - beforeValue;
 	if (badgeBonusHeal > 0) {
-		const int32_t badgePercent = healBadgeTier <= 5 ? healBadgeTier * 2 : 10 + ((healBadgeTier - 5) * 4);
 		if (!damage.exString.empty()) {
 			damage.exString += ", ";
 		}
-		damage.exString += fmt::format("badge +{} ({}%)", badgeBonusHeal, badgePercent);
+		damage.exString += fmt::format("(badge +{})", badgeBonusHeal);
 	}
 }
 
@@ -7876,11 +8060,10 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 				damage.secondary.value = static_cast<int32_t>(damage.secondary.value * (1.0 + damageBonus));
 				const int32_t badgeBonusDamage = (damage.primary.value - beforePrimary) + (damage.secondary.value - beforeSecondary);
 				if (badgeBonusDamage > 0) {
-					const int32_t badgePercent = damageBadgeTier <= 5 ? damageBadgeTier * 2 : 10 + ((damageBadgeTier - 5) * 4);
 					if (!damage.exString.empty()) {
 						damage.exString += ", ";
 					}
-					damage.exString += fmt::format("badge +{} ({}%)", badgeBonusDamage, badgePercent);
+					damage.exString += fmt::format("(badge +{})", badgeBonusDamage);
 				}
 			}
 		}
@@ -7997,6 +8180,14 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 						}
 					}
 				}
+			}
+
+			// GemBag Ruse: dodge incoming attacks based on ruse gem bonus (storage 910005, value % × 100)
+			const double ruseBonus = targetPlayer->getGemBagRuseBonus();
+			if (ruseBonus > 0 && (uniform_random(1, 10000) / 100.0) <= ruseBonus) {
+				targetPlayer->sendTextMessage(MESSAGE_DAMAGE_DEALT, "You dodged an attack.");
+				g_game().addMagicEffect(targetPos, CONST_ME_POFF);
+				return true;
 			}
 		}
 
@@ -8153,6 +8344,58 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 			}
 		}
 
+		// GemBag weapon bonus - extra elemental damage per equipped gem, applied after the main hit.
+		// Runs through combatChangeHealth recursively with damage.extension = true so it doesn't loop
+		// through badge/relic bonuses (which skip extensions) and so no individual message is produced.
+		if (attackerPlayer && !damage.extension && damage.origin != ORIGIN_NONE && realDamage > 0 && target->isAlive()) {
+			static const std::array<CombatType_t, 7> elementTypes = {
+				COMBAT_FIREDAMAGE, COMBAT_ENERGYDAMAGE, COMBAT_EARTHDAMAGE,
+				COMBAT_ICEDAMAGE, COMBAT_HOLYDAMAGE, COMBAT_DEATHDAMAGE,
+				COMBAT_PHYSICALDAMAGE
+			};
+			const int32_t totalBaseDamage = std::abs(damage.primary.value) + std::abs(damage.secondary.value);
+
+			if (totalBaseDamage > 0) {
+				for (const CombatType_t gemElement : elementTypes) {
+					const double gemBonus = attackerPlayer->getGemBagWeaponBonus(gemElement);
+					if (gemBonus <= 0.0) {
+						continue;
+					}
+					const int32_t extraDamage = static_cast<int32_t>(std::round(totalBaseDamage * (gemBonus / 100.0)));
+					if (extraDamage <= 0) {
+						continue;
+					}
+
+					CombatDamage gemDamage;
+					gemDamage.primary.type = gemElement;
+					gemDamage.primary.value = -extraDamage; // negative = damage
+					gemDamage.origin = ORIGIN_NONE;          // avoid triggering onCombat hooks
+					gemDamage.extension = true;              // suppress badge/relic bonuses + individual message
+					gemDamage.exString.clear();
+
+					CombatParams gemParams;
+					gemParams.combatType = gemElement;
+					gemParams.blockedByArmor = true;   // respects elemental resistances
+					gemParams.blockedByShield = false;
+					gemParams.impactEffect = CONST_ME_NONE;
+					gemParams.distanceEffect = CONST_ANI_NONE;
+
+					const int32_t healthBefore = target->getHealth();
+					Combat::doCombatHealth(attackerPlayer, target, gemDamage, gemParams);
+					const int32_t healthAfter = target->getHealth();
+					const int32_t actualDamage = healthBefore - healthAfter;
+
+					if (actualDamage > 0) {
+						damage.appliedGemDamage[gemElement] = actualDamage;
+					}
+
+					if (!target->isAlive()) {
+						break;
+					}
+				}
+			}
+		}
+
 		if (spectators.empty()) {
 			spectators.find<Player>(targetPos, true);
 		}
@@ -8204,6 +8447,12 @@ void Game::sendDamageMessageAndEffects(
 	const Position &targetPos, const std::shared_ptr<Player> &attackerPlayer, const std::shared_ptr<Player> &targetPlayer,
 	TextMessage &message, const CreatureVector &spectators, int32_t realDamage
 ) {
+	// Extension damage (GemBag weapon bonus, etc.) is aggregated into the main hit's message
+	// via damage.appliedGemDamage / exString. Do not emit individual messages/effects for it.
+	if (damage.extension) {
+		return;
+	}
+
 	message.primary.value = damage.primary.value;
 	message.secondary.value = damage.secondary.value;
 
@@ -8244,7 +8493,40 @@ void Game::sendMessages(
 	}
 	std::stringstream ss;
 
-	ss << realDamage << (realDamage != 1 ? " hitpoints" : " hitpoint");
+	// Compose damage string as "base (total)" when any post-hit bonus contributed to realDamage.
+	// - Badge bonus inflates damage.primary/secondary *before* realDamage is computed, so we
+	//   reconstruct the base by extracting the badge contribution from exString.
+	// - Gem bag weapon bonus is applied as separate extension hits aggregated in appliedGemDamage.
+	int32_t gemDamageTotal = 0;
+	for (const auto &[_, value] : damage.appliedGemDamage) {
+		gemDamageTotal += value;
+	}
+
+	int32_t badgeBonus = 0;
+	if (const auto pos = damage.exString.find("badge +"); pos != std::string::npos) {
+		const auto numStart = pos + 7; // strlen("badge +")
+		size_t numEnd = numStart;
+		while (numEnd < damage.exString.size() && std::isdigit(static_cast<unsigned char>(damage.exString[numEnd]))) {
+			++numEnd;
+		}
+		if (numEnd > numStart) {
+			try {
+				badgeBonus = std::stoi(damage.exString.substr(numStart, numEnd - numStart));
+			} catch (...) {
+				badgeBonus = 0;
+			}
+		}
+	}
+
+	const int32_t baseHit = std::max(0, realDamage - badgeBonus);
+	const int32_t totalDamage = realDamage + gemDamageTotal;
+	const bool hasBonuses = (badgeBonus > 0) || (gemDamageTotal > 0);
+
+	if (hasBonuses) {
+		ss << baseHit << " (" << totalDamage << ")" << (totalDamage != 1 ? " hitpoints" : " hitpoint");
+	} else {
+		ss << realDamage << (realDamage != 1 ? " hitpoints" : " hitpoint");
+	}
 	std::string damageString = ss.str();
 
 	std::string spectatorMessage;
@@ -8355,6 +8637,46 @@ void Game::buildMessageAsAttacker(
 
 	if (!damage.exString.empty()) {
 		ss << " " << damage.exString;
+	}
+
+	// GemBag: show per-element extra damage aggregated from attacker's equipped gems
+	if (!damage.appliedGemDamage.empty()) {
+		ss << " (";
+		bool first = true;
+		for (const auto &[gemType, gemDamage] : damage.appliedGemDamage) {
+			if (!first) {
+				ss << ", ";
+			}
+			ss << "+" << gemDamage << " ";
+			switch (gemType) {
+				case COMBAT_FIREDAMAGE:
+					ss << "fire";
+					break;
+				case COMBAT_ENERGYDAMAGE:
+					ss << "energy";
+					break;
+				case COMBAT_EARTHDAMAGE:
+					ss << "earth";
+					break;
+				case COMBAT_ICEDAMAGE:
+					ss << "ice";
+					break;
+				case COMBAT_HOLYDAMAGE:
+					ss << "holy";
+					break;
+				case COMBAT_DEATHDAMAGE:
+					ss << "death";
+					break;
+				case COMBAT_PHYSICALDAMAGE:
+					ss << "physical";
+					break;
+				default:
+					ss << "element";
+					break;
+			}
+			first = false;
+		}
+		ss << ")";
 	}
 
 	if (damage.fatal) {
