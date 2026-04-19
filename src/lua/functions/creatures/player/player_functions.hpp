@@ -325,6 +325,9 @@ class PlayerFunctions {
 	static int luaPlayerHasSecureMode(lua_State* L);
 	static int luaPlayerGetFightMode(lua_State* L);
 
+	static int luaPlayerSendStats(lua_State* L);
+	static int luaPlayerSendSkills(lua_State* L);
+
 	static int luaPlayerGetBaseXpGain(lua_State* L);
 	static int luaPlayerSetBaseXpGain(lua_State* L);
 	static int luaPlayerGetVoucherXpBoost(lua_State* L);

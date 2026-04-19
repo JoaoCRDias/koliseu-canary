@@ -125,10 +125,10 @@ function charinfo.onSay(player, words, param)
 	text = text .. string.format("Life Leech: %.2f%%\n", lifeLeech / 100)
 	text = text .. string.format("Mana Leech: %.2f%%\n", manaLeech / 100)
 
-	-- Mitigation Skill (from KV)
+	-- Mitigation Skill (from KV, +0.2% per level, max 100 levels)
 	local mitSkillLevel = player:kv():get("mitigation_skill") or 0
 	if mitSkillLevel > 0 then
-		local mitBonus = math.min(mitSkillLevel, 100) * 0.3
+		local mitBonus = math.min(mitSkillLevel, 100) * 0.2
 		text = text .. string.format("Mitigation Skill: %d (+%.1f%% mitigation)\n", mitSkillLevel, mitBonus)
 	end
 

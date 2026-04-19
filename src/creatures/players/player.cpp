@@ -205,6 +205,14 @@ std::string Player::getDescription(int32_t lookDistance) {
 		  << " (" << static_cast<int>(skills[SKILL_ATTACK_SPEED].percent) << "% to " << (skills[SKILL_ATTACK_SPEED].level + 1) << ")";
 		s << "\nMining: " << skills[SKILL_MINING].level
 		  << " (" << static_cast<int>(skills[SKILL_MINING].percent) << "% to " << (skills[SKILL_MINING].level + 1) << ")";
+
+		// Mitigation potion skill (KV: mitigation_skill, +0.2% per level, max 100)
+		auto mitigationSkillValue = kv()->get("mitigation_skill");
+		int32_t mitigationSkillLevel = mitigationSkillValue ? static_cast<int32_t>(mitigationSkillValue->getNumber()) : 0;
+		if (mitigationSkillLevel > 0) {
+			const double mitigationBonus = std::min(mitigationSkillLevel, 100) * 0.2;
+			s << fmt::format("\nMitigation Skill: {} (+{:.1f}% mitigation)", mitigationSkillLevel, mitigationBonus);
+		}
 	} else {
 		s << name;
 		if (!group->access) {
@@ -237,6 +245,14 @@ std::string Player::getDescription(int32_t lookDistance) {
 		  << " (" << static_cast<int>(skills[SKILL_ATTACK_SPEED].percent) << "% to " << (skills[SKILL_ATTACK_SPEED].level + 1) << ")";
 		s << "\nMining: " << skills[SKILL_MINING].level
 		  << " (" << static_cast<int>(skills[SKILL_MINING].percent) << "% to " << (skills[SKILL_MINING].level + 1) << ")";
+
+		// Mitigation potion skill (KV: mitigation_skill, +0.2% per level, max 100)
+		auto mitigationSkillValue = kv()->get("mitigation_skill");
+		int32_t mitigationSkillLevel = mitigationSkillValue ? static_cast<int32_t>(mitigationSkillValue->getNumber()) : 0;
+		if (mitigationSkillLevel > 0) {
+			const double mitigationBonus = std::min(mitigationSkillLevel, 100) * 0.2;
+			s << fmt::format("\nMitigation Skill: {} (+{:.1f}% mitigation)", mitigationSkillLevel, mitigationBonus);
+		}
 	}
 
 	if (m_party) {

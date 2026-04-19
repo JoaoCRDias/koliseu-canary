@@ -4025,7 +4025,17 @@ float PlayerWheel::calculateMitigation() const {
 	}
 
 	float mitigation = std::ceil(((((skill * m_player.vocation->mitigationFactor) + (shieldFactor * static_cast<float>(defenseValue))) / 100.0f) * fightFactor * distanceFactor) * 100.0f) / 100.0f;
+	// Shield skill bonus: +1% mitigation per 10 shield skill levels
+	mitigation += static_cast<float>(skill) / 10.0f;
 	mitigation += (mitigation * static_cast<float>(getMitigationMultiplier())) / 100.f;
+
+	// Mitigation potion skill bonus: +0.2% per level (max 100 levels = +20%)
+	auto mitigationSkillValue = m_player.kv()->get("mitigation_skill");
+	int32_t mitigationSkillLevel = mitigationSkillValue ? static_cast<int32_t>(mitigationSkillValue->getNumber()) : 0;
+	if (mitigationSkillLevel > 0) {
+		mitigation += static_cast<float>(std::min(mitigationSkillLevel, 100)) * 0.2f;
+	}
+
 	return mitigation;
 }
 

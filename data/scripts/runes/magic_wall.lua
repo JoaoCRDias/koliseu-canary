@@ -19,6 +19,14 @@ function onCreateMagicWall(creature, position)
 		magicWall = ITEM_MAGICWALL
 	end
 
+	-- Magic Wall Skins (gamestore OFFER_TYPE_MW_SKIN): override item id with player's selected cosmetic
+	if creature and creature:isPlayer() then
+		local selected = creature:kv():scoped("mw-skins"):get("selected")
+		if selected and selected >= 60799 and selected <= 60819 then
+			magicWall = selected
+		end
+	end
+
 	local item = Game.createItem(magicWall, 1, position)
 	if item then
 		item:setDuration(16, 24)

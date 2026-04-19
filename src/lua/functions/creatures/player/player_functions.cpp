@@ -341,6 +341,9 @@ void PlayerFunctions::init(lua_State* L) {
 	Lua::registerMethod(L, "Player", "hasSecureMode", PlayerFunctions::luaPlayerHasSecureMode);
 	Lua::registerMethod(L, "Player", "getFightMode", PlayerFunctions::luaPlayerGetFightMode);
 
+	Lua::registerMethod(L, "Player", "sendStats", PlayerFunctions::luaPlayerSendStats);
+	Lua::registerMethod(L, "Player", "sendSkills", PlayerFunctions::luaPlayerSendSkills);
+
 	Lua::registerMethod(L, "Player", "getBaseXpGain", PlayerFunctions::luaPlayerGetBaseXpGain);
 	Lua::registerMethod(L, "Player", "setBaseXpGain", PlayerFunctions::luaPlayerSetBaseXpGain);
 	Lua::registerMethod(L, "Player", "getVoucherXpBoost", PlayerFunctions::luaPlayerGetVoucherXpBoost);
@@ -3829,6 +3832,30 @@ int PlayerFunctions::luaPlayerHasSecureMode(lua_State* L) {
 	} else {
 		lua_pushnil(L);
 	}
+	return 1;
+}
+
+int PlayerFunctions::luaPlayerSendStats(lua_State* L) {
+	// player:sendStats()
+	const auto &player = Lua::getUserdataShared<Player>(L, 1, "Player");
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+	player->sendStats();
+	Lua::pushBoolean(L, true);
+	return 1;
+}
+
+int PlayerFunctions::luaPlayerSendSkills(lua_State* L) {
+	// player:sendSkills() — also exposed as forceSkillsSend alias
+	const auto &player = Lua::getUserdataShared<Player>(L, 1, "Player");
+	if (!player) {
+		lua_pushnil(L);
+		return 1;
+	}
+	player->sendSkills();
+	Lua::pushBoolean(L, true);
 	return 1;
 }
 

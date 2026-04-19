@@ -1,6 +1,14 @@
 -- Functions from The Forgotten Server
 local foodCondition = Condition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
 
+-- Alias: canary uses sendSkills() which fires immediately; koliseuot's forceSkillsSend bypasses a rate limit.
+-- Since canary has no rate limit, both map to the same engine call.
+if not Player.forceSkillsSend then
+	function Player:forceSkillsSend()
+		self:sendSkills()
+	end
+end
+
 function Player.feed(self, food)
 	local condition = self:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
 	if condition then
@@ -507,6 +515,18 @@ function Player:calculateLootFactor(monster)
 				suffix = suffix .. ", "
 			end
 			suffix = suffix .. string.format("badge +%d%%", bonusPercent)
+		end
+	end
+
+	-- Linked Task permanent loot bonus
+	if LinkedTask then
+		local linkedLootBonus = LinkedTask.getPlayerBonusLoot(self)
+		if linkedLootBonus and linkedLootBonus > 0 then
+			factor = factor * (1 + linkedLootBonus / 100)
+			if #suffix > 0 then
+				suffix = suffix .. ", "
+			end
+			suffix = suffix .. string.format("linked +%d%%", linkedLootBonus)
 		end
 	end
 

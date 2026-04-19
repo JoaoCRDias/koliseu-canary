@@ -633,6 +633,14 @@ function Player:onGainExperience(target, exp, rawExp)
 		end
 	end
 
+	-- Linked Task permanent XP bonus
+	if LinkedTask then
+		local linkedTaskXpBonus = LinkedTask.getPlayerBonusXP(self)
+		if linkedTaskXpBonus and linkedTaskXpBonus > 0 then
+			exp = math.floor(exp * (1 + linkedTaskXpBonus / 100))
+		end
+	end
+
 	-- Soul War Experience by Taint
 	if SoulWarQuest then
 		local monsterType = target:getType()

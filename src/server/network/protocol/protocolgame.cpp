@@ -4588,8 +4588,11 @@ void ProtocolGame::sendCyclopediaCharacterDefenceStats() {
 	msg.add<uint16_t>(0);
 
 	const auto wheelMultiplier = player->wheel().getMitigationMultiplier();
+	auto mitigationSkillValue = player->kv()->get("mitigation_skill");
+	int32_t mitigationSkillLevel = mitigationSkillValue ? static_cast<int32_t>(mitigationSkillValue->getNumber()) : 0;
+	double mitigationSkillBonus = std::min(mitigationSkillLevel, 100) * 0.2 / 100.0;
 	msg.addDouble(player->getMitigation() / 100.);
-	msg.addDouble(0.0);
+	msg.addDouble(mitigationSkillBonus);
 	msg.addDouble(player->getDefenseEquipment() / 10000.);
 	msg.addDouble(player->getSkillLevel(SKILL_SHIELD) * player->getVocation()->mitigationFactor / 10000.);
 	msg.addDouble(wheelMultiplier / 100.);
