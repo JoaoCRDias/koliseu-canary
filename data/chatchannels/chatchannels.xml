@@ -9,4 +9,5 @@
 	<channel id="8" name="Gamemaster" script="gamemaster.lua" />
 	<channel id="9" name="Tasks" public="1" script="tasks.lua" />
 	<channel id="11" name="Guild Leaders" script="guild_leaders.lua" />
+	<channel id="12" name="Castle War" public="1" script="castlewar.lua"  />
 </channels>

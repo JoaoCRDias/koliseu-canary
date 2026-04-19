@@ -180,6 +180,7 @@ function playerLoginGlobal.onLogin(player)
 	player:registerEvent("UpdatePlayerOnAdvancedLevel")
 	player:registerEvent("GemBagAutoCreate")
 	player:registerEvent("GemBagSchemaReset")
+	player:registerEvent("FallenCdReset")
 
 	-- Regeneration
 	local regenCondition = player:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)

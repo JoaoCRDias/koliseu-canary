@@ -3567,6 +3567,12 @@ void Player::addExperience(const std::shared_ptr<Creature> &target, uint64_t exp
 			expString = fmt::format("{} (gems +{}%)", expString, gemBagXpBonus);
 		}
 
+		// Castle War bonus (storage 53403 set by Lua onGainExperience)
+		const int32_t castleBonusExp = getStorageValue(53403);
+		if (castleBonusExp > 0) {
+			expString = fmt::format("{} (castle +{}%)", expString, castleBonusExp);
+		}
+
 		TextMessage message(MESSAGE_EXPERIENCE, "You gained " + expString + (handleHazardExperience ? " (Hazard)" : ""));
 		message.position = position;
 		message.primary.value = exp;

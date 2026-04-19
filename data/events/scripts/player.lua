@@ -642,6 +642,21 @@ function Player:onGainExperience(target, exp, rawExp)
 		end
 	end
 
+	-- Castle War Dominant Guild Bonus Experience
+	local castleBonusExp = 0
+	if Castle and Castle:isPlayerInDominantGuild(self) then
+		castleBonusExp = Castle:getExpBonus()
+		if castleBonusExp > 0 then
+			exp = exp * (1 + castleBonusExp / 100)
+		end
+	end
+	-- Storage 53403: castle bonus % for C++ exp message display
+	-- Only update when value changes to avoid unnecessary packets
+	local newCastleStorage = castleBonusExp > 0 and castleBonusExp or -1
+	if self:getStorageValue(53403) ~= newCastleStorage then
+		self:setStorageValue(53403, newCastleStorage)
+	end
+
 	-- Linked Task permanent XP bonus
 	if LinkedTask then
 		local linkedTaskXpBonus = LinkedTask.getPlayerBonusXP(self)
