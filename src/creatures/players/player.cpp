@@ -1101,16 +1101,30 @@ void Player::updateLastAggressiveAction() {
 }
 
 void Player::addSkillAdvance(skills_t skill, uint64_t count) {
-	uint64_t currReqTries = vocation->getReqSkillTries(skill, skills[skill].level);
-	uint64_t nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
-	if (currReqTries >= nextReqTries) {
-		return;
+	// Power-law skill boost active? (skill >= 141 for the vocation's main skill)
+	const bool isBoosted = isSkillBoosted(skill, skills[skill].level);
+
+	if (!isBoosted) {
+		// Original cap: bail if there is no next requirement (cap reached with exponential formula)
+		uint64_t currReqTries = vocation->getReqSkillTries(skill, skills[skill].level);
+		uint64_t nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
+		if (currReqTries >= nextReqTries) {
+			return;
+		}
 	}
 
 	g_events().eventPlayerOnGainSkillTries(static_self_cast<Player>(), skill, count);
 	g_callbacks().executeCallback(EventCallback_t::playerOnGainSkillTries, getPlayer(), std::ref(skill), std::ref(count));
 	if (count == 0) {
 		return;
+	}
+
+	uint64_t nextReqTries = getAdjustedReqSkillTries(skill, skills[skill].level + 1);
+
+	// Power-law activates at skill 141. Cap stored tries to adjusted requirement to prevent
+	// mass level-ups when transitioning from exponential to power-law formula.
+	if (skills[skill].tries >= nextReqTries) {
+		skills[skill].tries = nextReqTries - 1;
 	}
 
 	bool sendUpdateSkills = false;
@@ -1132,18 +1146,23 @@ void Player::addSkillAdvance(skills_t skill, uint64_t count) {
 		g_creatureEvents().playerAdvance(static_self_cast<Player>(), skill, (skills[skill].level - 1), skills[skill].level);
 
 		sendUpdateSkills = true;
-		currReqTries = nextReqTries;
-		nextReqTries = vocation->getReqSkillTries(skill, skills[skill].level + 1);
-		if (currReqTries >= nextReqTries) {
-			count = 0;
-			break;
+
+		// If we left boost zone, check exponential cap
+		if (!isSkillBoosted(skill, skills[skill].level)) {
+			uint64_t currReq = vocation->getReqSkillTries(skill, skills[skill].level);
+			uint64_t nextReq = vocation->getReqSkillTries(skill, skills[skill].level + 1);
+			if (currReq >= nextReq) {
+				count = 0;
+				break;
+			}
 		}
+		nextReqTries = getAdjustedReqSkillTries(skill, skills[skill].level + 1);
 	}
 
 	skills[skill].tries += count;
 
 	double_t newPercent;
-	if (nextReqTries > currReqTries) {
+	if (nextReqTries > 0) {
 		newPercent = Player::getPercentLevel(skills[skill].tries, nextReqTries);
 	} else {
 		newPercent = 0;
@@ -1158,6 +1177,110 @@ void Player::addSkillAdvance(skills_t skill, uint64_t count) {
 		sendSkills();
 		sendStats();
 	}
+}
+
+uint64_t Player::getAdjustedReqSkillTries(uint8_t skill, uint16_t skillLevel) const {
+	// Power-law skill system:
+	// - Activates at skill 141+ for main vocation skills (EK melee, RP distance, Monk fist)
+	// - Skill 140 is the last level using exponential formula (gate)
+	// - From 141+: tries = floor + A * (S - 140)^P
+	//   where floor = exponential tries at skill 140 (dynamic per vocation)
+	//   A = 664,577  P = 0.5 (square root growth)
+	// - The floor ensures each level costs AT LEAST as much as skill 139->140
+	// - Calibrated: sk500 ~120d boosted, sk1000 ~357d boosted
+	constexpr uint16_t MIN_BOOST_SKILL = 141;
+	constexpr uint16_t FLOOR_SKILL = 140;
+	constexpr double POWER_LAW_A = 664577.0;
+	constexpr double POWER_LAW_P = 0.5;
+
+	if (skillLevel < MIN_BOOST_SKILL) {
+		return vocation->getReqSkillTries(skill, skillLevel);
+	}
+
+	// Only boost main vocation skill: EK=axe/club/sword, RP=distance, Monk=fist
+	const uint8_t baseVoc = vocation->getBaseId();
+	bool isMainSkill = false;
+	if (baseVoc == 4 && (skill == SKILL_AXE || skill == SKILL_CLUB || skill == SKILL_SWORD)) {
+		isMainSkill = true;
+	} else if (baseVoc == 3 && skill == SKILL_DISTANCE) {
+		isMainSkill = true;
+	} else if (baseVoc == 5 && skill == SKILL_FIST) {
+		isMainSkill = true;
+	}
+	if (!isMainSkill) {
+		return vocation->getReqSkillTries(skill, skillLevel);
+	}
+
+	// Floor = exponential tries at skill 140 (varies per vocation due to skillBase)
+	const uint64_t floor = vocation->getReqSkillTries(skill, FLOOR_SKILL);
+	const double k = static_cast<double>(skillLevel - FLOOR_SKILL);
+	const auto tries = static_cast<uint64_t>(floor + POWER_LAW_A * std::pow(k, POWER_LAW_P));
+
+	return std::max(tries, static_cast<uint64_t>(1));
+}
+
+uint64_t Player::getAdjustedReqMana(uint32_t magicLevel) const {
+	// Power-law magic level system:
+	// - Same logic as skills: floor + A * (ML - 140)^P
+	// - Floor and A are scaled so ML takes EXACTLY the same time per level as skills
+	// - Skills: 7 tries/hit * 2 hits/sec * stage 10x = 140 eff tries/sec
+	// - ML: 500 mana/hit * 2 hits/sec * stage 10x = 10,000 eff mana/sec
+	// - Ratio: 10,000 / 140 = 71.4286x
+	// - floor_ml = floor_sk(EK sword) * 71.4286 = 10,930,157 * 71.4286 = 780,725,500
+	// - A_ml = 664,577 * 71.4286 = 47,470,000
+	constexpr uint16_t MIN_BOOST_ML = 141;
+	constexpr uint16_t FLOOR_ML = 140;
+	constexpr double MANA_FLOOR = 780725500.0;
+	constexpr double POWER_LAW_A = 47470000.0;
+	constexpr double POWER_LAW_P = 0.5;
+
+	if (magicLevel < MIN_BOOST_ML) {
+		return vocation->getReqMana(magicLevel);
+	}
+
+	// Only mages (sorcerer=1, druid=2) get magic level boost
+	const uint8_t baseVoc = vocation->getBaseId();
+	if (baseVoc != 1 && baseVoc != 2) {
+		return vocation->getReqMana(magicLevel);
+	}
+
+	const double k = static_cast<double>(magicLevel - FLOOR_ML);
+	const auto mana = static_cast<uint64_t>(MANA_FLOOR + POWER_LAW_A * std::pow(k, POWER_LAW_P));
+
+	return std::max(mana, static_cast<uint64_t>(1));
+}
+
+bool Player::isSkillBoosted(uint8_t skill, uint16_t skillLevel) const {
+	constexpr uint16_t MIN_BOOST_SKILL = 141;
+
+	if (skillLevel < MIN_BOOST_SKILL) {
+		return false;
+	}
+
+	// Only main vocation skill: EK=axe/club/sword, RP=distance, Monk=fist
+	const uint8_t baseVoc = vocation->getBaseId();
+	if (baseVoc == 4 && (skill == SKILL_AXE || skill == SKILL_CLUB || skill == SKILL_SWORD)) {
+		return true;
+	}
+	if (baseVoc == 3 && skill == SKILL_DISTANCE) {
+		return true;
+	}
+	if (baseVoc == 5 && skill == SKILL_FIST) {
+		return true;
+	}
+	return false;
+}
+
+bool Player::isMagicLevelBoosted(uint32_t magicLevel) const {
+	constexpr uint16_t MIN_BOOST_ML = 141;
+
+	if (magicLevel < MIN_BOOST_ML) {
+		return false;
+	}
+
+	// Only mages (sorcerer=1, druid=2) get magic level boost
+	const uint8_t baseVoc = vocation->getBaseId();
+	return (baseVoc == 1 || baseVoc == 2);
 }
 
 void Player::setVarStats(stats_t stat, int32_t modifier) {
@@ -3295,17 +3418,29 @@ void Player::addManaSpent(uint64_t amount) {
 		return;
 	}
 
-	uint64_t currReqMana = vocation->getReqMana(magLevel);
-	uint64_t nextReqMana = vocation->getReqMana(magLevel + 1);
-	if (currReqMana >= nextReqMana) {
-		// player has reached max magic level
-		return;
+	// Power-law ML boost active? (ML >= 141 for sorcerer/druid)
+	const bool isBoosted = isMagicLevelBoosted(magLevel);
+
+	if (!isBoosted) {
+		uint64_t currReqMana = vocation->getReqMana(magLevel);
+		uint64_t nextReqMana = vocation->getReqMana(magLevel + 1);
+		if (currReqMana >= nextReqMana) {
+			return;
+		}
 	}
 
 	g_events().eventPlayerOnGainSkillTries(static_self_cast<Player>(), SKILL_MAGLEVEL, amount);
 	g_callbacks().executeCallback(EventCallback_t::playerOnGainSkillTries, getPlayer(), SKILL_MAGLEVEL, amount);
 	if (amount == 0) {
 		return;
+	}
+
+	uint64_t nextReqMana = getAdjustedReqMana(magLevel + 1);
+
+	// Power-law activates at ML 141. Cap stored mana to adjusted requirement to prevent
+	// mass level-ups when transitioning from exponential to power-law formula.
+	if (manaSpent >= nextReqMana) {
+		manaSpent = nextReqMana - 1;
 	}
 
 	bool sendUpdateStats = false;
@@ -3323,17 +3458,22 @@ void Player::addManaSpent(uint64_t amount) {
 		sendScreenshotAndBannerUpSkill(SKILL_MAGLEVEL, magLevel);
 
 		sendUpdateStats = true;
-		currReqMana = nextReqMana;
-		nextReqMana = vocation->getReqMana(magLevel + 1);
-		if (currReqMana >= nextReqMana) {
-			return;
+
+		// If we left boost zone, check exponential cap
+		if (!isMagicLevelBoosted(magLevel)) {
+			uint64_t currReq = vocation->getReqMana(magLevel);
+			uint64_t nextReq = vocation->getReqMana(magLevel + 1);
+			if (currReq >= nextReq) {
+				return;
+			}
 		}
+		nextReqMana = getAdjustedReqMana(magLevel + 1);
 	}
 
 	manaSpent += amount;
 
 	const uint8_t oldPercent = magLevelPercent;
-	if (nextReqMana > currReqMana) {
+	if (nextReqMana > 0) {
 		magLevelPercent = Player::getPercentLevel(manaSpent, nextReqMana);
 	} else {
 		magLevelPercent = 0;

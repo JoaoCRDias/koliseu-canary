@@ -19,6 +19,21 @@
 #include "lua/global/lua_variant.hpp"
 #include "creatures/players/player.hpp"
 
+// Element Matter override: reads "element_type" custom attribute set by element_matter.lua action
+// (IDs 60676-60682). Returns the override type when valid, otherwise the item's default element.
+CombatType_t Weapon::getItemElementTypeOverride(const std::shared_ptr<Item> &item, CombatType_t defaultType) {
+	if (item) {
+		const auto* attr = item->getCustomAttribute("element_type");
+		if (attr) {
+			const auto val = attr->getInteger();
+			if (val >= 0 && val < COMBAT_COUNT) {
+				return static_cast<CombatType_t>(val);
+			}
+		}
+	}
+	return defaultType;
+}
+
 Weapons::Weapons() = default;
 Weapons::~Weapons() = default;
 
@@ -77,11 +92,23 @@ int32_t Weapons::getMaxMeleeDamage(int32_t attackSkill, int32_t attackValue) {
 
 // Players
 int32_t Weapons::getMaxWeaponDamage(uint32_t level, int32_t attackSkill, int32_t attackValue, float attackFactor, bool isMelee) {
-	if (isMelee) {
-		return attackValue > 0 ? static_cast<int32_t>(std::round((0.085 * attackFactor * attackValue * attackSkill) + (level / 5))) : 0;
-	} else {
-		return static_cast<int32_t>(std::round((0.09 * attackFactor * attackValue * attackSkill) + (level / 5)));
+	// Koliseuot-specific formulas (weaker skill coefficient, stronger level contribution).
+	// Melee   : max = round(0.0675 * atkFactor * atkValue * atkSkill + level/3.33)
+	// Distance: max = round(0.135  * atkFactor * atkValue * atkSkill + (level/3.33) * (1 + atkValue * 0.03))
+	// Zero-damage weapons skip melee calculation so unarmed/dummy items don't gain level-scaling damage.
+	if (isMelee && attackValue <= 0) {
+		return 0;
 	}
+
+	if (isMelee) {
+		const double skillWeaponPart = 0.0675 * attackFactor * attackValue * attackSkill;
+		const double levelPart = level / 3.33;
+		return static_cast<int32_t>(std::round(skillWeaponPart + levelPart));
+	}
+
+	const double skillPart = 0.135 * attackFactor * attackValue * attackSkill;
+	const double levelPart = (level / 3.33) * (1.0 + attackValue * 0.03);
+	return static_cast<int32_t>(std::round(skillPart + levelPart));
 }
 
 Weapon::Weapon() = default;
@@ -204,8 +231,17 @@ CombatDamage Weapon::getCombatDamage(CombatDamage combat, const std::shared_ptr<
 	const int32_t realDamage = normal_random(minDamage, maxDamage);
 
 	// Setting damage to combat
-	combat.primary.value = realDamage * weaponAttackProportion;
-	combat.secondary.value = realDamage * (1 - weaponAttackProportion);
+	const CombatType_t overrideElement = getElementType(item);
+	if (elementalAttack == 0 && item && item->getCustomAttribute("element_type") != nullptr
+		&& overrideElement != COMBAT_NONE && overrideElement != COMBAT_PHYSICALDAMAGE) {
+		// Element Matter override on weapon without base element: 10% physical / 90% element
+		combat.primary.value = static_cast<int32_t>(realDamage * 0.10);
+		combat.secondary.type = overrideElement;
+		combat.secondary.value = static_cast<int32_t>(realDamage * 0.90);
+	} else {
+		combat.primary.value = realDamage * weaponAttackProportion;
+		combat.secondary.value = realDamage * (1 - weaponAttackProportion);
+	}
 	return combat;
 }
 
@@ -304,7 +340,9 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 			damage.origin = ORIGIN_MELEE;
 		}
 		damage.primary.type = params.combatType;
-		damage.secondary.type = getElementType();
+		// For ammo (bolts/arrows), the element matter is on the main weapon (crossbow/bow)
+		const auto &matterItem = (weaponType == WEAPON_AMMO && player) ? player->getWeapon(true) : item;
+		damage.secondary.type = getElementType(matterItem);
 
 		// Cleave hits mirror the main hit's exact damage (no re-roll).
 		// overrideDamage holds the already-rolled main hit value (still negative sign).
@@ -322,6 +360,28 @@ void Weapon::internalUseWeapon(const std::shared_ptr<Player> &player, const std:
 			float elementalPercentage = static_cast<float>(elementalAttack) / combinedAttack;
 			damage.primary.value = static_cast<int32_t>(totalDamage * physicalPercentage);
 			damage.secondary.value = static_cast<int32_t>(totalDamage * elementalPercentage);
+		} else if (matterItem && matterItem->getCustomAttribute("element_type") != nullptr
+			&& getElementType(matterItem) != COMBAT_NONE) {
+			// Element Matter override on weapon without base element
+			const CombatType_t overrideType = getElementType(matterItem);
+			const bool isWandOrRod = (weaponType == WEAPON_WAND);
+			if (overrideType == COMBAT_PHYSICALDAMAGE) {
+				// Physical matter: 100% physical damage
+				damage.primary.type = COMBAT_PHYSICALDAMAGE;
+				damage.primary.value = totalDamage;
+				damage.secondary.value = 0;
+			} else if (isWandOrRod) {
+				// Wands/rods: 100% elemental damage (no physical component)
+				damage.primary.type = overrideType;
+				damage.primary.value = totalDamage;
+				damage.secondary.value = 0;
+			} else {
+				// Other weapons: 10% physical / 90% element
+				damage.primary.type = COMBAT_PHYSICALDAMAGE;
+				damage.primary.value = static_cast<int32_t>(totalDamage * 0.10f);
+				damage.secondary.type = overrideType;
+				damage.secondary.value = static_cast<int32_t>(totalDamage * 0.90f);
+			}
 		} else {
 			damage.primary.value = totalDamage;
 			damage.secondary.value = 0;
@@ -508,14 +568,28 @@ bool Weapon::calculateSkillFormula(const std::shared_ptr<Player> &player, int32_
 		}
 	}
 
-	const CombatType_t elementType = getElementType();
+	// For ammo, check element matter on the main weapon (crossbow/bow)
+	const auto &matterSource = (tool->getWeaponType() == WEAPON_AMMO && item) ? item : tool;
+	const CombatType_t elementType = getElementType(matterSource);
 	damage.secondary.type = elementType;
 
 	bool shouldCalculateSecondaryDamage = false;
 	if (elementType != COMBAT_NONE) {
 		elementAttack = getElementDamageValue();
-		shouldCalculateSecondaryDamage = true;
-		attackValue += elementAttack;
+		if (elementAttack > 0) {
+			shouldCalculateSecondaryDamage = true;
+			attackValue += elementAttack;
+		} else if (matterSource && matterSource->getCustomAttribute("element_type") != nullptr
+			&& elementType != COMBAT_PHYSICALDAMAGE
+			&& matterSource->getWeaponType() != WEAPON_FIST) {
+			// Element Matter override on weapon without base element damage.
+			// For spells: set elementAttack to 90% of weapon attack (90% elemental / 10% physical split).
+			// attackValue is NOT incremented so factor = elementAttack / attackValue = 0.90 exactly.
+			// Skip WEAPON_FIST (monk): monk spells pick the element entirely in Lua.
+			const ItemType &it = Item::items[matterSource->getID()];
+			elementAttack = static_cast<int16_t>(it.attack * 0.90);
+			shouldCalculateSecondaryDamage = true;
+		}
 	}
 
 	if (useCharges) {
@@ -667,7 +741,8 @@ bool WeaponMelee::getSkillType(const std::shared_ptr<Player> &player, const std:
 }
 
 int32_t WeaponMelee::getElementDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &, const std::shared_ptr<Item> &item) const {
-	if (elementType == COMBAT_NONE) {
+	const CombatType_t resolvedElement = getElementType(item);
+	if (resolvedElement == COMBAT_NONE) {
 		return 0;
 	}
 
@@ -675,6 +750,15 @@ int32_t WeaponMelee::getElementDamage(const std::shared_ptr<Player> &player, con
 	const int32_t attackValue = elementDamage;
 	const float attackFactor = player->getAttackFactor();
 	const uint32_t level = player->getLevel();
+
+	// Element Matter on melee weapon without base element damage: use weapon attack × 90% as element damage
+	if (attackValue == 0 && item && item->getCustomAttribute("element_type") != nullptr
+		&& resolvedElement != COMBAT_PHYSICALDAMAGE) {
+		const int32_t weaponAttack = std::max<int32_t>(0, item->getAttack());
+		const int32_t maxValue = Weapons::getMaxWeaponDamage(level, attackSkill, weaponAttack, attackFactor, true);
+		const int32_t minValue = level / 5;
+		return -static_cast<int32_t>((normal_random(minValue, static_cast<int32_t>(maxValue * player->getVocation()->meleeDamageMultiplier))) * 0.90);
+	}
 
 	const int32_t maxValue = Weapons::getMaxWeaponDamage(level, attackSkill, attackValue, attackFactor, true);
 	const int32_t minValue = level / 5;
@@ -921,7 +1005,10 @@ bool WeaponDistance::useWeapon(const std::shared_ptr<Player> &player, const std:
 }
 
 int32_t WeaponDistance::getElementDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item) const {
-	if (elementType == COMBAT_NONE) {
+	// For ammo, check element matter on the main weapon (crossbow/bow)
+	const auto &matterSource = (item && item->getWeaponType() == WEAPON_AMMO && player) ? player->getWeapon(true) : item;
+	const CombatType_t resolvedElement = getElementType(matterSource);
+	if (resolvedElement == COMBAT_NONE) {
 		return 0;
 	}
 

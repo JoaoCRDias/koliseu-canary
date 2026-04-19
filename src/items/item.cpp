@@ -1303,6 +1303,20 @@ Item::getDescriptions(const ItemType &it, const std::shared_ptr<Item> &item /*= 
 				ss << "attack +" << attack;
 				separator = true;
 			}
+			// Element Matter override (e.g. crossbows/bows) shown as "90% energy"
+			if (item) {
+				const auto* elementOverride = item->getCustomAttribute("element_type");
+				if (elementOverride) {
+					const auto val = elementOverride->getInteger();
+					if (val > 0 && val < COMBAT_COUNT) {
+						if (separator) {
+							ss << ", ";
+						}
+						ss << "90% " << getCombatName(static_cast<CombatType_t>(val));
+						separator = true;
+					}
+				}
+			}
 			if (int32_t hitChance = item->getHitChance();
 			    hitChance != 0) {
 				if (separator) {
@@ -1321,11 +1335,34 @@ Item::getDescriptions(const ItemType &it, const std::shared_ptr<Item> &item /*= 
 			descriptions.emplace_back("Attack", ss.str());
 		} else {
 			std::string attackDescription;
-			if (it.abilities && it.abilities->elementType != COMBAT_NONE && it.abilities->elementDamage != 0) {
-				attackDescription = fmt::format("{} {}", it.abilities->elementDamage, getCombatName(it.abilities->elementType));
+			CombatType_t displayElementType = COMBAT_NONE;
+			uint16_t displayElementDamage = 0;
+			bool matterOverrideNoBase = false;
+			if (item) {
+				const auto* elementOverride = item->getCustomAttribute("element_type");
+				if (elementOverride) {
+					const auto val = elementOverride->getInteger();
+					if (val > 0 && val < COMBAT_COUNT) {
+						displayElementType = static_cast<CombatType_t>(val);
+						displayElementDamage = it.abilities ? it.abilities->elementDamage : 0;
+						if (displayElementDamage == 0) {
+							matterOverrideNoBase = true;
+						}
+					}
+				}
+			}
+			if (displayElementType == COMBAT_NONE && it.abilities) {
+				displayElementType = it.abilities->elementType;
+				displayElementDamage = it.abilities->elementDamage;
+			}
+			if (displayElementType != COMBAT_NONE && displayElementDamage != 0) {
+				attackDescription = fmt::format("{} {}", displayElementDamage, getCombatName(displayElementType));
 			}
 
-			if (attack != 0 && !attackDescription.empty()) {
+			if (matterOverrideNoBase && attack != 0) {
+				const bool isWandOrRod = (it.weaponType == WEAPON_WAND);
+				attackDescription = fmt::format("{} | {}% {}", attack, isWandOrRod ? 100 : 90, getCombatName(displayElementType));
+			} else if (attack != 0 && !attackDescription.empty()) {
 				attackDescription = fmt::format("{} physical + {}", attack, attackDescription);
 			} else if (attack != 0 && attackDescription.empty()) {
 				attackDescription = std::to_string(attack);
@@ -1731,6 +1768,20 @@ Item::getDescriptions(const ItemType &it, const std::shared_ptr<Item> &item /*= 
 				ss << "attack +" << attack;
 				separator = true;
 			}
+			// Element Matter override (mirror of the item-aware path above, without per-item instance)
+			if (item) {
+				const auto* elementOverride = item->getCustomAttribute("element_type");
+				if (elementOverride) {
+					const auto val = elementOverride->getInteger();
+					if (val > 0 && val < COMBAT_COUNT) {
+						if (separator) {
+							ss << ", ";
+						}
+						ss << "90% " << getCombatName(static_cast<CombatType_t>(val));
+						separator = true;
+					}
+				}
+			}
 			if (int32_t hitChance = it.hitChance;
 			    hitChance != 0) {
 				if (separator) {
@@ -1749,11 +1800,34 @@ Item::getDescriptions(const ItemType &it, const std::shared_ptr<Item> &item /*= 
 			descriptions.emplace_back("Attack", ss.str());
 		} else {
 			std::string attackDescription;
-			if (it.abilities && it.abilities->elementType != COMBAT_NONE && it.abilities->elementDamage != 0) {
-				attackDescription = fmt::format("{} {}", it.abilities->elementDamage, getCombatName(it.abilities->elementType));
+			CombatType_t displayElementType = COMBAT_NONE;
+			uint16_t displayElementDamage = 0;
+			bool matterOverrideNoBase = false;
+			if (item) {
+				const auto* elementOverride = item->getCustomAttribute("element_type");
+				if (elementOverride) {
+					const auto val = elementOverride->getInteger();
+					if (val > 0 && val < COMBAT_COUNT) {
+						displayElementType = static_cast<CombatType_t>(val);
+						displayElementDamage = it.abilities ? it.abilities->elementDamage : 0;
+						if (displayElementDamage == 0) {
+							matterOverrideNoBase = true;
+						}
+					}
+				}
+			}
+			if (displayElementType == COMBAT_NONE && it.abilities) {
+				displayElementType = it.abilities->elementType;
+				displayElementDamage = it.abilities->elementDamage;
+			}
+			if (displayElementType != COMBAT_NONE && displayElementDamage != 0) {
+				attackDescription = fmt::format("{} {}", displayElementDamage, getCombatName(displayElementType));
 			}
 
-			if (attack != 0 && !attackDescription.empty()) {
+			if (matterOverrideNoBase && attack != 0) {
+				const bool isWandOrRod = (it.weaponType == WEAPON_WAND);
+				attackDescription = fmt::format("{} | {}% {}", attack, isWandOrRod ? 100 : 90, getCombatName(displayElementType));
+			} else if (attack != 0 && !attackDescription.empty()) {
 				attackDescription = fmt::format("{} physical + {}", attack, attackDescription);
 			} else if (attack != 0 && attackDescription.empty()) {
 				attackDescription = std::to_string(attack);
@@ -2624,6 +2698,17 @@ std::string Item::getDescription(const ItemType &it, int32_t lookDistance, const
 				s << ", Atk " << std::showpos << attack << std::noshowpos;
 			}
 
+			// Element Matter override (ranged weapons show "90% energy")
+			if (item) {
+				const auto* elOverride = item->getCustomAttribute("element_type");
+				if (elOverride) {
+					const auto val = elOverride->getInteger();
+					if (val > 0 && val < COMBAT_COUNT) {
+						s << " | 90% " << getCombatName(static_cast<CombatType_t>(val));
+					}
+				}
+			}
+
 			if (hitChance != 0) {
 				s << ", Hit% " << std::showpos << static_cast<int16_t>(hitChance) << std::noshowpos;
 			}
@@ -2895,11 +2980,40 @@ std::string Item::getDescription(const ItemType &it, int32_t lookDistance, const
 				s << " (Atk:" << attack;
 			}
 
-			if (it.abilities && it.abilities->elementType != COMBAT_NONE && it.abilities->elementDamage != 0 && !begin) {
-				s << " physical + " << it.abilities->elementDamage << ' ' << getCombatName(it.abilities->elementType);
-			} else if (it.abilities && it.abilities->elementType != COMBAT_NONE && it.abilities->elementDamage != 0 && begin) {
+			// Element Matter override resolution — prefer override over the item's default ability element
+			CombatType_t displayElType = COMBAT_NONE;
+			uint16_t displayElDamage = 0;
+			bool matterNoBase = false;
+			if (item) {
+				const auto* elOverride = item->getCustomAttribute("element_type");
+				if (elOverride) {
+					const auto val = elOverride->getInteger();
+					if (val > 0 && val < COMBAT_COUNT) {
+						displayElType = static_cast<CombatType_t>(val);
+						displayElDamage = it.abilities ? it.abilities->elementDamage : 0;
+						if (displayElDamage == 0) {
+							matterNoBase = true;
+						}
+					}
+				}
+			}
+			if (displayElType == COMBAT_NONE && it.abilities) {
+				displayElType = it.abilities->elementType;
+				displayElDamage = it.abilities->elementDamage;
+			}
+
+			const bool isWandOrRodShort = (it.weaponType == WEAPON_WAND);
+			const int matterPct = isWandOrRodShort ? 100 : 90;
+			if (matterNoBase && !begin) {
+				s << " | " << matterPct << "% " << getCombatName(displayElType);
+			} else if (matterNoBase && begin) {
 				begin = false;
-				s << " (" << it.abilities->elementDamage << ' ' << getCombatName(it.abilities->elementType);
+				s << " (Atk:" << attack << " | " << matterPct << "% " << getCombatName(displayElType);
+			} else if (displayElType != COMBAT_NONE && displayElDamage != 0 && !begin) {
+				s << " physical + " << displayElDamage << ' ' << getCombatName(displayElType);
+			} else if (displayElType != COMBAT_NONE && displayElDamage != 0 && begin) {
+				begin = false;
+				s << " (" << displayElDamage << ' ' << getCombatName(displayElType);
 			}
 
 			if (defense != 0 || extraDefense != 0 || it.isMissile()) {

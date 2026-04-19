@@ -71,8 +71,14 @@ public:
 
 	virtual int32_t getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item, bool maxDamage = false) const = 0;
 	virtual int32_t getElementDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item) const = 0;
-	virtual CombatType_t getElementType() const = 0;
+	virtual CombatType_t getElementType(const std::shared_ptr<Item> &item = nullptr) const = 0;
 	virtual int16_t getElementDamageValue() const = 0;
+
+	// Element Matter System: reads custom attribute "element_type" from the item and, if present
+	// and valid, returns it as the overriding combat type. Used by cosmic+ weapons to change their
+	// elemental damage via element_matter action items (ID 60676-60682).
+	static CombatType_t getItemElementTypeOverride(const std::shared_ptr<Item> &item, CombatType_t defaultType);
+
 	virtual CombatDamage getCombatDamage(CombatDamage combat, const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &item, int32_t damageModifier) const;
 	uint16_t getID() const {
 		return id;
@@ -267,8 +273,8 @@ public:
 
 	int32_t getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item, bool maxDamage = false) const override;
 	int32_t getElementDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item) const override;
-	CombatType_t getElementType() const override {
-		return elementType;
+	CombatType_t getElementType(const std::shared_ptr<Item> &item = nullptr) const override {
+		return getItemElementTypeOverride(item, elementType);
 	}
 	virtual int16_t getElementDamageValue() const override;
 
@@ -291,8 +297,8 @@ public:
 
 	int32_t getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item, bool maxDamage = false) const override;
 	int32_t getElementDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item) const override;
-	CombatType_t getElementType() const override {
-		return elementType;
+	CombatType_t getElementType(const std::shared_ptr<Item> &item = nullptr) const override {
+		return getItemElementTypeOverride(item, elementType);
 	}
 	virtual int16_t getElementDamageValue() const override;
 
@@ -314,8 +320,8 @@ public:
 	int32_t getElementDamage(const std::shared_ptr<Player> &, const std::shared_ptr<Creature> &, const std::shared_ptr<Item> &) const override {
 		return 0;
 	}
-	CombatType_t getElementType() const override {
-		return params.combatType;
+	CombatType_t getElementType(const std::shared_ptr<Item> &item = nullptr) const override {
+		return getItemElementTypeOverride(item, params.combatType);
 	}
 	virtual int16_t getElementDamageValue() const override;
 	void setMinChange(int32_t change) {

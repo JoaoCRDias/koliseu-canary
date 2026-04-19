@@ -154,9 +154,10 @@ bool IOLoginDataLoad::loadPlayerBasicInfo(const std::shared_ptr<Player> &player,
 	player->mana = result->getNumber<uint32_t>("mana");
 	player->manaMax = result->getNumber<uint32_t>("manamax");
 	player->magLevel = result->getNumber<uint32_t>("maglevel");
-	uint64_t nextManaCount = player->vocation->getReqMana(player->magLevel + 1);
+	// Use adjusted formula for boosted mages (original overflows at high magic levels)
+	uint64_t nextManaCount = player->getAdjustedReqMana(player->magLevel + 1);
 	auto manaSpent = result->getNumber<uint64_t>("manaspent");
-	if (manaSpent > nextManaCount) {
+	if (nextManaCount > 0 && manaSpent > nextManaCount) {
 		manaSpent = 0;
 	}
 	player->manaSpent = manaSpent;
@@ -360,13 +361,15 @@ void IOLoginDataLoad::loadPlayerSkill(const std::shared_ptr<Player> &player, con
 	for (size_t i = 0; i < skillNames.size(); ++i) {
 		auto skillLevel = result->getNumber<uint16_t>(skillNames[i]);
 		auto skillTries = result->getNumber<uint64_t>(skillNameTries[i]);
-		uint64_t nextSkillTries = vocationPtr->getReqSkillTries(static_cast<uint8_t>(i), skillLevel + 1);
-		if (skillTries > nextSkillTries) {
-			skillTries = 0;
-		}
 
 		if ((i == SKILL_ATTACK_SPEED || i == SKILL_MINING) && skillLevel < 10) {
 			skillLevel = 10;
+		}
+
+		// Use adjusted formula for boosted players (original overflows at high skill levels)
+		uint64_t nextSkillTries = player->getAdjustedReqSkillTries(static_cast<uint8_t>(i), skillLevel + 1);
+		if (nextSkillTries > 0 && skillTries > nextSkillTries) {
+			skillTries = 0;
 		}
 
 		player->skills[i].level = skillLevel;

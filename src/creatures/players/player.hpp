@@ -847,6 +847,15 @@ public:
 	void addManaSpent(uint64_t amount);
 	void addSkillAdvance(skills_t skill, uint64_t count);
 
+	// Power-law skill system (activates at skill/ML 141+, only for main vocation skills).
+	// getAdjustedReqSkillTries / getAdjustedReqMana: returns tries/mana required to advance to
+	// the given level, using power-law formula when isSkillBoosted/isMagicLevelBoosted is true,
+	// otherwise falls back to vocation->getReqSkillTries/getReqMana.
+	uint64_t getAdjustedReqSkillTries(uint8_t skill, uint16_t skillLevel) const;
+	uint64_t getAdjustedReqMana(uint32_t magicLevel) const;
+	bool isSkillBoosted(uint8_t skill, uint16_t skillLevel) const;
+	bool isMagicLevelBoosted(uint32_t magicLevel) const;
+
 	int32_t getArmor() const override;
 	int32_t getDefense(bool sendToClient = false) const override;
 	float getAttackFactor() const override;
