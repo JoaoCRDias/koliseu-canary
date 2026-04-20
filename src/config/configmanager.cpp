@@ -105,6 +105,8 @@ bool ConfigManager::load() {
 	loadBoolConfig(L, MARKET_PREMIUM, "premiumToCreateMarketOffer", true);
 	loadBoolConfig(L, METRICS_ENABLE_OSTREAM, "metricsEnableOstream", false);
 	loadBoolConfig(L, METRICS_ENABLE_PROMETHEUS, "metricsEnablePrometheus", false);
+	loadBoolConfig(L, NO_MAGIC_LOSS, "noMagicLoss", false);
+	loadBoolConfig(L, NO_SKILL_LOSS, "noSkillLoss", false);
 	loadBoolConfig(L, ONLY_INVITED_CAN_MOVE_HOUSE_ITEMS, "onlyInvitedCanMoveHouseItems", true);
 	loadBoolConfig(L, ONLY_PREMIUM_ACCOUNT, "onlyPremiumAccount", false);
 	loadBoolConfig(L, PARTY_AUTO_SHARE_EXPERIENCE, "partyAutoShareExperience", true);
@@ -169,7 +171,6 @@ bool ConfigManager::load() {
 	loadFloatConfig(L, COMBAT_CHAIN_SKILL_FORMULA_WANDS_AND_RODS, "combatChainSkillFormulaWandsAndRods", 1.0);
 	loadFloatConfig(L, FORGE_AMOUNT_MULTIPLIER, "forgeAmountMultiplier", 3.0);
 	loadFloatConfig(L, HAZARD_EXP_BONUS_MULTIPLIER, "hazardExpBonusMultiplier", 2.0);
-	loadFloatConfig(L, LOYALTY_BONUS_PERCENTAGE_MULTIPLIER, "loyaltyBonusPercentageMultiplier", 1.0);
 	loadFloatConfig(L, MINING_CHANCE_PER_LEVEL, "miningChancePerLevel", 0.25);
 	loadFloatConfig(L, MOMENTUM_CHANCE_FORMULA_A, "momentumChanceFormulaA", 0.05);
 	loadFloatConfig(L, MOMENTUM_CHANCE_FORMULA_B, "momentumChanceFormulaB", 1.9);
@@ -227,9 +228,13 @@ bool ConfigManager::load() {
 	loadIntConfig(L, BUY_AOL_COMMAND_FEE, "buyAolCommandFee", 0);
 	loadIntConfig(L, BUY_BLESS_COMMAND_FEE, "buyBlessCommandFee", 0);
 	loadIntConfig(L, CHECK_EXPIRED_MARKET_OFFERS_EACH_MINUTES, "checkExpiredMarketOffersEachMinutes", 60);
+	loadIntConfig(L, COLLATERAL_LEECH_PERCENT, "collateralLeechPercent", 33);
 	loadIntConfig(L, COMPRESSION_LEVEL, "packetCompressionLevel", 6);
 	loadIntConfig(L, CRITICALCHANCE, "criticalChance", 10);
-	loadIntConfig(L, DAY_KILLS_TO_RED, "dayKillsToRedSkull", 3);
+	// Simplified frag system: rolling time window
+	loadIntConfig(L, FRAG_WINDOW_HOURS, "fragWindowHours", 6);
+	loadIntConfig(L, KILLS_TO_RED_SKULL, "killsToRedSkull", 15);
+	loadIntConfig(L, KILLS_TO_BLACK_SKULL, "killsToBlackSkull", 30);
 	loadIntConfig(L, DEATH_LOSE_PERCENT, "deathLosePercent", -1);
 	loadIntConfig(L, DEFAULT_RESPAWN_TIME, "defaultRespawnTime", 60);
 	loadIntConfig(L, DEFAULT_DESPAWNRADIUS, "deSpawnRadius", 50);
@@ -245,9 +250,10 @@ bool ConfigManager::load() {
 	loadIntConfig(L, FORGE_CONVERGENCE_TRANSFER_DUST_COST, "forgeConvergenceTransferCost", 160);
 	loadIntConfig(L, FORGE_CORE_COST, "forgeCoreCost", 50);
 	loadIntConfig(L, FORGE_COST_ONE_SLIVER, "forgeCostOneSliver", 20);
-	loadIntConfig(L, FORGE_FIENDISH_CREATURES_LIMIT, "forgeFiendishLimit", 3);
+	// Forge spawn chance (percent, 0..100): per-spawn probability that a monster becomes fiendish/influenced
+	loadFloatConfig(L, FORGE_FIENDISH_SPAWN_CHANCE, "forgeFiendishSpawnChance", 0.2);
+	loadFloatConfig(L, FORGE_INFLUENCED_SPAWN_CHANCE, "forgeInfluencedSpawnChance", 1.0);
 	loadIntConfig(L, FORGE_FUSION_DUST_COST, "forgeFusionDustCost", 100);
-	loadIntConfig(L, FORGE_INFLUENCED_CREATURES_LIMIT, "forgeInfluencedLimit", 300);
 	loadIntConfig(L, FORGE_MAX_DUST, "forgeMaxDust", 225);
 	loadIntConfig(L, FORGE_MAX_ITEM_TIER, "forgeMaxItemTier", 10);
 	loadIntConfig(L, FORGE_MAX_SLIVERS, "forgeMaxSlivers", 7);
@@ -255,7 +261,6 @@ bool ConfigManager::load() {
 	loadIntConfig(L, FORGE_SLIVER_AMOUNT, "forgeSliverAmount", 3);
 	loadIntConfig(L, FORGE_TIER_LOSS_REDUCTION, "forgeTierLossReduction", 50);
 	loadIntConfig(L, FORGE_TRANSFER_DUST_COST, "forgeTransferDustCost", 100);
-	loadIntConfig(L, FRAG_TIME, "timeToDecreaseFrags", 24 * 60 * 60 * 1000);
 	loadIntConfig(L, FREE_QUEST_STAGE, "freeQuestStage", 1);
 	loadIntConfig(L, GLOBAL_SERVER_SAVE_NOTIFY_DURATION, "globalServerSaveNotifyDuration", 5);
 	loadIntConfig(L, HAZARD_CRITICAL_CHANCE, "hazardCriticalChance", 750);
@@ -278,16 +283,14 @@ bool ConfigManager::load() {
 	loadIntConfig(L, LOOTPOUCH_MAXLIMIT, "lootPouchMaxLimit", 2000);
 	loadIntConfig(L, QUICK_LOOT_MAX_CORPSES, "quickLootMaxCorpses", 30);
 	loadIntConfig(L, LOW_LEVEL_BONUS_EXP, "lowLevelBonusExp", 50);
-	loadIntConfig(L, LOYALTY_POINTS_PER_CREATION_DAY, "loyaltyPointsPerCreationDay", 1);
-	loadIntConfig(L, LOYALTY_POINTS_PER_PREMIUM_DAY_PURCHASED, "loyaltyPointsPerPremiumDayPurchased", 0);
-	loadIntConfig(L, LOYALTY_POINTS_PER_PREMIUM_DAY_SPENT, "loyaltyPointsPerPremiumDaySpent", 0);
-	loadIntConfig(L, MAX_ALLOWED_ON_A_DUMMY, "maxAllowedOnADummy", 1);
+	loadIntConfig(L, LOYALTY_POINTS_PER_COIN_SPENT, "loyaltyPointsPerCoinSpent", 2);
 	loadIntConfig(L, MAX_CONTAINER_ITEM, "maxItem", 5000);
 	loadIntConfig(L, MAX_CONTAINER, "maxContainer", 500);
 	loadIntConfig(L, MAX_CONTAINER_DEPTH, "maxContainerDepth", 200);
 	loadIntConfig(L, MAX_INBOX_ITEMS, "maxInboxItems", 0);
 	loadIntConfig(L, MAX_DAMAGE_REFLECTION, "maxDamageReflection", 200);
 	loadIntConfig(L, MAX_ELEMENTAL_RESISTANCE, "maxElementalResistance", 200);
+	loadIntConfig(L, MAX_HOUSES_LIMIT, "maxHousesLimit", 3);
 	loadIntConfig(L, MAX_MARKET_OFFERS_AT_A_TIME_PER_PLAYER, "maxMarketOffersAtATimePerPlayer", 100);
 	loadIntConfig(L, MINING_BASE_SUCCESS_CHANCE, "miningBaseChance", 3);
 	loadIntConfig(L, MINING_TRIES_PER_ATTEMPT, "miningTriesPerAttempt", 1);
@@ -302,7 +305,6 @@ bool ConfigManager::load() {
 	loadIntConfig(L, MIN_DELAY_BETWEEN_CONDITIONS, "minDelayBetweenConditions", 0);
 	loadIntConfig(L, MIN_ELEMENTAL_RESISTANCE, "minElementalResistance", -200);
 	loadIntConfig(L, MIN_TOWN_ID_TO_BANK_TRANSFER_FROM_MAIN, "minTownIdToBankTransferFromMain", 4);
-	loadIntConfig(L, MONTH_KILLS_TO_RED, "monthKillsToRedSkull", 10);
 	loadIntConfig(L, MULTIPLIER_ATTACKONFIST, "multiplierSpeedOnFist", 5);
 	loadIntConfig(L, ORANGE_SKULL_DURATION, "orangeSkullDuration", 7);
 	loadIntConfig(L, LOGIN_PROTECTION_TIME, "loginProtectionTime", 10000);
@@ -355,7 +357,6 @@ bool ConfigManager::load() {
 	loadIntConfig(L, VIP_BONUS_LOOT, "vipBonusLoot", 0);
 	loadIntConfig(L, VIP_BONUS_SKILL, "vipBonusSkill", 0);
 	loadIntConfig(L, VIP_FAMILIAR_TIME_COOLDOWN_REDUCTION, "vipFamiliarTimeCooldownReduction", 0);
-	loadIntConfig(L, WEEK_KILLS_TO_RED, "weekKillsToRedSkull", 5);
 	loadIntConfig(L, MONK_QUEST_TOTAL_SHRINES, "monkQuestTotalShrines", 11);
 	loadIntConfig(L, WHEEL_MONK_QUEST_BONUS, "wheelMonkQuestBonus", 10);
 	loadIntConfig(L, WHEEL_ATELIER_REVEAL_GREATER_COST, "wheelAtelierRevealGreaterCost", 6000000);
@@ -377,7 +378,8 @@ bool ConfigManager::load() {
 	loadStringConfig(L, DISCORD_WEBHOOK_URL, "discordWebhookURL", "");
 	loadStringConfig(L, FORGE_FIENDISH_INTERVAL_TIME, "forgeFiendishIntervalTime", "1");
 	loadStringConfig(L, FORGE_FIENDISH_INTERVAL_TYPE, "forgeFiendishIntervalType", "hour");
-	loadStringConfig(L, GLOBAL_SERVER_SAVE_TIME, "globalServerSaveTime", "06:00");
+	loadStringConfig(L, MORNING_SERVER_SAVE_TIME, "morningServerSaveTime", "09:55:00");
+	loadStringConfig(L, NIGHT_SERVER_SAVE_TIME, "nightServerSaveTime", "21:55:00");
 	loadStringConfig(L, LOCATION, "location", "");
 	loadStringConfig(L, M_CONST, "memoryConst", "1<<16");
 	loadStringConfig(L, METRICS_PROMETHEUS_ADDRESS, "metricsPrometheusAddress", "localhost:9464");

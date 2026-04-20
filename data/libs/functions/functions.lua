@@ -891,13 +891,7 @@ function SetInfluenced(monsterType, monster, player, influencedLevel)
 		player:sendCancelMessage("Only allowed monsters can be influenced.")
 		return false
 	end
-	local influencedMonster = Monster(ForgeMonster:pickInfluenced())
-	-- If it's reached the limit, we'll remove one to add the new one.
-	if ForgeMonster:exceededMaxInfluencedMonsters() then
-		if influencedMonster then
-			Game.removeInfluencedMonster(influencedMonster:getId())
-		end
-	end
+	-- No simultaneous cap anymore: influenced spawns are chance-based via forgeInfluencedSpawnChance.
 	Game.addInfluencedMonster(monster)
 	monster:setForgeStack(influencedLevel)
 end

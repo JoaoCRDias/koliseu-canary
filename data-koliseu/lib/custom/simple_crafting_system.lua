@@ -44,17 +44,23 @@ function Player:sendVocCraftWindow(config, lastChoice)
 		end
 		-- If the user presses the details button they will be redirected to a text window with information about the item they want to craft.
 		if button.name == "Details" then
-			local item = config.system[lastChoice].items[choice.id].item
+			local craftItem = config.system[lastChoice].items[choice.id]
+			local item = craftItem.item
 			local details = "In order to craft " .. item .. " you must collect the following items.\n\n"
-			if config.system[lastChoice].items[choice.id].price > 0 then
-				details = details .. "\nCraft price: " .. config.system[lastChoice].items[choice.id].price .. "KK\n\nRequired Items:"
+			if craftItem.price and craftItem.price > 0 then
+				details = details .. "\nCraft price: " .. craftItem.price .. "KK\n\nRequired Items:"
 			end
 
-			for i = 1, #config.system[lastChoice].items[choice.id].reqItems do
-				local reqItems = config.system[lastChoice].items[choice.id].reqItems[i].item
-				local reqItemsCount = config.system[lastChoice].items[choice.id].reqItems[i].count
-				local reqItemsOnPlayer = self:getItemCount(config.system[lastChoice].items[choice.id].reqItems[i].item)
-				details = details .. "\n- " .. capAll(getItemName(reqItems) .. " [" .. reqItemsOnPlayer .. "/" .. reqItemsCount .. "]")
+			for i = 1, #craftItem.reqItems do
+				local req = craftItem.reqItems[i]
+				if req.matcher then
+					local label = req.emptyMessage or ("custom requirement x" .. req.count)
+					details = details .. "\n- " .. label
+				else
+					local reqItemsOnPlayer = self:getItemCount(req.item)
+					local suffix = req.requireEmpty and " (must be empty)" or ""
+					details = details .. "\n- " .. capAll(getItemName(req.item) .. " [" .. reqItemsOnPlayer .. "/" .. req.count .. "]" .. suffix)
+				end
 			end
 			self:sendVocCraftWindow(config, lastChoice)
 			self:showTextDialog(item, details)
@@ -160,6 +166,41 @@ function Player:_findRelicInReliquaryInContainer(container)
 	return false
 end
 
+-- Collect items matching a given id (or predicate) recursively from all player containers.
+-- Used when reqItems entries specify `requireEmpty = true`: the player must own N empty
+-- container items with that id (nothing inside), so we can consume exactly those.
+local function collectEmptyMatchingItems(player, predicate)
+	local matches = {}
+	local queue = {}
+
+	local backpack = player:getSlotItem(CONST_SLOT_BACKPACK)
+	if backpack and backpack:isContainer() then
+		table.insert(queue, backpack)
+	end
+
+	local inbox = player:getStoreInbox()
+	if inbox then
+		table.insert(queue, inbox)
+	end
+
+	while #queue > 0 do
+		local container = table.remove(queue)
+		for i = 0, container:getSize() - 1 do
+			local item = container:getItem(i)
+			if item then
+				if predicate(item) then
+					if not item:isContainer() or item:getSize() == 0 then
+						table.insert(matches, item)
+					end
+				elseif item:isContainer() then
+					table.insert(queue, item)
+				end
+			end
+		end
+	end
+	return matches
+end
+
 -- Execute the actual craft (shared by direct craft and post-warning craft)
 function Player:executeCraft(config, lastChoice, itemIndex)
 	local craftItem = config.system[lastChoice].items[itemIndex]
@@ -170,26 +211,67 @@ function Player:executeCraft(config, lastChoice, itemIndex)
 		return false
 	end
 
-	if craftItem.price > 0 then
+	if craftItem.price and craftItem.price > 0 then
 		if self:getMoney() + self:getBankBalance() < (craftItem.price + 1000000) then
 			self:say("You do not have enough money to craft this item.", TALKTYPE_MONSTER_SAY)
 			return false
 		end
 	end
-	-- Check if player has required items to craft the item.
-	for i = 1, #craftItem.reqItems do
-		if self:getItemCount(craftItem.reqItems[i].item) < craftItem.reqItems[i].count then
+
+	-- Resolve reqItems. Entries can optionally be `requireEmpty = true` (for container
+	-- ingredients that must be empty) and/or provide a `matcher(item)` predicate for
+	-- alternative id sets (e.g. dummy crafting that accepts many related item ids).
+	local plainReqs = {}
+	local emptyContainerReqs = {}
+	for _, req in ipairs(craftItem.reqItems) do
+		if req.requireEmpty then
+			table.insert(emptyContainerReqs, req)
+		else
+			table.insert(plainReqs, req)
+		end
+	end
+
+	for _, req in ipairs(plainReqs) do
+		if self:getItemCount(req.item) < req.count then
 			self:say(config.needItems .. craftItem.item, TALKTYPE_MONSTER_SAY)
 			return false
 		end
 	end
-	-- Remove the required items and their count from the player.
-	for i = 1, #craftItem.reqItems do
-		self:removeItem(craftItem.reqItems[i].item, craftItem.reqItems[i].count)
+
+	local emptyMatches = {}
+	for _, req in ipairs(emptyContainerReqs) do
+		local predicate = req.matcher or function(it) return it:getId() == req.item end
+		local matches = collectEmptyMatchingItems(self, predicate)
+		if #matches < req.count then
+			local message = req.emptyMessage or (config.needItems .. craftItem.item)
+			self:say(message, TALKTYPE_MONSTER_SAY)
+			return false
+		end
+		emptyMatches[req] = matches
 	end
-	-- Send effect and give player item.
-	self:addItem(craftItem.itemID)
-	self:getPosition():sendMagicEffect(CONST_ME_FIREATTACK)
+
+	-- Consumption phase (only mutates state after all checks passed).
+	for _, req in ipairs(plainReqs) do
+		self:removeItem(req.item, req.count)
+	end
+	for _, req in ipairs(emptyContainerReqs) do
+		local matches = emptyMatches[req]
+		for i = 1, req.count do
+			matches[i]:remove()
+		end
+	end
+
+	-- Delivery: either custom onCraft hook, or default addItem.
+	if craftItem.onCraft then
+		local ok = craftItem.onCraft(self, craftItem)
+		if not ok then
+			return false
+		end
+	else
+		self:addItem(craftItem.itemID)
+	end
+
+	self:getPosition():sendMagicEffect(craftItem.craftEffect or CONST_ME_FIREATTACK)
 	return true
 end
 

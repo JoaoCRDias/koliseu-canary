@@ -173,6 +173,12 @@ function playerLoginGlobal.onLogin(player)
 		player:setBountyTalismanEquipped(true)
 	end
 
+	-- varSkills/varStats reset to 0 on every login (new Player object), so the
+	-- stored "previously applied" bonus is stale. Zero the tracking storages
+	-- before reapplying so the idempotent removal path in initializeLoyaltySystem
+	-- does not subtract a phantom bonus from varSkills on login.
+	player:setStorageValue(50005, 0)
+	player:setStorageValue(50006, 0)
 	player:initializeLoyaltySystem()
 
 	-- login log

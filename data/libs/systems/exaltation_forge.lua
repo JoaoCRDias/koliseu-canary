@@ -197,16 +197,8 @@ function ForgeMonster:pickClosestFiendish(creature)
 	return creatures[1].cid
 end
 
+-- Deprecated: influenced spawns are now probabilistic per-spawn (forgeInfluencedSpawnChance)
+-- without a simultaneous cap. Kept only to avoid breaking any external scripts.
 function ForgeMonster:exceededMaxInfluencedMonsters()
-	local totalMonsters = 0
-	for _, cid in pairs(Game.getInfluencedMonsters()) do
-		if Monster(cid) then
-			totalMonsters = totalMonsters + 1
-		end
-	end
-	local configMaxMonsters = configManager.getNumber(configKeys.FORGE_INFLUENCED_CREATURES_LIMIT)
-	if totalMonsters >= configMaxMonsters then
-		return true
-	end
 	return false
 end

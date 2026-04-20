@@ -3996,17 +3996,8 @@ void Player::death(const std::shared_ptr<Creature> &lastHitCreature) {
 			unfairFightReduction = std::max<uint8_t>(20, std::floor((reduce * 100) + 0.5));
 		}
 
-		// Magic level loss
-		uint64_t sumMana = 0;
-		uint64_t lostMana = 0;
-
-		// Sum up all the mana
-		for (uint32_t i = 1; i <= magLevel; ++i) {
-			sumMana += vocation->getReqMana(i);
-		}
-
-		sumMana += manaSpent;
-
+		// Base death loss percent (used for mana, skills and experience below).
+		// Charm bless reduction is applied regardless so exp loss still benefits from it.
 		double deathLossPercent = getLostPercent() * (unfairFightReduction / 100.);
 
 		// Charm bless bestiary
@@ -4022,21 +4013,34 @@ void Player::death(const std::shared_ptr<Creature> &lastHitCreature) {
 			}
 		}
 
-		lostMana = static_cast<uint64_t>(sumMana * deathLossPercent);
+		// Magic level loss (skipped entirely when noMagicLoss is enabled)
+		if (!g_configManager().getBoolean(NO_MAGIC_LOSS)) {
+			uint64_t sumMana = 0;
+			uint64_t lostMana = 0;
 
-		while (lostMana > manaSpent && magLevel > 0) {
-			lostMana -= manaSpent;
-			manaSpent = vocation->getReqMana(magLevel);
-			magLevel--;
-		}
+			// Sum up all the mana
+			for (uint32_t i = 1; i <= magLevel; ++i) {
+				sumMana += vocation->getReqMana(i);
+			}
 
-		manaSpent -= lostMana;
+			sumMana += manaSpent;
 
-		uint64_t nextReqMana = vocation->getReqMana(magLevel + 1);
-		if (nextReqMana > vocation->getReqMana(magLevel)) {
-			magLevelPercent = Player::getPercentLevel(manaSpent, nextReqMana);
-		} else {
-			magLevelPercent = 0;
+			lostMana = static_cast<uint64_t>(sumMana * deathLossPercent);
+
+			while (lostMana > manaSpent && magLevel > 0) {
+				lostMana -= manaSpent;
+				manaSpent = vocation->getReqMana(magLevel);
+				magLevel--;
+			}
+
+			manaSpent -= lostMana;
+
+			uint64_t nextReqMana = vocation->getReqMana(magLevel + 1);
+			if (nextReqMana > vocation->getReqMana(magLevel)) {
+				magLevelPercent = Player::getPercentLevel(manaSpent, nextReqMana);
+			} else {
+				magLevelPercent = 0;
+			}
 		}
 
 		// Level loss
@@ -4050,32 +4054,34 @@ void Player::death(const std::shared_ptr<Creature> &lastHitCreature) {
 		std::ostringstream lostExp;
 		lostExp << "You lost " << expLoss << " experience.";
 
-		// Skill loss
-		for (uint8_t i = SKILL_FIRST; i <= SKILL_LAST; ++i) { // For each skill
-			uint64_t sumSkillTries = 0;
-			for (uint16_t c = 11; c <= skills[i].level; ++c) { // Sum up all required tries for all skill levels
-				sumSkillTries += vocation->getReqSkillTries(i, c);
-			}
-
-			sumSkillTries += skills[i].tries;
-
-			auto lostSkillTries = static_cast<uint32_t>(sumSkillTries * deathLossPercent);
-			while (lostSkillTries > skills[i].tries) {
-				lostSkillTries -= skills[i].tries;
-
-				if (skills[i].level <= 10) {
-					skills[i].level = 10;
-					skills[i].tries = 0;
-					lostSkillTries = 0;
-					break;
+		// Skill loss (skipped entirely when noSkillLoss is enabled)
+		if (!g_configManager().getBoolean(NO_SKILL_LOSS)) {
+			for (uint8_t i = SKILL_FIRST; i <= SKILL_LAST; ++i) { // For each skill
+				uint64_t sumSkillTries = 0;
+				for (uint16_t c = 11; c <= skills[i].level; ++c) { // Sum up all required tries for all skill levels
+					sumSkillTries += vocation->getReqSkillTries(i, c);
 				}
 
-				skills[i].tries = vocation->getReqSkillTries(i, skills[i].level);
-				skills[i].level--;
-			}
+				sumSkillTries += skills[i].tries;
 
-			skills[i].tries = std::max<int32_t>(0, skills[i].tries - lostSkillTries);
-			skills[i].percent = Player::getPercentLevel(skills[i].tries, vocation->getReqSkillTries(i, skills[i].level));
+				auto lostSkillTries = static_cast<uint32_t>(sumSkillTries * deathLossPercent);
+				while (lostSkillTries > skills[i].tries) {
+					lostSkillTries -= skills[i].tries;
+
+					if (skills[i].level <= 10) {
+						skills[i].level = 10;
+						skills[i].tries = 0;
+						lostSkillTries = 0;
+						break;
+					}
+
+					skills[i].tries = vocation->getReqSkillTries(i, skills[i].level);
+					skills[i].level--;
+				}
+
+				skills[i].tries = std::max<int32_t>(0, skills[i].tries - lostSkillTries);
+				skills[i].percent = Player::getPercentLevel(skills[i].tries, vocation->getReqSkillTries(i, skills[i].level));
+			}
 		}
 
 		sendTextMessage(MESSAGE_EVENT_ADVANCE, lostExp.str());
@@ -7025,31 +7031,26 @@ void Player::addUnjustifiedDead(const std::shared_ptr<Player> &attacked) {
 	unjustifiedKills.emplace_back(attacked->getGUID(), killTime, true);
 	updateLastKillTimeCache(killTime);
 
-	uint8_t dayKills = 0;
-	uint8_t weekKills = 0;
-	uint8_t monthKills = 0;
+	// Simplified frag system: count unjustified kills within a single configurable time window.
+	// Replaces the legacy day/week/month tiers with one uniform rolling window.
+	const int64_t fragWindowSeconds = g_configManager().getNumber(FRAG_WINDOW_HOURS) * 60 * 60;
+	const uint32_t killsToRed = g_configManager().getNumber(KILLS_TO_RED_SKULL);
+	const uint32_t killsToBlack = g_configManager().getNumber(KILLS_TO_BLACK_SKULL);
 
+	uint32_t recentKills = 0;
 	for (const auto &kill : unjustifiedKills) {
-		const auto diff = time(nullptr) - kill.time;
-		if (diff <= 4 * 60 * 60) {
-			dayKills += 1;
-		}
-		if (diff <= 7 * 24 * 60 * 60) {
-			weekKills += 1;
-		}
-		if (diff <= 30 * 24 * 60 * 60) {
-			monthKills += 1;
+		const auto diff = killTime - kill.time;
+		if (diff <= fragWindowSeconds) {
+			recentKills += 1;
 		}
 	}
 
 	if (getSkull() != SKULL_BLACK) {
-		if (dayKills >= 2 * g_configManager().getNumber(DAY_KILLS_TO_RED) || weekKills >= 2 * g_configManager().getNumber(WEEK_KILLS_TO_RED) || monthKills >= 2 * g_configManager().getNumber(MONTH_KILLS_TO_RED)) {
+		if (recentKills >= killsToBlack) {
 			setSkull(SKULL_BLACK);
-			// start black skull time
 			skullTicks = static_cast<int64_t>(g_configManager().getNumber(BLACK_SKULL_DURATION)) * 24 * 60 * 60;
-		} else if (dayKills >= g_configManager().getNumber(DAY_KILLS_TO_RED) || weekKills >= g_configManager().getNumber(WEEK_KILLS_TO_RED) || monthKills >= g_configManager().getNumber(MONTH_KILLS_TO_RED)) {
+		} else if (recentKills >= killsToRed) {
 			setSkull(SKULL_RED);
-			// reset red skull time
 			skullTicks = static_cast<int64_t>(g_configManager().getNumber(RED_SKULL_DURATION)) * 24 * 60 * 60;
 		}
 	}
@@ -7369,6 +7370,22 @@ bool Player::checkChainSystem() const {
 	}
 
 	return chainSystemValue;
+}
+
+// Staff mute. Stores an expiration timestamp in KV `features.mutePlayer` (int64).
+// Returns seconds remaining until expiry; 0 if not muted or already expired.
+int64_t Player::checkMute() const {
+	auto featureKV = kv()->scoped("features")->get("mutePlayer");
+	if (!featureKV.has_value()) {
+		return 0;
+	}
+
+	const int64_t expiresAt = featureKV->getNumber();
+	const int64_t now = static_cast<int64_t>(time(nullptr));
+	if (expiresAt <= now) {
+		return 0;
+	}
+	return expiresAt - now;
 }
 
 uint8_t Player::getBadgeTier(uint16_t badgeItemId) {
@@ -7844,40 +7861,33 @@ void Player::setBedItem(std::shared_ptr<BedItem> b) {
 
 void Player::sendUnjustifiedPoints() const {
 	if (client) {
-		double dayKills = 0;
-		double weekKills = 0;
-		double monthKills = 0;
+		// Simplified frag system: count kills within a single rolling time window.
+		// Packet keeps the day/week/month slot layout for client compatibility:
+		// - day slot   → red skull progress
+		// - week slot  → black skull progress
+		// - month slot → unused (zeroed)
+		const int64_t fragWindowSeconds = g_configManager().getNumber(FRAG_WINDOW_HOURS) * 60 * 60;
+		const double killsToRed = static_cast<double>(g_configManager().getNumber(KILLS_TO_RED_SKULL));
+		const double killsToBlack = static_cast<double>(g_configManager().getNumber(KILLS_TO_BLACK_SKULL));
 
+		double recentKills = 0;
 		for (const auto &kill : unjustifiedKills) {
 			const auto diff = time(nullptr) - kill.time;
-			if (diff <= 24 * 60 * 60) {
-				dayKills += 1;
-			}
-			if (diff <= 7 * 24 * 60 * 60) {
-				weekKills += 1;
-			}
-			if (diff <= 30 * 24 * 60 * 60) {
-				monthKills += 1;
+			if (diff <= fragWindowSeconds) {
+				recentKills += 1;
 			}
 		}
 
-		const bool isRedOrBlack = getSkull() == SKULL_RED || getSkull() == SKULL_BLACK;
+		const uint8_t redProgress = killsToRed > 0 ? static_cast<uint8_t>(std::min(std::round(recentKills / killsToRed * 100.0), 100.0)) : 0;
+		const uint8_t blackProgress = killsToBlack > 0 ? static_cast<uint8_t>(std::min(std::round(recentKills / killsToBlack * 100.0), 100.0)) : 0;
+		const uint8_t redLeft = static_cast<uint8_t>(std::min(std::max(killsToRed - recentKills, 0.0), 255.0));
+		const uint8_t blackLeft = static_cast<uint8_t>(std::min(std::max(killsToBlack - recentKills, 0.0), 255.0));
 
-		const double dayMax = static_cast<double>((isRedOrBlack ? 2 : 1) * g_configManager().getNumber(DAY_KILLS_TO_RED));
-		const double weekMax = static_cast<double>((isRedOrBlack ? 2 : 1) * g_configManager().getNumber(WEEK_KILLS_TO_RED));
-		const double monthMax = static_cast<double>((isRedOrBlack ? 2 : 1) * g_configManager().getNumber(MONTH_KILLS_TO_RED));
-
-		const double dayProgressRaw = dayMax > 0 ? std::round(dayKills / dayMax * 100.0) : 0.0;
-		const double weekProgressRaw = weekMax > 0 ? std::round(weekKills / weekMax * 100.0) : 0.0;
-		const double monthProgressRaw = monthMax > 0 ? std::round(monthKills / monthMax * 100.0) : 0.0;
-		const uint8_t dayProgress = static_cast<uint8_t>(std::min(dayProgressRaw, 100.0));
-		const uint8_t weekProgress = static_cast<uint8_t>(std::min(weekProgressRaw, 100.0));
-		const uint8_t monthProgress = static_cast<uint8_t>(std::min(monthProgressRaw, 100.0));
-		const uint8_t dayLeft = static_cast<uint8_t>(std::min(dayMax > 0 ? std::max(dayMax - dayKills, 0.0) : 0.0, 255.0));
-		const uint8_t weekLeft = static_cast<uint8_t>(std::min(weekMax > 0 ? std::max(weekMax - weekKills, 0.0) : 0.0, 255.0));
-		const uint8_t monthLeft = static_cast<uint8_t>(std::min(monthMax > 0 ? std::max(monthMax - monthKills, 0.0) : 0.0, 255.0));
-		const auto info = computeSkullTimeFromLastKill();
-		client->sendUnjustifiedPoints(dayProgress, dayLeft, weekProgress, weekLeft, monthProgress, monthLeft, info.remainingDays);
+		uint8_t skullDuration = 0;
+		if (skullTicks != 0) {
+			skullDuration = static_cast<uint8_t>(std::min<int64_t>(skullTicks / (24 * 60 * 60), 255));
+		}
+		client->sendUnjustifiedPoints(redProgress, redLeft, blackProgress, blackLeft, 0, 0, skullDuration);
 	}
 }
 

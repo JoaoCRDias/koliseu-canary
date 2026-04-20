@@ -782,16 +782,29 @@ int32_t WeaponMelee::getWeaponDamage(const std::shared_ptr<Player> &player, cons
 
 	const float attackFactor = player->getAttackFactor();
 	const uint32_t level = player->getLevel();
+	const float vocationMultiplier = player->getVocation()->meleeDamageMultiplier;
 
-	const auto maxValue = static_cast<int32_t>(Weapons::getMaxWeaponDamage(level, attackSkill, combinedAttack, attackFactor, true) * player->getVocation()->meleeDamageMultiplier);
+	// Melee: skill^1.15 * attack = 80%, level = 20%
+	const double effectiveSkill = std::pow(static_cast<double>(attackSkill), 1.15);
+	const double skillWeaponPart = 0.038015 * attackFactor * combinedAttack * effectiveSkill;
+	const double levelPart = level * 0.4308;
 
-	const int32_t minValue = physicalAttack > 0 ? level / 5 : 0;
+	double baseDamage = (skillWeaponPart + levelPart) * vocationMultiplier;
 
-	if (maxDamage) {
-		return -maxValue;
+	// Two-handed weapons deal 15% to 30% more damage than one-handed
+	if (item->getSlotPosition() & SLOTP_TWO_HAND) {
+		const double twoHandMultiplier = maxDamage ? 1.30 : (uniform_random(105, 115) / 100.0);
+		baseDamage *= twoHandMultiplier;
+	} else {
+		const double oneHandMultiplier = maxDamage ? 1.10 : (uniform_random(90, 110) / 100.0);
+		baseDamage *= oneHandMultiplier;
 	}
 
-	return -normal_random(minValue, maxValue);
+	// Variation of ±25%
+	const int32_t min = static_cast<int32_t>(baseDamage - (baseDamage * 0.25));
+	const int32_t max = static_cast<int32_t>(baseDamage + (baseDamage * 0.25));
+
+	return maxDamage ? -max : -normal_random(min, max);
 }
 
 WeaponDistance::WeaponDistance() {
@@ -1044,7 +1057,6 @@ int16_t WeaponDistance::getElementDamageValue() const {
 
 int32_t WeaponDistance::getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &target, const std::shared_ptr<Item> &item, bool maxDamage /*= false*/) const {
 	int32_t attackValue = item->getAttack();
-	bool hasElement = false;
 
 	if (player && item && item->getWeaponType() == WEAPON_AMMO) {
 		const auto &weapon = player->getWeapon(true);
@@ -1052,7 +1064,6 @@ int32_t WeaponDistance::getWeaponDamage(const std::shared_ptr<Player> &player, c
 			const ItemType &it = Item::items[item->getID()];
 			if (it.abilities && it.abilities->elementDamage != 0) {
 				attackValue += it.abilities->elementDamage;
-				hasElement = true;
 			}
 
 			attackValue += weapon->getAttack();
@@ -1066,27 +1077,22 @@ int32_t WeaponDistance::getWeaponDamage(const std::shared_ptr<Player> &player, c
 
 	const int32_t attackSkill = player->getSkillLevel(SKILL_DISTANCE);
 	const float attackFactor = player->getAttackFactor();
+	const uint32_t level = player->getLevel();
+	const float vocationMultiplier = player->getVocation()->distDamageMultiplier;
 
-	int32_t minValue = player->getLevel() / 5;
-	int32_t maxValue = std::round((0.09f * attackFactor) * attackSkill * attackValue + minValue);
-	if (maxDamage) {
-		return -maxValue;
-	}
+	// Distance: skill^1.15 * sqrt(attack) = 80%, level = 20%
+	// sqrt(attack) compresses bow vs xbow gap for balanced scaling
+	const double effectiveSkill = std::pow(static_cast<double>(attackSkill), 1.15);
+	const double skillPart = 0.484216 * attackFactor * std::sqrt(static_cast<double>(std::max<int32_t>(0, attackValue))) * effectiveSkill;
+	const double levelPart = level * 0.64;
 
-	if (target && target->getPlayer()) {
-		if (hasElement) {
-			minValue /= 4;
-		} else {
-			minValue /= 2;
-		}
-	} else {
-		if (hasElement) {
-			maxValue /= 2;
-			minValue /= 2;
-		}
-	}
+	const double baseDamage = (skillPart + levelPart) * vocationMultiplier;
 
-	return -normal_random(minValue, (maxValue * static_cast<int32_t>(player->getVocation()->distDamageMultiplier)));
+	// Variation of ±25%
+	const int32_t min = static_cast<int32_t>(baseDamage - (baseDamage * 0.25));
+	const int32_t max = static_cast<int32_t>(baseDamage + (baseDamage * 0.25));
+
+	return maxDamage ? -max : -normal_random(min, max);
 }
 
 bool WeaponDistance::getSkillType(const std::shared_ptr<Player> &player, const std::shared_ptr<Item> &, skills_t &skill, uint32_t &skillpoint) const {
@@ -1150,8 +1156,7 @@ void WeaponWand::configureWeapon(const ItemType &it) {
 }
 
 int32_t WeaponWand::getWeaponDamage(const std::shared_ptr<Player> &player, const std::shared_ptr<Creature> &, const std::shared_ptr<Item> &, bool maxDamage /* = false*/) const {
-	// Only apply custom ML-based formula when chain system is enabled for this player
-	if (!player || !player->checkChainSystem()) {
+	if (!player) {
 		return maxDamage ? -maxChange : -normal_random(minChange, maxChange);
 	}
 

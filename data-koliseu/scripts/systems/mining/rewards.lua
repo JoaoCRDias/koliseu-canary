@@ -169,9 +169,6 @@ MiningRewards.tiers = {
 			{ weight = 6, itemId = 44611, minCount = 1, maxCount = 1 },
 			{ weight = 5, itemId = 44612, minCount = 1, maxCount = 1 },
 			{ weight = 1, itemId = 44613, minCount = 1, maxCount = 1 },
-			{ weight = 5, itemId = 49371, minCount = 1, maxCount = 1 },
-			{ weight = 4, itemId = 49372, minCount = 1, maxCount = 1 },
-			{ weight = 1, itemId = 49373, minCount = 1, maxCount = 1 },
 		},
 	},
 

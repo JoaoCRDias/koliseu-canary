@@ -63,12 +63,25 @@ public:
 	float defenseMultiplier = 1.0f;
 	float armorMultiplier = 1.0f;
 
+	// PvP-only leech scaling (multiplier applied when the target is a player).
+	float pvpLifeLeechBonus = 1.0f;
+	float pvpManaLeechBonus = 1.0f;
+
 	float mitigationFactor = 1.0f;
 	float mitigationPrimaryShield = 1.0f;
 	float mitigationSecondaryShield = 1.0f;
 
 	float pvpDamageReceivedMultiplier = 1.0f;
 	float pvpDamageDealtMultiplier = 1.0f;
+	float pvpSpellDamageMultiplier = 1.0f;
+
+	// PvE balance multipliers (player -> monster and monster -> player)
+	// spellLevelScale grows the spell multiplier linearly with player level and caps at spellLevelMax.
+	float pveDamageReceivedMultiplier = 1.0f;
+	float pveDamageDealtMultiplier = 1.0f;
+	float pveSpellDamageMultiplier = 1.0f;
+	float pveSpellLevelScale = 0.0f;
+	float pveSpellLevelMax = 1.0f;
 
 	std::vector<WheelGemSupremeModifier_t> getSupremeGemModifiers();
 

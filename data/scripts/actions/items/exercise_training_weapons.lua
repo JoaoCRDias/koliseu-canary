@@ -187,13 +187,17 @@ function exerciseTraining.onUse(player, item, fromPosition, target, toPosition, 
 				return true
 			end
 
+			-- Per-dummy maxAllowed is defined in items.xml <attribute key="maxAllowed" ... />;
+			-- defaults to 1 if the dummy entry isn't registered.
+			local dummyInfo = dummies[targetId]
+			local maxAllowed = (dummyInfo and dummyInfo.maxAllowed) or 1
 			local playersOnDummy = 0
 			for _, playerTraining in pairs(_G.OnExerciseTraining) do
 				if playerTraining.dummyPos == targetPos then
 					playersOnDummy = playersOnDummy + 1
 				end
 
-				if playersOnDummy >= configManager.getNumber(configKeys.MAX_ALLOWED_ON_A_DUMMY) then
+				if playersOnDummy >= maxAllowed then
 					player:sendTextMessage(MESSAGE_FAILURE, "That exercise dummy is busy.")
 					return true
 				end

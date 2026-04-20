@@ -22,9 +22,54 @@
 #include "lua/creature/events.hpp"
 #include "map/spectators.hpp"
 #include "utils/pugicast.hpp"
+#include "utils/tools.hpp"
+
+#include <algorithm>
 
 static constexpr int32_t MONSTER_MINSPAWN_INTERVAL = 1000; // 1 second
 static constexpr int32_t MONSTER_MAXSPAWN_INTERVAL = 86400000; // 1 day
+
+namespace {
+	constexpr int32_t FORGE_SPAWN_CHANCE_SCALE = 10000; // 2 decimal precision
+
+	void tryApplyForgeSpawnChance(const std::shared_ptr<Monster> &monster) {
+		if (!monster || !monster->canBeForgeMonster()) {
+			return;
+		}
+
+		const auto tile = monster->getTile();
+		if (tile && tile->hasFlag(TILESTATE_NOLOGOUT)) {
+			return;
+		}
+
+		const float rawFiendishChance = g_configManager().getFloat(FORGE_FIENDISH_SPAWN_CHANCE);
+		const float rawInfluencedChance = g_configManager().getFloat(FORGE_INFLUENCED_SPAWN_CHANCE);
+		const float fiendishChance = std::clamp(rawFiendishChance, 0.0f, 100.0f);
+		const float influencedChance = std::clamp(rawInfluencedChance, 0.0f, 100.0f);
+
+		if (fiendishChance <= 0.0f && influencedChance <= 0.0f) {
+			return;
+		}
+
+		const float combinedChance = std::min(100.0f, fiendishChance + influencedChance);
+		const int32_t fiendishThreshold = static_cast<int32_t>(fiendishChance * (FORGE_SPAWN_CHANCE_SCALE / 100.0f));
+		const int32_t influencedThreshold = static_cast<int32_t>(combinedChance * (FORGE_SPAWN_CHANCE_SCALE / 100.0f));
+		if (fiendishThreshold <= 0 && influencedThreshold <= 0) {
+			return;
+		}
+
+		const int32_t roll = uniform_random(1, FORGE_SPAWN_CHANCE_SCALE);
+		if (fiendishThreshold > 0 && roll <= fiendishThreshold) {
+			if (g_game().addFiendishMonster(monster)) {
+				return;
+			}
+		}
+
+		if (influencedThreshold > fiendishThreshold && roll <= influencedThreshold) {
+			g_game().addInfluencedMonster(monster);
+		}
+	}
+} // namespace
 
 bool SpawnsMonster::loadFromXML(const std::string &filemonstername) {
 	if (isLoaded()) {
@@ -231,6 +276,7 @@ bool SpawnMonster::spawnMonster(uint32_t spawnMonsterId, spawnBlock_t &sb, const
 
 	spawnedMonsterMap[spawnMonsterId] = monster;
 	sb.lastSpawn = OTSYS_TIME();
+	tryApplyForgeSpawnChance(monster);
 	monster->onSpawn(sb.pos);
 	return true;
 }

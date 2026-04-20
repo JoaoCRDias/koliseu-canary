@@ -1,4 +1,5 @@
-local serverSaveTime = GetNextOccurrence(configManager.getString(configKeys.GLOBAL_SERVER_SAVE_TIME))
+-- Use the morning save as the canonical "end of day" for raid scheduling.
+local serverSaveTime = GetNextOccurrence(configManager.getString(configKeys.MORNING_SERVER_SAVE_TIME))
 local stopExecutionAt = serverSaveTime - ParseDuration("1h") / ParseDuration("1s") -- stop rolling raids 1 hour before server save
 local raidCheck = GlobalEvent("raids.check.onThink")
 

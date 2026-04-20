@@ -661,6 +661,7 @@ public:
 	uint32_t makeInfluencedMonster();
 
 	bool addInfluencedMonster(const std::shared_ptr<Monster> &monster);
+	bool addFiendishMonster(const std::shared_ptr<Monster> &monster);
 	void sendUpdateCreature(const std::shared_ptr<Creature> &creature);
 	std::shared_ptr<Item> wrapItem(const std::shared_ptr<Item> &item, const std::shared_ptr<House> &house);
 

@@ -864,8 +864,9 @@ uint32_t IOWeeklyTasks::getNextResetTimestamp() {
 	// Get configured reset day from config string (e.g. "monday", "tuesday", etc.)
 	int resetDay = parseDayOfWeek(g_configManager().getString(WEEKLY_TASKS_RESET_DAY));
 
-	// Parse server save time from config (e.g. "16:20:00") — this is LOCAL time
-	const auto serverSaveTime = g_configManager().getString(GLOBAL_SERVER_SAVE_TIME);
+	// Parse server save time from config (e.g. "16:20:00") — this is LOCAL time.
+	// Use the morning save as the canonical weekly reset anchor.
+	const auto serverSaveTime = g_configManager().getString(MORNING_SERVER_SAVE_TIME);
 	std::vector<int32_t> timeParams = vectorAtoi(explodeString(serverSaveTime, ":"));
 	int32_t saveHour = timeParams.size() > 0 ? timeParams[0] : 6;
 	int32_t saveMin = timeParams.size() > 1 ? timeParams[1] : 0;

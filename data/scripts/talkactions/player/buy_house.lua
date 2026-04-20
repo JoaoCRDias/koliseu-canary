@@ -40,6 +40,13 @@ function buyHouse.onSay(player, words, param)
 		return true
 	end
 
+	local maxHousesLimit = configManager.getNumber(configKeys.MAX_HOUSES_LIMIT)
+	local playerHouses = Game:getHouseCountByAccount(player:getAccountId())
+	if playerHouses >= maxHousesLimit then
+		player:sendCancelMessage("You cannot buy more houses. The maximum number of houses you can own is " .. maxHousesLimit .. ".")
+		return true
+	end
+
 	if house:hasItemOnTile() then
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You cannot buy this house, as there are items inside it. Please, contact an administrator.")
 		return true

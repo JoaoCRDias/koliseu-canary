@@ -24,6 +24,7 @@ public:
 
 	// serialization
 	Attr_ReadValue readAttr(AttrTypes_t attr, PropStream &propStream) override;
+	void serializeAttr(PropWriteStream &propWriteStream) const override;
 
 	uint16_t getDepotId() const {
 		return depotId;

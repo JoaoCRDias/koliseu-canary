@@ -190,6 +190,9 @@ void PlayerFunctions::init(lua_State* L) {
 	Lua::registerMethod(L, "Player", "setMagicLevel", PlayerFunctions::luaPlayerSetMagicLevel);
 	Lua::registerMethod(L, "Player", "setSkillLevel", PlayerFunctions::luaPlayerSetSkillLevel);
 
+	Lua::registerMethod(L, "Player", "setVarSkill", PlayerFunctions::luaPlayerSetVarSkill);
+	Lua::registerMethod(L, "Player", "setVarStats", PlayerFunctions::luaPlayerSetVarStats);
+
 	Lua::registerMethod(L, "Player", "addOfflineTrainingTime", PlayerFunctions::luaPlayerAddOfflineTrainingTime);
 	Lua::registerMethod(L, "Player", "getOfflineTrainingTime", PlayerFunctions::luaPlayerGetOfflineTrainingTime);
 	Lua::registerMethod(L, "Player", "removeOfflineTrainingTime", PlayerFunctions::luaPlayerRemoveOfflineTrainingTime);
@@ -1874,6 +1877,38 @@ int PlayerFunctions::luaPlayerSetSkillLevel(lua_State* L) {
 			player->skills[skillType].tries = 0;
 			player->skills[skillType].percent = 0;
 		}
+		player->sendStats();
+		player->sendSkills();
+		Lua::pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int PlayerFunctions::luaPlayerSetVarSkill(lua_State* L) {
+	// player:setVarSkill(skillType, modifier)
+	const auto &player = Lua::getUserdataShared<Player>(L, 1, "Player");
+	if (player) {
+		const skills_t skillType = Lua::getNumber<skills_t>(L, 2);
+		const int32_t modifier = Lua::getNumber<int32_t>(L, 3);
+		player->setVarSkill(skillType, modifier);
+		player->sendStats();
+		player->sendSkills();
+		Lua::pushBoolean(L, true);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int PlayerFunctions::luaPlayerSetVarStats(lua_State* L) {
+	// player:setVarStats(statType, modifier)
+	const auto &player = Lua::getUserdataShared<Player>(L, 1, "Player");
+	if (player) {
+		const stats_t statType = Lua::getNumber<stats_t>(L, 2);
+		const int32_t modifier = Lua::getNumber<int32_t>(L, 3);
+		player->setVarStats(statType, modifier);
 		player->sendStats();
 		player->sendSkills();
 		Lua::pushBoolean(L, true);

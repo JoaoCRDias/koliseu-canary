@@ -3843,13 +3843,13 @@ int64_t PlayerWheel::getOnThinkTimer(WheelOnThink_t type) const {
 // Wheel of destiny - Specific functions
 uint32_t PlayerWheel::getGiftOfLifeTotalCooldown() const {
 	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 1) {
-		return 1 * 60 * 60 * 30;
+		return 15 * 60;
 	}
 	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 2) {
-		return 1 * 60 * 60 * 20;
+		return 10 * 60;
 	}
 	if (getRevelationPerkStage(WheelRelevationPerk_t::GIFT_OF_LIFE) == 3) {
-		return 1 * 60 * 60 * 10;
+		return 5 * 60;
 	}
 	return 0;
 }

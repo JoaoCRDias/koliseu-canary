@@ -596,7 +596,8 @@ void House::calculateBidEndDate(uint8_t daysToEnd) {
 
 	std::chrono::system_clock::time_point targetDay = todayMidnight + days(daysToEnd);
 
-	const auto serverSaveTime = g_configManager().getString(GLOBAL_SERVER_SAVE_TIME);
+	// Use the morning save as the canonical end-of-day marker for house bid auctions.
+	const auto serverSaveTime = g_configManager().getString(MORNING_SERVER_SAVE_TIME);
 
 	std::vector<int32_t> params = vectorAtoi(explodeString(serverSaveTime, ":"));
 	int32_t hour = params.front();

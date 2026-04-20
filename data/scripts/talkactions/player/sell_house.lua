@@ -13,6 +13,13 @@ function sellHouse.onSay(player, words, param)
 		return true
 	end
 
+	local maxHousesLimit = configManager.getNumber(configKeys.MAX_HOUSES_LIMIT)
+	local playerHouses = Game:getHouseCountByAccount(tradePartner:getAccountId())
+	if playerHouses >= maxHousesLimit then
+		player:sendCancelMessage("The new owner has reached the house limit of " .. maxHousesLimit .. ".")
+		return true
+	end
+
 	local returnValue = house:startTrade(player, tradePartner)
 	if returnValue ~= RETURNVALUE_NOERROR then
 		player:sendCancelMessage(returnValue)

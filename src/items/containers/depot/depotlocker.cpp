@@ -19,7 +19,15 @@ Attr_ReadValue DepotLocker::readAttr(AttrTypes_t attr, PropStream &propStream) {
 		}
 		return ATTR_READ_CONTINUE;
 	}
-	return Item::readAttr(attr, propStream);
+	return Container::readAttr(attr, propStream);
+}
+
+void DepotLocker::serializeAttr(PropWriteStream &propWriteStream) const {
+	if (depotId != 0) {
+		propWriteStream.write<uint8_t>(ATTR_DEPOT_ID);
+		propWriteStream.write<uint16_t>(depotId);
+	}
+	Item::serializeAttr(propWriteStream);
 }
 
 ReturnValue DepotLocker::queryAdd(int32_t, const std::shared_ptr<Thing> &, uint32_t, uint32_t, const std::shared_ptr<Creature> &) {

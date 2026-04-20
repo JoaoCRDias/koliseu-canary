@@ -35,6 +35,7 @@ private:
 
 	static int luaGameGetTowns(lua_State* L);
 	static int luaGameGetHouses(lua_State* L);
+	static int luaGameGetHouseCountByAccount(lua_State* L);
 
 	static int luaGameGetGameState(lua_State* L);
 	static int luaGameSetGameState(lua_State* L);

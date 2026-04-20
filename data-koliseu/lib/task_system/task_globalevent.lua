@@ -2,7 +2,8 @@
 TASK_LAST_SERVER_SAVE_STORAGE = 191100
 
 local function parseServerSaveTime()
-	local timeStr = configManager.getString(configKeys.GLOBAL_SERVER_SAVE_TIME)
+	-- Use the morning save as the canonical daily reset anchor.
+	local timeStr = configManager.getString(configKeys.MORNING_SERVER_SAVE_TIME)
 	local hours, minutes, seconds = string.match(timeStr, "^(%d+):(%d+):(%d+)$")
 	if not hours then
 		hours, minutes = string.match(timeStr, "^(%d+):(%d+)$")

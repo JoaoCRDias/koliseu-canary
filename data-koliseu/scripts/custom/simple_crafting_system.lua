@@ -331,6 +331,182 @@ local config = {
 
 			},
 		},
+
+		[6] = {
+			vocation = "Miscellaneous",
+			items = {
+				-- Gladiator's Triumph: combine 5 empty sight of truth
+				[1] = {
+					item = "Gladiator's Triumph",
+					itemID = 63366,
+					price = 0,
+					reqItems = {
+						[1] = {
+							item = 60160, -- sight of truth
+							count = 5,
+							requireEmpty = true,
+							emptyMessage = "You need 5 empty sight of truth (no relics inside) to craft this.",
+						},
+					},
+					craftEffect = CONST_ME_MAGIC_GREEN,
+				},
+
+				-- Vocation backpacks from booster bps (single entry per vocation for clarity).
+				[2] = {
+					item = "Knight Backpack",
+					itemID = 60656,
+					price = 0,
+					reqItems = {
+						[1] = {
+							item = 0,
+							count = 5,
+							requireEmpty = true,
+							matcher = function(it)
+								local id = it:getId()
+								return id == 63363 or id == 63365
+							end,
+							emptyMessage = "You need 5 empty booster backpacks (cosmicsteel or ironlord).",
+						},
+					},
+					craftEffect = CONST_ME_MAGIC_GREEN,
+				},
+				[3] = {
+					item = "Paladin Backpack",
+					itemID = 60653,
+					price = 0,
+					reqItems = {
+						[1] = {
+							item = 0,
+							count = 5,
+							requireEmpty = true,
+							matcher = function(it)
+								local id = it:getId()
+								return id == 63363 or id == 63365
+							end,
+							emptyMessage = "You need 5 empty booster backpacks (cosmicsteel or ironlord).",
+						},
+					},
+					craftEffect = CONST_ME_MAGIC_GREEN,
+				},
+				[4] = {
+					item = "Druid Backpack",
+					itemID = 60655,
+					price = 0,
+					reqItems = {
+						[1] = {
+							item = 0,
+							count = 5,
+							requireEmpty = true,
+							matcher = function(it)
+								local id = it:getId()
+								return id == 63363 or id == 63365
+							end,
+							emptyMessage = "You need 5 empty booster backpacks (cosmicsteel or ironlord).",
+						},
+					},
+					craftEffect = CONST_ME_MAGIC_GREEN,
+				},
+				[5] = {
+					item = "Sorcerer Backpack",
+					itemID = 60657,
+					price = 0,
+					reqItems = {
+						[1] = {
+							item = 0,
+							count = 5,
+							requireEmpty = true,
+							matcher = function(it)
+								local id = it:getId()
+								return id == 63363 or id == 63365
+							end,
+							emptyMessage = "You need 5 empty booster backpacks (cosmicsteel or ironlord).",
+						},
+					},
+					craftEffect = CONST_ME_MAGIC_GREEN,
+				},
+
+				-- Undead Soldier Exercise Dummy: 5 any store dummies -> wrapped deco kit in store inbox
+				[6] = {
+					item = "Undead Soldier Exercise Dummy",
+					itemID = 60131,
+					price = 0,
+					reqItems = {
+						[1] = {
+							item = 0,
+							count = 5,
+							matcher = function(it)
+								local STORE_DUMMY_IDS = {
+									[60298] = true, [60299] = true, [60261] = true, [60262] = true,
+									[60163] = true, [60164] = true, [60153] = true, [60154] = true,
+									[60139] = true, [60140] = true, [60127] = true, [60128] = true,
+									[60102] = true, [60103] = true, [60032] = true, [60033] = true,
+									[60031] = true, [60034] = true, [60062] = true, [60063] = true,
+									[60620] = true, [60621] = true, [60453] = true, [60454] = true,
+								}
+								local id = it:getId()
+								if STORE_DUMMY_IDS[id] then
+									return true
+								end
+								if id == 23398 then
+									local unwrapId = it:getCustomAttribute("unWrapId")
+									if unwrapId and STORE_DUMMY_IDS[unwrapId] then
+										return true
+									end
+								end
+								return false
+							end,
+							emptyMessage = "You need 5 exercise dummies from the store.",
+						},
+					},
+					onCraft = function(player, craftItem)
+						local inbox = player:getStoreInbox()
+						if not inbox then
+							player:sendTextMessage(MESSAGE_LOOK, "Error: Could not access your store inbox.")
+							return false
+						end
+						if #inbox:getItems() >= inbox:getMaxCapacity() then
+							player:sendTextMessage(MESSAGE_LOOK, "Your store inbox is full. Please free up a slot and try again.")
+							return false
+						end
+						-- Create the kit first so we can set all attributes, then deliver via
+						-- addItemStoreInboxEx(item, movable=false): sets owner + STORE attr (lets
+						-- the item be unwrapped in a friend's house if the owner is a subowner there).
+						local decoKit = Game.createItem(23398, 1)
+						if not decoKit then
+							player:sendTextMessage(MESSAGE_LOOK, "Error: Could not create decoration kit.")
+							return false
+						end
+						decoKit:setAttribute(ITEM_ATTRIBUTE_DESCRIPTION, "Unwrap it in your own house to create a <undead soldier exercise dummy>.")
+						decoKit:setCustomAttribute("unWrapId", 60131)
+						player:addItemStoreInboxEx(decoKit, false, true)
+						return true
+					end,
+					craftEffect = CONST_ME_HOLYDAMAGE,
+				},
+
+				-- Stone upgrades: 5 basic -> 1 medium
+				[7] = {
+					item = "Medium Upgrade Stone",
+					itemID = 60428,
+					price = 0,
+					reqItems = {
+						[1] = { item = 60429, count = 5 },
+					},
+					craftEffect = CONST_ME_HOLYAREA,
+				},
+
+				-- Stone upgrades: 5 medium -> 1 epic
+				[8] = {
+					item = "Epic Upgrade Stone",
+					itemID = 60427,
+					price = 0,
+					reqItems = {
+						[1] = { item = 60428, count = 5 },
+					},
+					craftEffect = CONST_ME_HOLYAREA,
+				},
+			},
+		},
 	},
 }
 

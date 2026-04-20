@@ -22,7 +22,7 @@ toggleMaintainMode = false
 --- Message displayed during maintenance mode.
 -- Should inform the expected downtime or resumption details succinctly.
 -- @field [parent=#global] #string maintainModeMessage an empty string by default, set a custom message if needed.
-maintainModeMessage = ""
+maintainModeMessage = "Servidor em manutenção. Por favor, entre no nosso discord para mais informações."
 
 -- Combat settings
 -- NOTE: valid values for worldType are: "pvp", "no-pvp" and "pvp-enforced"
@@ -33,26 +33,31 @@ worldType = "pvp"
 hotkeyAimbotEnabled = true
 protectionLevel = 7
 pzLocked = 60 * 1000
-removeChargesFromRunes = true
+removeChargesFromRunes = false
 removeChargesFromPotions = true
-removeWeaponAmmunition = true
+removeWeaponAmmunition = false
 removeWeaponCharges = true
-removeBeginningWeaponAmmunition = true
+removeBeginningWeaponAmmunition = false
 refundBeginningWeaponMana = false
-timeToDecreaseFrags = 24 * 60 * 60 * 1000
-whiteSkullTime = 15 * 60 * 1000
-stairJumpExhaustion = 2 * 1000
+whiteSkullTime = 5 * 60 * 1000
+stairJumpExhaustion = 1 * 1000
 experienceByKillingPlayers = false
 expFromPlayersLevelRange = 75
-dayKillsToRedSkull = 3
-weekKillsToRedSkull = 5
-monthKillsToRedSkull = 10
+-- Simplified frag system: single rolling time window governs both red and black skulls
+fragWindowHours = 8
+killsToRedSkull = 20
+killsToBlackSkull = 40
 redSkullDuration = 1
 blackSkullDuration = 3
-orangeSkullDuration = 7
+orangeSkullDuration = 1
 loginProtectionTime = 10 * 1000
 
 cleanProtectionZones = false
+
+-- Collateral leech (secondary target) reduction
+-- NOTE: percent (1..100) of normal life/mana leech that melee/ranged auto-attacks apply
+-- to secondary targets (cleave or chain hits). Set to 100 to disable the nerf.
+collateralLeechPercent = 33
 
 -- Connection Config
 -- NOTE: allowOldProtocol can allow login on 10x protocol. (11.00)
@@ -67,11 +72,11 @@ gameProtocolPort = 7172
 statusProtocolPort = 7171
 maxPlayers = 0
 serverName = "KoliseuOT"
-serverMotd = "Welcome to the OTServBR-Global!"
+serverMotd = "Welcome to the KoliseOT!"
 statusTimeout = 5 * 1000
 replaceKickOnLogin = true
-maxPacketsPerSecond = 25
-maxPlayersOnlinePerAccount = 1
+maxPacketsPerSecond = 80
+maxPlayersOnlinePerAccount = 2
 maxPlayersOutsidePZPerAccount = 1
 
 -- Packet Compression
@@ -123,7 +128,7 @@ augmentStrongImpactPercent = 10
 preySystemEnabled = true
 preyFreeThirdSlot = false
 preyRerollPricePerLevel = 200
-preySelectListPrice = 5
+preySelectListPrice = 3
 preyBonusRerollPrice = 1
 preyBonusTime = 2 * 60 * 60
 preyFreeRerollTime = 20 * 60 * 60
@@ -136,20 +141,20 @@ taskHuntingSystemEnabled = true
 taskHuntingFreeThirdSlot = false
 taskHuntingLimitedTasksExhaust = 20 * 60 * 60
 taskHuntingRerollPricePerLevel = 200
-taskHuntingSelectListPrice = 5
+taskHuntingSelectListPrice = 3
 taskHuntingBonusRerollPrice = 1
 taskHuntingFreeRerollTime = 20 * 60 * 60
 
 -- Bounty tasks system (Winter Update 2025)
 -- NOTE: bountyTasksFreeRerollTime: Time in seconds that players will have to wait to get a free bounty tasks reroll.
-bountyTasksEnabled = true
+bountyTasksEnabled = false
 bountyTasksExpMultiplier = 1
 bountyTasksPointsMultiplier = 1
 bountyTasksRerollMultiplier = 1
 bountyTasksFreeRerollTime = 20 * 60 * 60
 
 -- Weekly tasks system (Winter Update 2025)
-weeklyTasksEnabled = true
+weeklyTasksEnabled = false
 -- Day of week for weekly tasks reset (monday, tuesday, wednesday, thursday, friday, saturday, sunday)
 weeklyTasksResetDay = "monday"
 
@@ -157,26 +162,26 @@ weeklyTasksResetDay = "monday"
 -- NOTE: forgeAmountMultiplier, amount dusts multiplies of influenced monsters, default 3
 -- NOTE: forgeMinSlivers, min slivers from influenced monsters
 -- NOTE: forgeMaxSlivers, max slivers from influenced monsters
--- NOTE: forgeInfluencedLimit, limit of influenced monsters that will be created in interval type and time
--- NOTE: forgeFiendishLimit, limit of diabolic monsters that will be created in interval type and time, less than forgeInfluencedLimit
+-- NOTE: forgeFiendishSpawnChance / forgeInfluencedSpawnChance — per-spawn chance (percent, 0..100)
+--       that a newly spawned monster becomes fiendish or influenced. No simultaneous cap.
 -- NOTE: forgeFiendishIntervalType: "hour", "minute" or "second"
 forgeMaxItemTier = 10
 forgeCostOneSliver = 20
 forgeSliverAmount = 3
 forgeCoreCost = 50
-forgeMaxDust = 225
+forgeMaxDust = 500
 forgeFusionDustCost = 100
 forgeConvergenceFusionDustCost = 130
 forgeTransferDustCost = 100
 forgeConvergenceTransferCost = 160
-forgeBaseSuccessRate = 50
+forgeBaseSuccessRate = 60
 forgeBonusSuccessRate = 15
 forgeTierLossReduction = 50
-forgeAmountMultiplier = 3
+forgeAmountMultiplier = 6
 forgeMinSlivers = 3
 forgeMaxSlivers = 7
-forgeInfluencedLimit = 300
-forgeFiendishLimit = 4
+forgeFiendishSpawnChance = 0.2
+forgeInfluencedSpawnChance = 1.0
 forgeFiendishIntervalType = "hour"
 forgeFiendishIntervalTime = "1"
 
@@ -205,8 +210,8 @@ transcendenceAvatarDuration = 7000
 -- Bestiary & Bosstiary system
 -- NOTE: bestiaryKillMultiplier, multiplier value of monster killed, default 1
 -- NOTE: bosstiaryKillMultiplier, multiplier value of boss killed, default 1
-bestiaryKillMultiplier = 1
-bosstiaryKillMultiplier = 1
+bestiaryKillMultiplier = 3
+bosstiaryKillMultiplier = 3
 bestiaryRateCharmShopPrice  = 1.0
 boostedBossSlot = true
 boostedBossLootBonus = 250
@@ -229,11 +234,11 @@ hazardPodsDamage = 5
 hazardSpawnPlunderMultiplier = 25
 
 -- Loyalty system
+-- Loyalty is earned by spending coins in the Store. Transfers between players
+-- are logged with mode = HISTORY_TYPE_TRANSFER and are excluded on load so
+-- players cannot inflate loyalty by moving coins between accounts.
 loyaltyEnabled = true
-loyaltyPointsPerCreationDay = 1
-loyaltyPointsPerPremiumDaySpent = 0
-loyaltyPointsPerPremiumDayPurchased = 0
-loyaltyBonusPercentageMultiplier = 1.0
+loyaltyPointsPerCoinSpent = 2
 
 -- Custom PvP system
 -- NOTE: Rate is additive percent for each level and applied multiplicative to totalDamage
@@ -272,7 +277,7 @@ partyShareLootBoosts = false
 partyShareLootBoostsDimishingFactor = 0.7
 
 -- Tibiadrome concoctions
-tibiadromeConcoctionCooldown = 24 * 60 * 60 -- 24 hours
+tibiadromeConcoctionCooldown = 3 * 60 * 60 -- 24 hours
 tibiadromeConcoctionDuration = 60 * 60 -- 1 hour
 tibiadromeConcoctionTickType = "online" -- "online" | "experience"
 
@@ -297,29 +302,29 @@ onlyPremiumAccount = false
 -- NOTE: minTownIdToBankTransferFromMain blocks towns less than defined from receiving money transfers
 -- NOTE: enableSupportOutfit enable GODS and GMS to select support outfit (gamemaster, customer support or community manager)
 depotChest = 4
-autoLoot = false
-autoBank = false
-toggleGoldPouchAllowAnything = false
-toggleGoldPouchQuickLootOnly = false
+autoLoot = true
+autoBank = true
+toggleGoldPouchAllowAnything = true
+toggleGoldPouchQuickLootOnly = true
 toggleServerIsRetroPVP = false
 toggleTravelsFree = false
-buyAolCommandFee = 0
+buyAolCommandFee = 10000
 buyBlessCommandFee = 0
-teleportPlayerToVocationRoom = true
+teleportPlayerToVocationRoom = false
 toggleReceiveReward = false
 randomMonsterSpawn = false
-lootPouchMaxLimit = 2000
+lootPouchMaxLimit = 10000
 quickLootMaxCorpses = 30
-storeInboxMaxLimit = 2000
-enablePlayerPutItemInAmmoSlot = true
-startStreakLevel = 0
-showLootsInBestiary = false
-minTownIdToBankTransferFromMain = 4
+storeInboxMaxLimit = 10000
+enablePlayerPutItemInAmmoSlot = false
+startStreakLevel = 7
+showLootsInBestiary = true
+minTownIdToBankTransferFromMain = 1
 enableSupportOutfit = true
 
 -- NOTE: stashMoving = true, stow an container inside your stash
 -- NOTE: stashManageAmount = max items add/remove from stash at once
-stashMoving = false
+stashMoving = true
 stashManageAmount = 100000
 
 -- Teleport summon
@@ -332,16 +337,14 @@ teleportSummons = false
 allowReload = false
 
 -- Stamina in Trainers
-staminaTrainer = false
-staminaTrainerDelay = 5
+staminaTrainer = true
+staminaTrainerDelay = 1
 staminaTrainerGain = 1
 -- Stamina in PZ
-staminaPz = false
+staminaPz = true
 staminaOrangeDelay = 1
-staminaGreenDelay = 5
+staminaGreenDelay = 1
 staminaPzGain = 1
--- Max players allowed on a dummy.
-maxAllowedOnADummy = 1
 
 -- Save interval per time
 -- NOTE: toggleSaveInterval: true = enable the save interval, false = disable the save interval
@@ -352,7 +355,7 @@ maxAllowedOnADummy = 1
 toggleSaveAsync = false
 toggleSaveInterval = true
 saveIntervalType = "hour"
-toggleSaveIntervalCleanMap = true
+toggleSaveIntervalCleanMap = false
 saveIntervalTime = 1
 
 -- Imbuement
@@ -371,8 +374,12 @@ freeQuestStage = 1
 -- NOTE: Leave deathLosePercent as -1 if you want to use the default
 -- death penalty formula. For the old formula, set it to 10. For
 -- no skill/experience loss, set it to 0.
+-- NOTE: When `noSkillLoss`/`noMagicLoss` is true, the player will NOT lose
+-- skills/magic level on death (only loses experience).
 deathLosePercent = -1
-leavePartyOnDeath = false
+noSkillLoss = true
+noMagicLoss = true
+leavePartyOnDeath = true
 
 -- Houses
 -- NOTE: set housePriceEachSQM to -1 to disable the ingame buy house functionality
@@ -385,18 +392,19 @@ Setting this to false may pose risks; if a house is abandoned and contains a lar
 -- NOTE: When toggleCyclopediaHouseAuction = true, the !buyhouse commmand does not work.
 -- Periods: daily/weekly/monthly/yearly/never
 -- Base: sqm,rent,sqm+rent
-toggleCyclopediaHouseAuction = true
+toggleCyclopediaHouseAuction = false
 daysToCloseBid = 7
 housePriceRentMultiplier = 0.0
-housePriceEachSQM = 1000
-houseRentPeriod = "monthly"
+housePriceEachSQM = 1000000
+houseRentPeriod = "weekly"
 houseRentRate = 1.0
-houseOwnedByAccount = false
-houseBuyLevel = 100
+houseOwnedByAccount = true
+houseBuyLevel = 500
 housePurchasedShowPrice = false
-houseLoseAfterInactivity = 30 -- days; 0 = never
+houseLoseAfterInactivity = 7 -- days; 0 = never
 onlyInvitedCanMoveHouseItems = true
 togglehouseTransferOnRestart = true
+maxHousesLimit = 1
 
 -- Item Usage
 timeBetweenActions = 200
@@ -422,11 +430,11 @@ mapAuthor = "Koliseu"
 -- Party List limitations
 -- max distance in which players in party list are visible
 -- NOTE partyListMaxDistance set to 0 means no limit
-partyListMaxDistance = 30
+partyListMaxDistance = 45
 
 -- Custom Map
 -- NOTE: toggleMapCustom set to true will load all maps in custom map folder
-toggleMapCustom = true
+toggleMapCustom = false
 
 -- Market
 -- NOTE: marketRefreshPricesInterval (in minutes, minimum is 1 minute)
@@ -473,15 +481,15 @@ kickIdlePlayerAfterMinutes = 15
 maxMessageBuffer = 4
 emoteSpells = false
 allowWalkthrough = true
-coinPacketSize = 25
-coinImagesURL = "http://127.0.0.1/images/store/"
+coinPacketSize = 5
+coinImagesURL = "http://127.0.0.1:3000/store"
 classicAttackSpeed = true
 showScriptsLogInConsole = false
 -- time to suppress negative conditions after being affected by them (ms)
 minDelayBetweenConditions = 0
 -- configure maximum value of critical imbuement
-criticalChance = 10
-inventoryGlowOnFiveBless = false
+criticalChance = 50
+inventoryGlowOnFiveBless = true
 adventurersBlessingLevel = 21
 skulledDeathLoseStoreItem = false
 experienceDisplayRates = true
@@ -508,14 +516,16 @@ globalServerSaveNotifyDuration = 5
 globalServerSaveCleanMap = false
 globalServerSaveClose = false
 globalServerSaveShutdown = true
-globalServerSaveTime = "06:00:00"
+-- Two global server saves per day. Morning save also resets per-player daily task counters.
+morningServerSaveTime = "09:55:00"
+nightServerSaveTime = "21:55:00"
 
 -- Sort loot by chance, most rare items drop first
 -- it is good to be setted when you have a higher
 -- rateLoot to avoid losing all rare items when
 -- the corpse size is less than the total of loots
 -- the monster can drop
-sortLootByChance = false
+sortLootByChance = true
 
 -- Rates
 -- NOTE: rateExp, rateSkill and rateMagic is used when 'rateUseStages = false' - or a fallback only
@@ -525,7 +535,7 @@ rateUseStages = false
 lowLevelBonusExp = 50
 rateExp = 1
 rateSkill = 1
-rateLoot = 1
+rateLoot = 2
 rateMagic = 1
 rateSpawn = 1
 
@@ -596,9 +606,9 @@ defaultPriority = "high"
 startupDatabaseOptimization = true
 
 -- Status server information
-ownerName = "OpenTibiaBR"
-ownerEmail = "opentibiabr@outlook.com"
-url = "http://docs.opentibiabr.com/"
+ownerName = "ADM Jarbas"
+ownerEmail = "joaocrdias17@gmail.com"
+url = "https://koliseuot.com.br/"
 location = "South America"
 
 -- Sends Discord webhook notifications on startup, raids and shutdown.
@@ -621,13 +631,13 @@ discordWebhookDelayMs = 1000
 -- 		If you use 'vipFamiliarTimeCooldownReduction' greater than half of 'familiarTime', it will get the highest possible value, in this case 15
 -- NOTE: GainCoin function, please configure script: data-otservbr-global/scripts/globalevents/vip/online_coins.lua
 -- NOTE: GainToken function, please configure script: data-otservbr-global/scripts/globalevents/vip/online_tokens.lua
-vipSystemEnabled = false
-vipBonusExp = 0
-vipBonusLoot = 0
-vipBonusSkill = 0
+vipSystemEnabled = true
+vipBonusExp = 10
+vipBonusLoot = 10
+vipBonusSkill = 10
 vipAutoLootVipOnly = false
-vipStayOnline = false
-vipFamiliarTimeCooldownReduction = 0
+vipStayOnline = true
+vipFamiliarTimeCooldownReduction = 5
 vipKeepHouse = false
 
 -- NOTE: set rewardChestCollectEnabled to true to enable the reward collect system

@@ -108,12 +108,24 @@ bool IOLoginDataLoad::preLoadPlayer(const std::shared_ptr<Player> &player, const
 
 	player->coinTransferableBalance = transferableCoins;
 
-	uint32_t premiumDays = player->getAccount()->getPremiumRemainingDays();
-	uint32_t premiumDaysPurchased = player->getAccount()->getPremiumDaysPurchased();
+	// Loyalty points are derived from coins actually spent in the store
+	// (coin_amount < 0). Transfers between players (mode = 3) are excluded so
+	// that players cannot inflate their loyalty by ping-ponging coins between
+	// accounts. 1 loyalty point per LOYALTY_POINTS_PER_COIN_SPENT coins spent.
+	const auto loyaltyAccountId = player->getAccount()->getID();
+	const auto loyaltyResult = g_database().storeQuery(fmt::format(
+		"SELECT SUM(ABS(`coin_amount`)) AS total_spent FROM `store_history` "
+		"WHERE `account_id` = {} AND `coin_amount` < 0 AND `mode` != 3",
+		loyaltyAccountId
+	));
 
-	player->loyaltyPoints = player->getAccount()->getAccountAgeInDays() * g_configManager().getNumber(LOYALTY_POINTS_PER_CREATION_DAY)
-		+ (premiumDaysPurchased - premiumDays) * g_configManager().getNumber(LOYALTY_POINTS_PER_PREMIUM_DAY_SPENT)
-		+ premiumDaysPurchased * g_configManager().getNumber(LOYALTY_POINTS_PER_PREMIUM_DAY_PURCHASED);
+	uint32_t loyaltyCoinsSpent = 0;
+	if (loyaltyResult) {
+		loyaltyCoinsSpent = loyaltyResult->getNumber<uint32_t>("total_spent");
+	}
+
+	const auto coinsPerPoint = std::max<int32_t>(1, g_configManager().getNumber(LOYALTY_POINTS_PER_COIN_SPENT));
+	player->loyaltyPoints = loyaltyCoinsSpent / static_cast<uint32_t>(coinsPerPoint);
 
 	return true;
 }
@@ -389,10 +401,11 @@ void IOLoginDataLoad::loadPlayerKills(const std::shared_ptr<Player> &player, DBR
 	query << "SELECT `player_id`, `time`, `target`, `unavenged` FROM `player_kills` WHERE `player_id` = " << player->getGUID();
 	if ((result = db.storeQuery(query.str()))) {
 		int64_t lastKillTime = 0;
-		const int64_t fragTime = g_configManager().getNumber(FRAG_TIME);
+		// Use the simplified frag window to discard stale kills on login
+		const int64_t fragWindowSeconds = g_configManager().getNumber(FRAG_WINDOW_HOURS) * 60 * 60;
 		do {
 			auto killTime = result->getNumber<time_t>("time");
-			if ((time(nullptr) - killTime) <= fragTime) {
+			if ((time(nullptr) - killTime) <= fragWindowSeconds) {
 				(void)player->unjustifiedKills.emplace_back(result->getNumber<uint32_t>("target"), killTime, result->getNumber<bool>("unavenged"));
 				lastKillTime = std::max<int64_t>(lastKillTime, killTime);
 			}

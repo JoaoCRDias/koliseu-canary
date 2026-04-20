@@ -873,21 +873,46 @@ do
 			[9] = { name = "Sage of Tibia", points = 5000 },
 			[10] = { name = "Savant of Tibia", points = 6000 },
 			[11] = { name = "Enlightened of Tibia", points = 7000 },
+			[12] = { name = "Vanguard of Tibia", points = 10000 },
+			[13] = { name = "Champion of Tibia", points = 15000 },
+			[14] = { name = "Overlord of Tibia", points = 20000 },
+			[15] = { name = "Archon of Tibia", points = 25000 },
+			[16] = { name = "Sovereign of Tibia", points = 30000 },
+			[17] = { name = "Conqueror of Tibia", points = 40000 },
+			[18] = { name = "Mythical of Tibia", points = 50000 },
+			[19] = { name = "Eternal of Tibia", points = 60000 },
+			[20] = { name = "Ascendant of Tibia", points = 70000 },
+			[21] = { name = "Primordial of Tibia", points = 80000 },
+			[22] = { name = "Transcendent of Tibia", points = 90000 },
 		},
 		bonus = {
-			{ minPoints = 360, percentage = 5 },
-			{ minPoints = 720, percentage = 10 },
-			{ minPoints = 1080, percentage = 15 },
-			{ minPoints = 1440, percentage = 20 },
-			{ minPoints = 1800, percentage = 25 },
-			{ minPoints = 2160, percentage = 30 },
-			{ minPoints = 2520, percentage = 35 },
-			{ minPoints = 2880, percentage = 40 },
-			{ minPoints = 3240, percentage = 45 },
-			{ minPoints = 3600, percentage = 50 },
+			{ minPoints = 500, skillBonus = 2 },
+			{ minPoints = 1000, skillBonus = 4 },
+			{ minPoints = 1500, skillBonus = 6 },
+			{ minPoints = 2000, skillBonus = 8 },
+			{ minPoints = 2500, skillBonus = 10 },
+			{ minPoints = 3000, skillBonus = 12 },
+			{ minPoints = 3500, skillBonus = 14 },
+			{ minPoints = 4000, skillBonus = 16 },
+			{ minPoints = 4500, skillBonus = 18 },
+			{ minPoints = 5000, skillBonus = 20 },
+			{ minPoints = 6000, skillBonus = 22 },
+			{ minPoints = 7000, skillBonus = 24 },
+			{ minPoints = 8000, skillBonus = 26 },
+			{ minPoints = 9000, skillBonus = 28 },
+			{ minPoints = 10000, skillBonus = 30 },
+			{ minPoints = 11000, skillBonus = 32 },
+			{ minPoints = 12000, skillBonus = 34 },
+			{ minPoints = 13000, skillBonus = 36 },
+			{ minPoints = 14000, skillBonus = 38 },
+			{ minPoints = 15000, skillBonus = 40 },
+			{ minPoints = 16000, skillBonus = 42 },
+			{ minPoints = 17000, skillBonus = 44 },
 		},
-		messageTemplate = "Due to your long-term loyalty to " .. SERVER_NAME .. " you currently benefit from a ${bonusPercentage}% bonus on all of your skills. (You have ${loyaltyPoints} loyalty points)",
 	}
+
+	local STORAGE_LOYALTY_SKILL = 50005
+	local STORAGE_LOYALTY_STAT = 50006
 
 	function Player.initializeLoyaltySystem(self)
 		if not loyaltySystem.enable then
@@ -908,19 +933,59 @@ do
 			self:setLoyaltyTitle(title)
 		end
 
-		-- Bonus
-		local playerBonusPercentage = 0
+		-- Bonus per vocation category (applied as flat skill/stat points)
+		local skillBonus = 0
 		for _, bonusTable in ipairs(loyaltySystem.bonus) do
 			if playerLoyaltyPoints >= bonusTable.minPoints then
-				playerBonusPercentage = bonusTable.percentage
+				skillBonus = bonusTable.skillBonus
 			end
 		end
 
-		playerBonusPercentage = playerBonusPercentage * configManager.getFloat(configKeys.LOYALTY_BONUS_PERCENTAGE_MULTIPLIER)
-		self:setLoyaltyBonus(playerBonusPercentage)
+		-- Remove previous loyalty bonus (idempotent across relogins)
+		local prevSkillBonus = self:getStorageValue(STORAGE_LOYALTY_SKILL)
+		local prevStatBonus = self:getStorageValue(STORAGE_LOYALTY_STAT)
+		if prevSkillBonus and prevSkillBonus > 0 then
+			if self:isKnight() then
+				self:setVarSkill(SKILL_AXE, -prevSkillBonus)
+				self:setVarSkill(SKILL_SWORD, -prevSkillBonus)
+				self:setVarSkill(SKILL_CLUB, -prevSkillBonus)
+			elseif self:isPaladin() then
+				self:setVarSkill(SKILL_DISTANCE, -prevSkillBonus)
+			elseif self:isMonk() then
+				self:setVarSkill(SKILL_FIST, -prevSkillBonus)
+			end
+		end
+		if prevStatBonus and prevStatBonus > 0 then
+			if self:isMage() then
+				self:setVarStats(STAT_MAGICPOINTS, -prevStatBonus)
+			end
+		end
 
-		if self:getLoyaltyBonus() ~= 0 then
-			self:sendTextMessage(MESSAGE_STATUS, string.formatNamed(loyaltySystem.messageTemplate, { bonusPercentage = playerBonusPercentage, loyaltyPoints = playerLoyaltyPoints }))
+		if skillBonus > 0 then
+			if self:isKnight() then
+				self:setVarSkill(SKILL_AXE, skillBonus)
+				self:setVarSkill(SKILL_SWORD, skillBonus)
+				self:setVarSkill(SKILL_CLUB, skillBonus)
+				self:setStorageValue(STORAGE_LOYALTY_SKILL, skillBonus)
+				self:setStorageValue(STORAGE_LOYALTY_STAT, 0)
+			elseif self:isPaladin() then
+				self:setVarSkill(SKILL_DISTANCE, skillBonus)
+				self:setStorageValue(STORAGE_LOYALTY_SKILL, skillBonus)
+				self:setStorageValue(STORAGE_LOYALTY_STAT, 0)
+			elseif self:isMonk() then
+				self:setVarSkill(SKILL_FIST, skillBonus)
+				self:setStorageValue(STORAGE_LOYALTY_SKILL, skillBonus)
+				self:setStorageValue(STORAGE_LOYALTY_STAT, 0)
+			elseif self:isMage() then
+				self:setVarStats(STAT_MAGICPOINTS, skillBonus)
+				self:setStorageValue(STORAGE_LOYALTY_SKILL, 0)
+				self:setStorageValue(STORAGE_LOYALTY_STAT, skillBonus)
+			end
+
+			self:sendTextMessage(MESSAGE_STATUS, string.formatNamed("Due to your long-term loyalty to " .. SERVER_NAME .. " you received +${skillBonus} skill bonus. (You have ${loyaltyPoints} loyalty points)", { skillBonus = skillBonus, loyaltyPoints = playerLoyaltyPoints }))
+		else
+			self:setStorageValue(STORAGE_LOYALTY_SKILL, 0)
+			self:setStorageValue(STORAGE_LOYALTY_STAT, 0)
 		end
 
 		return true

@@ -39,6 +39,7 @@
 #include "io/iobountytasks.hpp"
 #include "io/ioweeklytasks.hpp"
 #include "items/bed.hpp"
+#include "items/containers/depot/depotlocker.hpp"
 #include "items/containers/inbox/inbox.hpp"
 #include "items/containers/rewards/reward.hpp"
 #include "items/containers/rewards/rewardchest.hpp"
@@ -4894,19 +4895,29 @@ void Game::playerWrapableItem(uint32_t playerId, const Position &pos, uint8_t st
 		return;
 	}
 
-	if (house->getHouseAccessLevel(player) < HOUSE_OWNER) {
-		player->sendCancelMessage("You are not allowed to construct this here.");
-		return;
-	}
-
 	if (!item || item->getID() != itemId || item->hasAttribute(ItemAttribute_t::UNIQUEID) || (!item->isWrapable() && item->getID() != ITEM_DECORATION_KIT)) {
 		player->sendCancelMessage(RETURNVALUE_NOTPOSSIBLE);
 		return;
 	}
 
-	if (item->hasOwner() && !item->isOwner(player)) {
-		player->sendCancelMessage(RETURNVALUE_ITEMISNOTYOURS);
-		return;
+	// Access check: the house owner can wrap/unwrap anything. A subowner may wrap/unwrap
+	// items they own (ITEM_ATTRIBUTE_OWNER = their guid) — this lets a friend place their
+	// own exercise dummies/decorations in another player's house.
+	const auto houseAccessLevel = house->getHouseAccessLevel(player);
+	if (item->hasOwner() && item->isOwner(player)) {
+		if (houseAccessLevel < HOUSE_SUBOWNER) {
+			player->sendCancelMessage("You need to be a subowner of this house to construct your items here.");
+			return;
+		}
+	} else {
+		if (item->hasOwner() && !item->isOwner(player)) {
+			player->sendCancelMessage(RETURNVALUE_ITEMISNOTYOURS);
+			return;
+		}
+		if (houseAccessLevel < HOUSE_OWNER) {
+			player->sendCancelMessage("You are not allowed to construct this here.");
+			return;
+		}
 	}
 
 	if (g_configManager().getBoolean(ONLY_INVITED_CAN_MOVE_HOUSE_ITEMS) && !InternalGame::playerCanUseItemOnHouseTile(player, item)) {
@@ -5022,6 +5033,14 @@ void Game::unwrapItem(const std::shared_ptr<Item> &item, uint16_t unWrapId, cons
 		house->addBed(newItem->getBed());
 	}
 	if (newItem) {
+		// Portable depot: set depotId to the house's town ID so market/stash work
+		if (house && newiType.isDepot()) {
+			const auto &depotLocker = newItem->getContainer() ? newItem->getContainer()->getDepotLocker() : nullptr;
+			if (depotLocker) {
+				depotLocker->setDepotId(house->getTownId());
+			}
+		}
+
 		if (hiddenCharges > 0 && isCaskItem(unWrapId)) {
 			newItem->setSubType(hiddenCharges);
 		}
@@ -6895,6 +6914,22 @@ void Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type, c
 		return;
 	}
 
+	// Staff-issued mute (spells already passed through above).
+	if (const int64_t staffMuteRemaining = player->checkMute(); staffMuteRemaining > 0) {
+		const int64_t minutes = staffMuteRemaining / 60;
+		const int64_t seconds = staffMuteRemaining % 60;
+		std::string timeStr;
+		if (minutes > 0 && seconds > 0) {
+			timeStr = fmt::format("{} minute{} and {} second{}", minutes, minutes == 1 ? "" : "s", seconds, seconds == 1 ? "" : "s");
+		} else if (minutes > 0) {
+			timeStr = fmt::format("{} minute{}", minutes, minutes == 1 ? "" : "s");
+		} else {
+			timeStr = fmt::format("{} second{}", seconds, seconds == 1 ? "" : "s");
+		}
+		player->sendTextMessage(MESSAGE_FAILURE, "You have been muted by a staff member. " + timeStr + " remaining.");
+		return;
+	}
+
 	uint32_t muteTime = player->isMuted();
 	if (muteTime > 0) {
 		std::ostringstream ss;
@@ -7657,10 +7692,74 @@ void Game::notifySpectators(const CreatureVector &spectators, const Position &ta
 	}
 }
 
+// Vocation balance - PvE damage adjustments (player -> monster).
+// Attack damage uses pveDamageDealtMultiplier; spells use pveSpellDamageMultiplier
+// and can scale linearly with player level (capped by pveSpellLevelMax).
+static void applyVocationPveBalance(CombatDamage &damage, const std::shared_ptr<Player> &attackerPlayer, const std::shared_ptr<Creature> &target) {
+	if (!attackerPlayer || !target || !target->getMonster()) {
+		return;
+	}
+
+	if (damage.origin == ORIGIN_NONE) {
+		return;
+	}
+
+	const auto &vocation = attackerPlayer->getVocation();
+	if (!vocation) {
+		return;
+	}
+
+	float multiplier = vocation->pveDamageDealtMultiplier;
+	if (damage.origin == ORIGIN_SPELL) {
+		multiplier = vocation->pveSpellDamageMultiplier;
+		if (vocation->pveSpellLevelScale > 0.0f) {
+			float levelMultiplier = 1.0f + (attackerPlayer->getLevel() * vocation->pveSpellLevelScale);
+			if (levelMultiplier > vocation->pveSpellLevelMax) {
+				levelMultiplier = vocation->pveSpellLevelMax;
+			}
+			multiplier *= levelMultiplier;
+		}
+	}
+
+	if (multiplier == 1.0f) {
+		return;
+	}
+
+	damage.primary.value = static_cast<int32_t>(std::round(damage.primary.value * multiplier));
+	if (damage.secondary.value != 0) {
+		damage.secondary.value = static_cast<int32_t>(std::round(damage.secondary.value * multiplier));
+	}
+}
+
+// Vocation balance - PvE damage received (monster -> player)
+static void applyVocationPveDamageReceived(CombatDamage &damage, const std::shared_ptr<Creature> &attacker, const std::shared_ptr<Player> &targetPlayer) {
+	if (!targetPlayer || !attacker || !attacker->getMonster()) {
+		return;
+	}
+
+	const auto &vocation = targetPlayer->getVocation();
+	if (!vocation) {
+		return;
+	}
+
+	const float multiplier = vocation->pveDamageReceivedMultiplier;
+	if (multiplier == 1.0f) {
+		return;
+	}
+
+	damage.primary.value = static_cast<int32_t>(std::round(damage.primary.value * multiplier));
+	if (damage.secondary.value != 0) {
+		damage.secondary.value = static_cast<int32_t>(std::round(damage.secondary.value * multiplier));
+	}
+}
+
 // Custom PvP System combat helpers
 void Game::applyPvPDamage(CombatDamage &damage, const std::shared_ptr<Player> &attacker, const std::shared_ptr<Player> &target) {
 	float targetDamageReceivedMultiplier = target->vocation->pvpDamageReceivedMultiplier;
 	float attackerDamageDealtMultiplier = attacker->vocation->pvpDamageDealtMultiplier;
+	if (damage.origin == ORIGIN_SPELL) {
+		attackerDamageDealtMultiplier = attacker->vocation->pvpSpellDamageMultiplier;
+	}
 	float levelDifferenceDamageMultiplier = this->pvpLevelDifferenceDamageMultiplier(attacker, target);
 
 	float pvpDamageMultiplier = targetDamageReceivedMultiplier * attackerDamageDealtMultiplier * levelDifferenceDamageMultiplier;
@@ -8044,6 +8143,12 @@ bool Game::combatChangeHealth(const std::shared_ptr<Creature> &attacker, const s
 
 		damage.primary.value = std::abs(damage.primary.value);
 		damage.secondary.value = std::abs(damage.secondary.value);
+
+		// Vocation balance - PvE damage adjustments (player -> monster)
+		applyVocationPveBalance(damage, attackerPlayer, target);
+
+		// Vocation balance - PvE damage received adjustments (monster -> player)
+		applyVocationPveDamageReceived(damage, attacker, targetPlayer);
 
 		// Badge progression - damage bonus (ALL damage except extensions like gem damage)
 		if (attackerPlayer && !damage.extension) {
@@ -8773,10 +8878,20 @@ void Game::applyManaLeech(
 	tmpDamage.primary.type = COMBAT_MANADRAIN;
 	tmpDamage.primary.value = calculateLeechAmount(realDamage, manaSkill, affected);
 
-	// Secondary targets get 1/3 leech on auto attacks only (melee/ranged/cleave).
+	// PvP mana leech bonus (per-vocation, only when target is a player)
+	if (target && target->getPlayer()) {
+		const float pvpBonus = attackerPlayer->getVocation()->pvpManaLeechBonus;
+		if (pvpBonus != 1.0f) {
+			tmpDamage.primary.value = static_cast<int32_t>(std::round(tmpDamage.primary.value * pvpBonus));
+			tmpDamage.primary.value = std::clamp(tmpDamage.primary.value, 0, realDamage);
+		}
+	}
+
+	// Secondary targets (cleave / chain) get reduced leech on melee/ranged auto-attacks.
 	// Spells and runes (ORIGIN_SPELL) already pay a multi-target penalty through `affected`.
 	if (damage.secondaryTarget && (damage.origin == ORIGIN_MELEE || damage.origin == ORIGIN_RANGED)) {
-		tmpDamage.primary.value /= 3;
+		const auto percent = std::clamp<int32_t>(g_configManager().getNumber(COLLATERAL_LEECH_PERCENT), 0, 100);
+		tmpDamage.primary.value = (tmpDamage.primary.value * percent) / 100;
 	}
 
 	Combat::doCombatMana(nullptr, attackerPlayer, tmpDamage, tmpParams);
@@ -8820,10 +8935,20 @@ void Game::applyLifeLeech(
 		}
 	}
 
-	// Secondary targets get 1/3 leech on auto attacks only (melee/ranged/cleave).
+	// PvP life leech bonus (per-vocation, only when target is a player)
+	if (target && target->getPlayer()) {
+		const float pvpBonus = attackerPlayer->getVocation()->pvpLifeLeechBonus;
+		if (pvpBonus != 1.0f) {
+			tmpDamage.primary.value = static_cast<int32_t>(std::round(tmpDamage.primary.value * pvpBonus));
+			tmpDamage.primary.value = std::clamp(tmpDamage.primary.value, 0, realDamage);
+		}
+	}
+
+	// Secondary targets (cleave / chain) get reduced leech on melee/ranged auto-attacks.
 	// Spells and runes (ORIGIN_SPELL) already pay a multi-target penalty through `affected`.
 	if (damage.secondaryTarget && (damage.origin == ORIGIN_MELEE || damage.origin == ORIGIN_RANGED)) {
-		tmpDamage.primary.value /= 3;
+		const auto percent = std::clamp<int32_t>(g_configManager().getNumber(COLLATERAL_LEECH_PERCENT), 0, 100);
+		tmpDamage.primary.value = (tmpDamage.primary.value * percent) / 100;
 	}
 
 	if (tmpDamage.primary.value > 0) {
@@ -11626,165 +11751,42 @@ void Game::sendUpdateCreature(const std::shared_ptr<Creature> &creature) {
 	}
 }
 
+// NOTE: fiendish/influenced monsters are now spawned probabilistically per-spawn
+// via tryApplyForgeSpawnChance() (see spawn_monster.cpp). There are no caps — the
+// size of fiendishMonsters/influencedMonsters grows with whatever the chance produces.
+// The legacy periodic "reseed to limit" logic was removed together with the limits.
+
+namespace {
+	uint32_t getFiendishIntervalMs() {
+		const std::string saveIntervalType = g_configManager().getString(FORGE_FIENDISH_INTERVAL_TYPE);
+		const auto saveIntervalConfigTime = std::atoi(g_configManager().getString(FORGE_FIENDISH_INTERVAL_TIME).c_str());
+		int intervalTime = 0;
+		if (saveIntervalType == "second") {
+			intervalTime = 1000;
+		} else if (saveIntervalType == "minute") {
+			intervalTime = 60 * 1000;
+		} else if (saveIntervalType == "hour") {
+			intervalTime = 60 * 60 * 1000;
+		}
+
+		if (intervalTime == 0) {
+			g_logger().warn("Fiendish interval type is wrong, setting default time to 1h");
+			return 3600 * 1000;
+		}
+
+		return static_cast<uint32_t>(saveIntervalConfigTime * intervalTime);
+	}
+}
+
 uint32_t Game::makeInfluencedMonster() {
-	if (auto influencedLimit = g_configManager().getNumber(FORGE_INFLUENCED_CREATURES_LIMIT);
-	    // Condition
-	    forgeableMonsters.empty() || influencedMonsters.size() >= influencedLimit) {
-		return 0;
-	}
-
-	auto maxTries = forgeableMonsters.size();
-	uint16_t tries = 0;
-	std::shared_ptr<Monster> monster = nullptr;
-	while (true) {
-		if (tries == maxTries) {
-			return 0;
-		}
-
-		tries++;
-
-		auto random = static_cast<uint32_t>(uniform_random(0, static_cast<int32_t>(forgeableMonsters.size() - 1)));
-		auto monsterId = forgeableMonsters.at(random);
-		monster = getMonsterByID(monsterId);
-		if (monster == nullptr) {
-			continue;
-		}
-
-		// Avoiding replace forgeable monster with another
-		if (monster->getForgeStack() == 0) {
-			auto it = std::ranges::find(forgeableMonsters.begin(), forgeableMonsters.end(), monsterId);
-			if (it == forgeableMonsters.end()) {
-				monster = nullptr;
-				continue;
-			}
-			forgeableMonsters.erase(it);
-			break;
-		}
-	}
-
-	if (monster && monster->canBeForgeMonster()) {
-		monster->setMonsterForgeClassification(ForgeClassifications_t::FORGE_INFLUENCED_MONSTER);
-		monster->configureForgeSystem();
-		influencedMonsters.emplace(monster->getID());
-		return monster->getID();
-	}
-
+	// Deprecated entry point kept for the Lua binding (Game.makeInfluencedMonster).
+	// Returns 0; use forgeInfluencedSpawnChance in config.lua to control spawn rate.
 	return 0;
 }
 
-uint32_t Game::makeFiendishMonster(uint32_t forgeableMonsterId /* = 0*/, bool createForgeableMonsters /* = false*/) {
-	if (createForgeableMonsters) {
-		forgeableMonsters.clear();
-		// If the forgeable monsters haven't been created
-		// Then we'll create them so they don't return in the next if (forgeableMonsters.empty())
-		for (const auto &monster : monsters) {
-			auto monsterTile = monster->getTile();
-			if (!monster || !monsterTile) {
-				continue;
-			}
-
-			if (monster->canBeForgeMonster() && !monsterTile->hasFlag(TILESTATE_NOLOGOUT)) {
-				forgeableMonsters.push_back(monster->getID());
-			}
-		}
-		for (const auto monsterId : getFiendishMonsters()) {
-			// If the fiendish is no longer on the map, we remove it from the vector
-			auto monster = getMonsterByID(monsterId);
-			if (!monster) {
-				removeFiendishMonster(monsterId);
-				continue;
-			}
-
-			// If you're trying to create a new fiendish and it's already max size, let's remove one of them
-			if (auto fiendishLimit = g_configManager().getNumber(FORGE_FIENDISH_CREATURES_LIMIT);
-			    // Condition
-			    getFiendishMonsters().size() >= fiendishLimit) {
-				monster->clearFiendishStatus();
-				removeFiendishMonster(monsterId);
-				break;
-			}
-		}
-	}
-
-	if (auto fiendishLimit = g_configManager().getNumber(FORGE_FIENDISH_CREATURES_LIMIT);
-	    // Condition
-	    forgeableMonsters.empty() || fiendishMonsters.size() >= fiendishLimit) {
-		return 0;
-	}
-
-	auto maxTries = forgeableMonsters.size();
-	uint16_t tries = 0;
-	std::shared_ptr<Monster> monster = nullptr;
-	while (true) {
-		if (tries == maxTries) {
-			return 0;
-		}
-
-		tries++;
-
-		auto random = static_cast<uint32_t>(uniform_random(0, static_cast<int32_t>(forgeableMonsters.size() - 1)));
-		uint32_t fiendishMonsterId = forgeableMonsterId;
-		if (fiendishMonsterId == 0) {
-			fiendishMonsterId = forgeableMonsters.at(random);
-		}
-		monster = getMonsterByID(fiendishMonsterId);
-		if (monster == nullptr) {
-			continue;
-		}
-
-		// Avoiding replace forgeable monster with another
-		if (monster->getForgeStack() == 0) {
-			auto it = std::find(forgeableMonsters.begin(), forgeableMonsters.end(), fiendishMonsterId);
-			if (it == forgeableMonsters.end()) {
-				monster = nullptr;
-				continue;
-			}
-			forgeableMonsters.erase(it);
-			break;
-		}
-	}
-
-	// Get interval time to fiendish
-	std::string saveIntervalType = g_configManager().getString(FORGE_FIENDISH_INTERVAL_TYPE);
-	auto saveIntervalConfigTime = std::atoi(g_configManager().getString(FORGE_FIENDISH_INTERVAL_TIME).c_str());
-	int intervalTime = 0;
-	time_t timeToChangeFiendish;
-	if (saveIntervalType == "second") {
-		intervalTime = 1000;
-		timeToChangeFiendish = 1;
-	} else if (saveIntervalType == "minute") {
-		intervalTime = 60 * 1000;
-		timeToChangeFiendish = 60;
-	} else if (saveIntervalType == "hour") {
-		intervalTime = 60 * 60 * 1000;
-		timeToChangeFiendish = 3600;
-	} else {
-		timeToChangeFiendish = 3600;
-	}
-
-	uint32_t finalTime = 0;
-	if (intervalTime == 0) {
-		g_logger().warn("Fiendish interval type is wrong, setting default time to 1h");
-		finalTime = 3600 * 1000;
-	} else {
-		finalTime = static_cast<uint32_t>(saveIntervalConfigTime * intervalTime);
-	}
-
-	if (monster && monster->canBeForgeMonster()) {
-		monster->setMonsterForgeClassification(ForgeClassifications_t::FORGE_FIENDISH_MONSTER);
-		monster->configureForgeSystem();
-		monster->setTimeToChangeFiendish(timeToChangeFiendish + getTimeNow());
-		fiendishMonsters.emplace(monster->getID());
-
-		auto schedulerTask = createPlayerTask(
-			finalTime,
-			[this, monster] { updateFiendishMonsterStatus(monster->getID(), monster->getName()); },
-			__FUNCTION__
-		);
-		forgeMonsterEventIds[monster->getID()] = g_dispatcher().scheduleEvent(schedulerTask);
-		return monster->getID();
-	}
-
+uint32_t Game::makeFiendishMonster(uint32_t /*forgeableMonsterId*/, bool /*createForgeableMonsters*/) {
+	// Deprecated entry point kept for the Lua binding (Game.makeFiendishMonster).
+	// Returns 0; use forgeFiendishSpawnChance in config.lua to control spawn rate.
 	return 0;
 }
 
@@ -11797,7 +11799,6 @@ void Game::updateFiendishMonsterStatus(uint32_t monsterId, const std::string &mo
 
 	monster->clearFiendishStatus();
 	removeFiendishMonster(monsterId, false);
-	makeFiendishMonster();
 }
 
 bool Game::removeForgeMonster(uint32_t id, ForgeClassifications_t monsterForgeClassification, bool create) {
@@ -11810,35 +11811,19 @@ bool Game::removeForgeMonster(uint32_t id, ForgeClassifications_t monsterForgeCl
 	return true;
 }
 
-bool Game::removeInfluencedMonster(uint32_t id, bool create /* = false*/) {
-	if (auto find = influencedMonsters.find(id);
-	    // Condition
-	    find != influencedMonsters.end()) {
+bool Game::removeInfluencedMonster(uint32_t id, bool /*create*/) {
+	if (auto find = influencedMonsters.find(id); find != influencedMonsters.end()) {
 		influencedMonsters.erase(find);
-
-		if (create) {
-			g_dispatcher().scheduleEvent(
-				10 * 1000, [this] { makeInfluencedMonster(); }, "Game::makeInfluencedMonster"
-			);
-		}
 	} else {
 		g_logger().warn("[Game::removeInfluencedMonster] - Failed to remove a Influenced Monster, error code: monster id not exist in the influenced monsters map");
 	}
 	return false;
 }
 
-bool Game::removeFiendishMonster(uint32_t id, bool create /* = true*/) {
-	if (auto find = fiendishMonsters.find(id);
-	    // Condition
-	    find != fiendishMonsters.end()) {
+bool Game::removeFiendishMonster(uint32_t id, bool /*create*/) {
+	if (auto find = fiendishMonsters.find(id); find != fiendishMonsters.end()) {
 		fiendishMonsters.erase(find);
 		checkForgeEventId(id);
-
-		if (create) {
-			g_dispatcher().scheduleEvent(
-				270 * 1000, [this] { makeFiendishMonster(0, false); }, "Game::makeFiendishMonster"
-			);
-		}
 	} else {
 		g_logger().warn("[Game::removeFiendishMonster] - Failed to remove a Fiendish Monster, error code: monster id not exist in the fiendish monsters map");
 	}
@@ -11847,67 +11832,21 @@ bool Game::removeFiendishMonster(uint32_t id, bool create /* = true*/) {
 }
 
 void Game::updateForgeableMonsters() {
-	if (auto influencedLimit = g_configManager().getNumber(FORGE_INFLUENCED_CREATURES_LIMIT);
-	    forgeableMonsters.size() < influencedLimit) {
-		forgeableMonsters.clear();
-		for (const auto &monster : monsters) {
-			const auto &monsterTile = monster->getTile();
-			if (!monsterTile) {
-				continue;
-			}
-
-			if (monster->canBeForgeMonster() && !monsterTile->hasFlag(TILESTATE_NOLOGOUT)) {
-				forgeableMonsters.emplace_back(monster->getID());
-			}
-		}
-	}
-
+	// Clean up stale fiendish entries whose monsters no longer exist on the map.
+	// The legacy cap-refill logic is gone: spawns are now probabilistic per-creature.
 	for (const auto &monsterId : getFiendishMonsters()) {
 		if (!getMonsterByID(monsterId)) {
 			removeFiendishMonster(monsterId);
 		}
 	}
-
-	uint32_t fiendishLimit = g_configManager().getNumber(FORGE_FIENDISH_CREATURES_LIMIT); // Fiendish Creatures limit
-	if (fiendishMonsters.size() < fiendishLimit) {
-		createFiendishMonsters();
-	}
 }
 
 void Game::createFiendishMonsters() {
-	uint32_t created = 0;
-	uint32_t fiendishLimit = g_configManager().getNumber(FORGE_FIENDISH_CREATURES_LIMIT); // Fiendish Creatures limit
-	while (fiendishMonsters.size() < fiendishLimit) {
-		if (fiendishMonsters.size() >= fiendishLimit) {
-			g_logger().warn("[{}] - Returning in creation of Fiendish, size: {}, max is: {}.", __FUNCTION__, fiendishMonsters.size(), fiendishLimit);
-			break;
-		}
-
-		if (auto ret = makeFiendishMonster();
-		    // Condition
-		    ret == 0) {
-			return;
-		}
-
-		created++;
-	}
+	// Deprecated: kept only so the Lua binding Game.createFiendishMonsters still links.
 }
 
 void Game::createInfluencedMonsters() {
-	uint32_t created = 0;
-	uint32_t influencedLimit = g_configManager().getNumber(FORGE_INFLUENCED_CREATURES_LIMIT);
-	while (created < influencedLimit) {
-		if (influencedMonsters.size() >= influencedLimit) {
-			g_logger().warn("[{}] - Returning in creation of Influenced, size: {}, max is: {}.", __FUNCTION__, influencedMonsters.size(), influencedLimit);
-			break;
-		}
-
-		if (makeInfluencedMonster() == 0) {
-			return;
-		}
-
-		created++;
-	}
+	// Deprecated: kept only so the Lua binding Game.createInfluencedMonsters still links.
 }
 
 void Game::checkForgeEventId(uint32_t monsterId) {
@@ -11920,18 +11859,41 @@ void Game::checkForgeEventId(uint32_t monsterId) {
 
 bool Game::addInfluencedMonster(const std::shared_ptr<Monster> &monster) {
 	if (monster && monster->canBeForgeMonster()) {
-		if (auto maxInfluencedMonsters = static_cast<uint32_t>(g_configManager().getNumber(FORGE_INFLUENCED_CREATURES_LIMIT));
-		    // If condition
-		    (influencedMonsters.size() + 1) > maxInfluencedMonsters) {
-			return false;
-		}
-
 		monster->setMonsterForgeClassification(ForgeClassifications_t::FORGE_INFLUENCED_MONSTER);
 		monster->configureForgeSystem();
 		influencedMonsters.emplace(monster->getID());
 		return true;
 	}
 	return false;
+}
+
+bool Game::addFiendishMonster(const std::shared_ptr<Monster> &monster) {
+	if (!monster || !monster->canBeForgeMonster()) {
+		return false;
+	}
+	if (monster->getMonsterForgeClassification() != ForgeClassifications_t::FORGE_NORMAL_MONSTER) {
+		return false;
+	}
+	if (fiendishMonsters.contains(monster->getID())) {
+		return false;
+	}
+
+	monster->setMonsterForgeClassification(ForgeClassifications_t::FORGE_FIENDISH_MONSTER);
+	monster->configureForgeSystem();
+	const uint32_t finalTime = getFiendishIntervalMs();
+	monster->setTimeToChangeFiendish(getTimeNow() + finalTime / 1000);
+	fiendishMonsters.emplace(monster->getID());
+
+	auto schedulerTask = createPlayerTask(
+		finalTime,
+		[this, monsterId = monster->getID(), monsterName = monster->getName()] {
+			updateFiendishMonsterStatus(monsterId, monsterName);
+		},
+		__FUNCTION__
+	);
+	checkForgeEventId(monster->getID());
+	forgeMonsterEventIds[monster->getID()] = g_dispatcher().scheduleEvent(schedulerTask);
+	return true;
 }
 
 bool Game::addItemStoreInbox(const std::shared_ptr<Player> &player, uint32_t itemId) {
@@ -12502,6 +12464,13 @@ void Game::playerCyclopediaHouseBid(uint32_t playerId, uint32_t houseId, uint64_
 		return;
 	}
 
+	const auto accountHouseCount = g_game().map.houses.getHouseCountByAccount(player->getAccountId());
+	const auto maxHousesLimit = g_configManager().getNumber(MAX_HOUSES_LIMIT);
+	if (accountHouseCount >= maxHousesLimit) {
+		player->sendFYIBox(fmt::format("You have reached the maximum number of houses you can own or bid on. The limit is {}.", maxHousesLimit));
+		return;
+	}
+
 	auto ret = player->canBidHouse(houseId);
 	if (ret != BidErrorMessage::NoError) {
 		player->sendHouseAuctionMessage(houseId, HouseAuctionType::Bid, enumToValue(ret));
@@ -12630,6 +12599,13 @@ void Game::playerCyclopediaHouseTransfer(uint32_t playerId, uint32_t houseId, ui
 	const auto house = g_game().map.houses.getHouseByClientId(houseId);
 	if (!house || house->getState() != CyclopediaHouseState::Rented) {
 		owner->sendHouseAuctionMessage(houseId, HouseAuctionType::Transfer, enumToValue(TransferErrorMessage::Internal));
+		return;
+	}
+
+	const auto accountHouseCount = g_game().map.houses.getHouseCountByAccount(newOwner->getAccountId());
+	const auto maxHousesLimit = g_configManager().getNumber(MAX_HOUSES_LIMIT);
+	if (accountHouseCount >= maxHousesLimit) {
+		owner->sendFYIBox(fmt::format("The new owner, {}, has reached the maximum number of houses they can own or bid on. The limit is {}.", newOwnerName, maxHousesLimit));
 		return;
 	}
 

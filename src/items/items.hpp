@@ -449,14 +449,19 @@ public:
 	void addLadderId(uint16_t newId) {
 		ladders.push_back(newId);
 	}
-	void addDummyId(uint16_t newId, uint16_t rate) {
-		dummys[newId] = rate;
+	struct DummyInfo {
+		uint16_t rate = 100;
+		uint16_t maxAllowed = 1;
+	};
+
+	void addDummyId(uint16_t newId, uint16_t rate, uint16_t maxAllowed = 1) {
+		dummys[newId] = { rate, maxAllowed };
 	}
 
 	const std::vector<uint16_t> &getLadders() const {
 		return ladders;
 	}
-	const std::unordered_map<uint16_t, uint16_t> &getDummys() const {
+	const std::unordered_map<uint16_t, DummyInfo> &getDummys() const {
 		return dummys;
 	}
 
@@ -475,6 +480,6 @@ public:
 private:
 	std::vector<ItemType> items;
 	std::vector<uint16_t> ladders;
-	std::unordered_map<uint16_t, uint16_t> dummys;
+	std::unordered_map<uint16_t, DummyInfo> dummys;
 	InventoryVector inventory;
 };

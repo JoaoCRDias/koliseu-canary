@@ -92,6 +92,9 @@ void ItemParse::initParse(const std::string &stringValue, pugi::xml_node attribu
 }
 
 void ItemParse::parseDummyRate(pugi::xml_node attributeNode, ItemType &itemType) {
+	uint16_t rate = 100;
+	uint16_t maxAllowed = 1;
+
 	for (const auto &subAttributeNode : attributeNode.children()) {
 		pugi::xml_attribute subKeyAttribute = subAttributeNode.attribute("key");
 		if (!subKeyAttribute) {
@@ -105,10 +108,13 @@ void ItemParse::parseDummyRate(pugi::xml_node attributeNode, ItemType &itemType)
 
 		auto stringValue = asLowerCaseString(subKeyAttribute.as_string());
 		if (stringValue == "rate") {
-			const uint16_t rate = subValueAttribute.as_uint();
-			Item::items.addDummyId(itemType.id, rate);
+			rate = subValueAttribute.as_uint();
+		} else if (stringValue == "maxallowed") {
+			maxAllowed = subValueAttribute.as_uint();
 		}
 	}
+
+	Item::items.addDummyId(itemType.id, rate, maxAllowed);
 }
 
 void ItemParse::parseType(const std::string &stringValue, pugi::xml_node attributeNode, pugi::xml_attribute valueAttribute, ItemType &itemType) {

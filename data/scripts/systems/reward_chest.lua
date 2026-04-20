@@ -30,11 +30,24 @@ function bossDeath.onDeath(creature, corpse, killer, mostDamageKiller, lastHitUn
 		local scores = {}
 		local info = _G.GlobalBosses[bossId]
 		local damageMap = creature:getDamageMap()
+		-- Aggregate damage across each participant including damage dealt by their summons.
+		-- damageMap is keyed by attackerId (could be summon), so roll summon damage up to its master.
+		local damageOutByPlayerId = {}
+		for attackerId, damageInfo in pairs(damageMap) do
+			if damageInfo and (damageInfo.total or 0) > 0 then
+				local attacker = Creature(attackerId)
+				local player = attacker and (attacker:getPlayer() or (attacker:getMaster() and attacker:getMaster():getPlayer()))
+				if player then
+					local playerId = player:getId()
+					damageOutByPlayerId[playerId] = (damageOutByPlayerId[playerId] or 0) + damageInfo.total
+				end
+			end
+		end
 
 		for guid, stats in pairs(info) do
 			local player = Player(stats.playerId)
-			local part = damageMap[stats.playerId]
-			local damageOut, damageIn, healing = (stats.damageOut or 0) + (part and part.total or 0), stats.damageIn or 0, stats.healing or 0
+			local damageOut = (stats.damageOut or 0) + (damageOutByPlayerId[stats.playerId] or 0)
+			local damageIn, healing = stats.damageIn or 0, stats.healing or 0
 
 			totalDamageOut = totalDamageOut + damageOut
 			totalDamageIn = totalDamageIn + damageIn
@@ -83,10 +96,12 @@ function bossDeath.onDeath(creature, corpse, killer, mostDamageKiller, lastHitUn
 				lootFactor = lootFactor * (1 + lootFactor) ^ (con.score / expectedScore)
 				-- Bosstiary Loot Bonus
 				local rolls = 1
+				local hasBossBonus = false
 				local isBoostedBoss = creature:getName():lower() == (Game.getBoostedBoss()):lower()
 				local bossRaceIds = { player:getSlotBossId(1), player:getSlotBossId(2) }
 				local isBoss = table.contains(bossRaceIds, monsterType:raceId()) or isBoostedBoss
 				if isBoss and monsterType:raceId() ~= 0 then
+					hasBossBonus = true
 					if monsterType:raceId() == player:getSlotBossId(1) then
 						rolls = rolls + player:getBossBonus(1) / 100.0
 					elseif monsterType:raceId() == player:getSlotBossId(2) then
@@ -108,13 +123,18 @@ function bossDeath.onDeath(creature, corpse, killer, mostDamageKiller, lastHitUn
 					playerLoot = monsterType:getBossReward(lootFactor, false, true, playerLoot, player)
 				end
 
+				-- Add custom boss loot from bossLootConfig (custom_monster_loot.lua)
+				if addCustomBossLoot then
+					playerLoot = addCustomBossLoot(monsterType, playerLoot)
+				end
+
 				-- Add droped items to reward container
 				reward:addRewardBossItems(playerLoot)
 
 				if con.player then
 					local collorMessage = player:getClient().version > 1200
 					local lootMessage = ("The following items dropped by %s are available in your reward chest: %s"):format(creature:getName(), reward:getContentDescription(collorMessage))
-					if rolls > 1 then
+					if hasBossBonus then
 						lootMessage = lootMessage .. " (boss bonus)"
 					end
 					if stamina > 840 then

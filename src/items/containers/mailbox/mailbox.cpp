@@ -111,9 +111,9 @@ bool Mailbox::sendItem(const std::shared_ptr<Item> &item) const {
 		if (senderForLog.empty()) {
 			if (!writer.empty()) {
 				senderForLog = writer;
-			} else {
+			} else if (item->getTile()) {
 				// Fallback: any player standing on the mailbox tile (single-floor)
-				const Position mailboxPos = getPosition();
+				const Position mailboxPos = item->getTile()->getPosition();
 				for (const auto &spectator : Spectators().find<Player>(mailboxPos)) {
 					const auto &spectatorPlayer = spectator->getPlayer();
 					if (spectatorPlayer && spectatorPlayer->getPosition() == mailboxPos) {

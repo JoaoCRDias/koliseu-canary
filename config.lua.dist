@@ -37,20 +37,27 @@ removeWeaponAmmunition = true
 removeWeaponCharges = true
 removeBeginningWeaponAmmunition = true
 refundBeginningWeaponMana = false
-timeToDecreaseFrags = 24 * 60 * 60 * 1000
 whiteSkullTime = 15 * 60 * 1000
 stairJumpExhaustion = 2 * 1000
 experienceByKillingPlayers = false
 expFromPlayersLevelRange = 75
-dayKillsToRedSkull = 3
-weekKillsToRedSkull = 5
-monthKillsToRedSkull = 10
+-- Simplified frag system: single rolling time window governs both red and black skulls
+-- fragWindowHours: time window (hours) used to count recent unjustified kills
+-- killsToRedSkull / killsToBlackSkull: kills within that window that trigger each skull
+fragWindowHours = 6
+killsToRedSkull = 15
+killsToBlackSkull = 30
 redSkullDuration = 1
 blackSkullDuration = 3
 orangeSkullDuration = 7
 loginProtectionTime = 10 * 1000
 
 cleanProtectionZones = false
+
+-- Collateral leech (secondary target) reduction
+-- NOTE: percent (1..100) of normal life/mana leech that melee/ranged auto-attacks apply
+-- to secondary targets (cleave or chain hits). Set to 100 to disable the nerf.
+collateralLeechPercent = 33
 
 -- Connection Config
 -- NOTE: allowOldProtocol can allow login on 10x protocol. (11.00)
@@ -155,8 +162,8 @@ weeklyTasksResetDay = "monday"
 -- NOTE: forgeAmountMultiplier, amount dusts multiplies of influenced monsters, default 3
 -- NOTE: forgeMinSlivers, min slivers from influenced monsters
 -- NOTE: forgeMaxSlivers, max slivers from influenced monsters
--- NOTE: forgeInfluencedLimit, limit of influenced monsters that will be created in interval type and time
--- NOTE: forgeFiendishLimit, limit of diabolic monsters that will be created in interval type and time, less than forgeInfluencedLimit
+-- NOTE: forgeFiendishSpawnChance / forgeInfluencedSpawnChance — per-spawn chance (percent, 0..100)
+--       that a newly spawned monster becomes fiendish or influenced. No simultaneous cap.
 -- NOTE: forgeFiendishIntervalType: "hour", "minute" or "second"
 forgeMaxItemTier = 10
 forgeCostOneSliver = 20
@@ -173,8 +180,8 @@ forgeTierLossReduction = 50
 forgeAmountMultiplier = 3
 forgeMinSlivers = 3
 forgeMaxSlivers = 7
-forgeInfluencedLimit = 300
-forgeFiendishLimit = 4
+forgeFiendishSpawnChance = 0.2
+forgeInfluencedSpawnChance = 1.0
 forgeFiendishIntervalType = "hour"
 forgeFiendishIntervalTime = "1"
 
@@ -227,11 +234,12 @@ hazardPodsDamage = 5
 hazardSpawnPlunderMultiplier = 25
 
 -- Loyalty system
+-- Loyalty is earned by spending coins in the Store. Transfers between players
+-- are logged with mode = HISTORY_TYPE_TRANSFER and are excluded on load to
+-- prevent boosting loyalty by moving coins between accounts.
+-- loyaltyPointsPerCoinSpent: how many coins are worth 1 loyalty point.
 loyaltyEnabled = true
-loyaltyPointsPerCreationDay = 1
-loyaltyPointsPerPremiumDaySpent = 0
-loyaltyPointsPerPremiumDayPurchased = 0
-loyaltyBonusPercentageMultiplier = 1.0
+loyaltyPointsPerCoinSpent = 2
 
 -- Custom PvP system
 -- NOTE: Rate is additive percent for each level and applied multiplicative to totalDamage
@@ -338,8 +346,6 @@ staminaPz = false
 staminaOrangeDelay = 1
 staminaGreenDelay = 5
 staminaPzGain = 1
--- Max players allowed on a dummy.
-maxAllowedOnADummy = 1
 
 -- Save interval per time
 -- NOTE: toggleSaveInterval: true = enable the save interval, false = disable the save interval
@@ -369,7 +375,11 @@ freeQuestStage = 1
 -- NOTE: Leave deathLosePercent as -1 if you want to use the default
 -- death penalty formula. For the old formula, set it to 10. For
 -- no skill/experience loss, set it to 0.
+-- NOTE: When `noSkillLoss`/`noMagicLoss` is true, the player will NOT lose
+-- skills/magic level on death (only loses experience).
 deathLosePercent = -1
+noSkillLoss = false
+noMagicLoss = false
 leavePartyOnDeath = false
 
 -- Houses
@@ -395,6 +405,7 @@ housePurchasedShowPrice = false
 houseLoseAfterInactivity = 30 -- days; 0 = never
 onlyInvitedCanMoveHouseItems = true
 togglehouseTransferOnRestart = true
+maxHousesLimit = 3
 
 -- Item Usage
 timeBetweenActions = 200
@@ -508,7 +519,9 @@ globalServerSaveNotifyDuration = 5
 globalServerSaveCleanMap = false
 globalServerSaveClose = false
 globalServerSaveShutdown = true
-globalServerSaveTime = "06:00:00"
+-- Two global server saves per day. Morning save also resets per-player daily task counters.
+morningServerSaveTime = "09:55:00"
+nightServerSaveTime = "21:55:00"
 
 -- Sort loot by chance, most rare items drop first
 -- it is good to be setted when you have a higher

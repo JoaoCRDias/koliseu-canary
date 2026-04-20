@@ -185,6 +185,46 @@ bool Vocations::loadFromXml() {
 				if (pvpDamageDealtMultiplier) {
 					voc->pvpDamageDealtMultiplier = pugi::cast<float>(pvpDamageDealtMultiplier.value());
 				}
+
+				pugi::xml_attribute pvpSpellDamageMultiplier = childNode.attribute("spellDamageMultiplier");
+				if (pvpSpellDamageMultiplier) {
+					voc->pvpSpellDamageMultiplier = pugi::cast<float>(pvpSpellDamageMultiplier.value());
+				}
+
+				pugi::xml_attribute pvpLifeLeech = childNode.attribute("pvpLifeLeechBonus");
+				if (pvpLifeLeech) {
+					voc->pvpLifeLeechBonus = pugi::cast<float>(pvpLifeLeech.value());
+				}
+
+				pugi::xml_attribute pvpManaLeech = childNode.attribute("pvpManaLeechBonus");
+				if (pvpManaLeech) {
+					voc->pvpManaLeechBonus = pugi::cast<float>(pvpManaLeech.value());
+				}
+			} else if (strcasecmp(childNode.name(), "pve") == 0) {
+				pugi::xml_attribute pveDamageReceivedMultiplier = childNode.attribute("damageReceivedMultiplier");
+				if (pveDamageReceivedMultiplier) {
+					voc->pveDamageReceivedMultiplier = pugi::cast<float>(pveDamageReceivedMultiplier.value());
+				}
+
+				pugi::xml_attribute pveDamageDealtMultiplier = childNode.attribute("damageDealtMultiplier");
+				if (pveDamageDealtMultiplier) {
+					voc->pveDamageDealtMultiplier = pugi::cast<float>(pveDamageDealtMultiplier.value());
+				}
+
+				pugi::xml_attribute pveSpellDamageMultiplier = childNode.attribute("spellDamageMultiplier");
+				if (pveSpellDamageMultiplier) {
+					voc->pveSpellDamageMultiplier = pugi::cast<float>(pveSpellDamageMultiplier.value());
+				}
+
+				pugi::xml_attribute pveSpellLevelScale = childNode.attribute("spellLevelScale");
+				if (pveSpellLevelScale) {
+					voc->pveSpellLevelScale = pugi::cast<float>(pveSpellLevelScale.value());
+				}
+
+				pugi::xml_attribute pveSpellLevelMax = childNode.attribute("spellLevelMax");
+				if (pveSpellLevelMax) {
+					voc->pveSpellLevelMax = pugi::cast<float>(pveSpellLevelMax.value());
+				}
 			} else if (strcasecmp(childNode.name(), "gem") == 0) {
 				pugi::xml_attribute qualityAttr = childNode.attribute("quality");
 				pugi::xml_attribute nameAttr = childNode.attribute("name");

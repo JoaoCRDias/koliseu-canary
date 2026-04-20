@@ -53,6 +53,7 @@ void GameFunctions::init(lua_State* L) {
 
 	Lua::registerMethod(L, "Game", "getTowns", GameFunctions::luaGameGetTowns);
 	Lua::registerMethod(L, "Game", "getHouses", GameFunctions::luaGameGetHouses);
+	Lua::registerMethod(L, "Game", "getHouseCountByAccount", GameFunctions::luaGameGetHouseCountByAccount);
 
 	Lua::registerMethod(L, "Game", "getGameState", GameFunctions::luaGameGetGameState);
 	Lua::registerMethod(L, "Game", "setGameState", GameFunctions::luaGameSetGameState);
@@ -361,6 +362,13 @@ int GameFunctions::luaGameGetHouses(lua_State* L) {
 		Lua::setMetatable(L, -1, "House");
 		lua_rawseti(L, -2, ++index);
 	}
+	return 1;
+}
+
+int GameFunctions::luaGameGetHouseCountByAccount(lua_State* L) {
+	// Game:getHouseCountByAccount(accountId)
+	const uint32_t accountId = Lua::getNumber<uint32_t>(L, 2);
+	lua_pushnumber(L, g_game().map.houses.getHouseCountByAccount(accountId));
 	return 1;
 }
 
@@ -861,18 +869,20 @@ int GameFunctions::luaGameGetLadderIds(lua_State* L) {
 
 int GameFunctions::luaGameGetDummies(lua_State* L) {
 	/**
-	 * @brief Retrieve dummy IDs categorized by type.
-	 * @details This function provides a table containing two sub-tables: one for free dummies and one for house (or premium) dummies.
-
-	* @note usage on lua:
-	    local dummies = Game.getDummies()
-	    local rate = dummies[1] -- Retrieve dummy rate
-	*/
+	 * @brief Retrieve dummy IDs with rate and maxAllowed.
+	 * @details Returns a table keyed by dummy item ID; each value is a table `{rate, maxAllowed}`.
+	 *
+	 * @note usage on lua:
+	 *     local dummies = Game.getDummies()
+	 *     local info = dummies[28558] -- { rate = 100, maxAllowed = 1 }
+	 */
 
 	const auto &dummies = Item::items.getDummys();
-	lua_createtable(L, dummies.size(), 0);
-	for (const auto &[dummyId, rate] : dummies) {
-		lua_pushnumber(L, static_cast<lua_Number>(rate));
+	lua_createtable(L, 0, dummies.size());
+	for (const auto &[dummyId, info] : dummies) {
+		lua_createtable(L, 0, 2);
+		Lua::setField(L, "rate", static_cast<lua_Number>(info.rate));
+		Lua::setField(L, "maxAllowed", static_cast<lua_Number>(info.maxAllowed));
 		lua_rawseti(L, -2, dummyId);
 	}
 	return 1;

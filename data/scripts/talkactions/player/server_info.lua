@@ -65,14 +65,17 @@ function serverInfo.onSay(player, words, param)
 		.. configManager.getNumber(configKeys.PROTECTION_LEVEL)
 		.. "\nWorldType: "
 		.. configManager.getString(configKeys.WORLD_TYPE)
-		.. "\nKills/day to red skull: "
-		.. configManager.getNumber(configKeys.DAY_KILLS_TO_RED)
-		.. "\nKills/week to red skull: "
-		.. configManager.getNumber(configKeys.WEEK_KILLS_TO_RED)
-		.. "\nKills/month to red skull: "
-		.. configManager.getNumber(configKeys.MONTH_KILLS_TO_RED)
-		.. "\nServer Save: "
-		.. configManager.getString(configKeys.GLOBAL_SERVER_SAVE_TIME)
+		.. "\nFrag window: "
+		.. configManager.getNumber(configKeys.FRAG_WINDOW_HOURS)
+		.. "h"
+		.. "\nKills to red skull: "
+		.. configManager.getNumber(configKeys.KILLS_TO_RED_SKULL)
+		.. "\nKills to black skull: "
+		.. configManager.getNumber(configKeys.KILLS_TO_BLACK_SKULL)
+		.. "\nMorning Save: "
+		.. configManager.getString(configKeys.MORNING_SERVER_SAVE_TIME)
+		.. "\nNight Save: "
+		.. configManager.getString(configKeys.NIGHT_SERVER_SAVE_TIME)
 	player:showTextDialog(34266, text)
 	return true
 end
