@@ -14,10 +14,12 @@
 #include "creatures/combat/condition.hpp"
 #include "creatures/interactions/chat.hpp"
 #include "creatures/players/player.hpp"
+#include "database/database.hpp"
 #include "game/game.hpp"
 #include "game/scheduling/dispatcher.hpp"
 #include "game/scheduling/save_manager.hpp"
 #include "items/containers/depot/depotlocker.hpp"
+#include "lib/logging/logger.hpp"
 #include "lua/global/globalevent.hpp"
 #include "lua/global/lua_timer_event_descr.hpp"
 #include "lua/scripts/lua_environment.hpp"
@@ -26,8 +28,17 @@
 #include "lua/functions/lua_functions_loader.hpp"
 #include "creatures/players/player.hpp"
 
+#include <atomic>
+#include <system_error>
+#include <thread>
+
+namespace {
+	std::atomic<bool> backupInProgress = false;
+}
+
 void GlobalFunctions::init(lua_State* L) {
 	lua_register(L, "addEvent", GlobalFunctions::luaAddEvent);
+	lua_register(L, "backupDatabase", GlobalFunctions::luaBackupDatabase);
 	lua_register(L, "cleanMap", GlobalFunctions::luaCleanMap);
 	lua_register(L, "createCombatArea", GlobalFunctions::luaCreateCombatArea);
 	lua_register(L, "debugPrint", GlobalFunctions::luaDebugPrint);
@@ -889,6 +900,45 @@ int GlobalFunctions::luaReportError(lua_State* L) {
 	// reportError(errorDescription)
 	const auto errorDescription = Lua::getString(L, 1);
 	Lua::reportError(__func__, errorDescription, true);
+	return 1;
+}
+
+int GlobalFunctions::luaBackupDatabase(lua_State* L) {
+	// backupDatabase(compress = true, async = true)
+	const bool compress = Lua::getBoolean(L, 1, true);
+	const bool asyncRun = Lua::getBoolean(L, 2, true);
+
+	bool expected = false;
+	if (!backupInProgress.compare_exchange_strong(expected, true)) {
+		g_logger().warn("[luaBackupDatabase] Backup request ignored because another backup is still running.");
+		Lua::pushBoolean(L, false);
+		return 1;
+	}
+
+	auto runBackup = [compress]() {
+		struct FlagReset {
+			~FlagReset() {
+				backupInProgress.store(false);
+			}
+		} flagReset;
+
+		g_database().createDatabaseBackup(compress);
+	};
+
+	if (asyncRun) {
+		try {
+			std::thread(runBackup).detach();
+		} catch (const std::system_error &e) {
+			backupInProgress.store(false);
+			g_logger().error("[luaBackupDatabase] Failed to start async backup thread: {}", e.what());
+			Lua::pushBoolean(L, false);
+			return 1;
+		}
+	} else {
+		runBackup();
+	}
+
+	Lua::pushBoolean(L, true);
 	return 1;
 }
 

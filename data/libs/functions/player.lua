@@ -95,6 +95,85 @@ function Player.addManaSpent(...)
 	return ret
 end
 
+local blessLogBuffer = {}
+
+local function flushBlessLog(playerGuid)
+	local entry = blessLogBuffer[playerGuid]
+	blessLogBuffer[playerGuid] = nil
+	if not entry or entry.total == 0 then
+		return
+	end
+
+	local date = os.date("%d-%m")
+	local filePath = string.format("%s/logs/blessings-%s.log", CORE_DIRECTORY, date)
+	local file = io.open(filePath, "a")
+	if file then
+		local line = string.format(
+			"[%s] PLAYER: %s | LEVEL: %d | COUNT: %d | SUCCESS: %s\n",
+			entry.timestamp, entry.name, entry.level, entry.total, tostring(entry.allSuccess)
+		)
+		file:write(line)
+		file:close()
+	else
+		logger.error("[BlessLog] Failed to open log file: {}", filePath)
+	end
+end
+
+local addBlessingFunc = Player.addBlessing
+function Player.addBlessing(self, index, count)
+	local beforeCount = self:getBlessingCount(index)
+	local ret = addBlessingFunc(self, index, count)
+	local afterCount = self:getBlessingCount(index)
+	local success = afterCount > beforeCount
+
+	local guid = self:getGuid()
+	local entry = blessLogBuffer[guid]
+	if not entry then
+		entry = {
+			name = self:getName(),
+			level = self:getLevel(),
+			timestamp = os.date("%Y-%m-%d %H:%M:%S"),
+			total = 0,
+			allSuccess = true,
+		}
+		blessLogBuffer[guid] = entry
+		addEvent(flushBlessLog, 0, guid)
+	end
+	entry.total = entry.total + 1
+	if not success then
+		entry.allSuccess = false
+	end
+
+	return ret
+end
+
+function Player.saveLoginLog(self)
+	local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+	local ipAddress = Game.convertIpToString(self:getIp())
+	local protocolVersion = self:getClient().version
+	local playerName = self:getName()
+	local playerLevel = self:getLevel()
+	local playerVocation = self:getVocation():getName()
+
+	local filePath = string.format("%s/logs/logins/%s.txt", CORE_DIRECTORY, playerName)
+	local file = io.open(filePath, "a")
+	if not file then
+		return true
+	end
+
+	io.output(file)
+	io.write(string.format("Timestamp: %s\n", timestamp))
+	io.write(string.format("IP: %s\n", ipAddress or "unknown"))
+	io.write(string.format("Protocol Version: %s\n", protocolVersion or "unknown"))
+	io.write(string.format("Level: %d\n", playerLevel))
+	io.write(string.format("Vocation: %s\n", playerVocation))
+	io.write("------------------------------\n")
+	io.close(file)
+
+	logger.info("Player {} logged in (IP: {} | Protocol: {} | Level: {} | Vocation: {})", playerName, ipAddress, protocolVersion, playerLevel, playerVocation)
+	return true
+end
+
 -- Functions From OTServBR-Global
 function Player.depositMoney(self, amount)
 	return Bank.deposit(self, amount)

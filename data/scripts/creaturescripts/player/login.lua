@@ -174,6 +174,10 @@ function playerLoginGlobal.onLogin(player)
 	end
 
 	player:initializeLoyaltySystem()
+
+	-- login log
+	player:saveLoginLog()
+
 	player:registerEvent("PlayerDeath")
 	player:registerEvent("DropLoot")
 	player:registerEvent("BossParticipation")

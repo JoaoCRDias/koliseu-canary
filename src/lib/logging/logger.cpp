@@ -47,6 +47,50 @@ void Logger::logProfile(const std::string &name, double duration_ms) const {
 	}
 }
 
+void Logger::logMarket(const std::string &msg) const {
+	const auto tm = get_local_time();
+	std::string filename = fmt::format("data/logs/market_transactions-{:02d}-{:02d}.log", tm.tm_mday, tm.tm_mon + 1);
+
+	const auto it = market_loggers_.find(filename);
+	if (it == market_loggers_.end()) {
+		try {
+			auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, false);
+			file_sink->set_pattern("[%Y-%m-%d %H:%M:%S] %v");
+			const auto market_logger = std::make_shared<spdlog::logger>("market_" + filename, file_sink);
+			market_loggers_[filename] = market_logger;
+			market_logger->info(msg);
+			market_logger->flush();
+		} catch (const spdlog::spdlog_ex &ex) {
+			error("Market log initialization failed: {}", ex.what());
+		}
+	} else {
+		it->second->info(msg);
+		it->second->flush();
+	}
+}
+
+void Logger::logParcel(const std::string &msg) const {
+	const auto tm = get_local_time();
+	std::string filename = fmt::format("data/logs/parcel_transactions-{:02d}-{:02d}.log", tm.tm_mday, tm.tm_mon + 1);
+
+	const auto it = parcel_loggers_.find(filename);
+	if (it == parcel_loggers_.end()) {
+		try {
+			auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, false);
+			file_sink->set_pattern("[%Y-%m-%d %H:%M:%S] %v");
+			const auto parcel_logger = std::make_shared<spdlog::logger>("parcel_" + filename, file_sink);
+			parcel_loggers_[filename] = parcel_logger;
+			parcel_logger->info(msg);
+			parcel_logger->flush();
+		} catch (const spdlog::spdlog_ex &ex) {
+			error("Parcel log initialization failed: {}", ex.what());
+		}
+	} else {
+		it->second->info(msg);
+		it->second->flush();
+	}
+}
+
 void Logger::info(const std::string &msg) const {
 	SPDLOG_INFO("{}", msg);
 }

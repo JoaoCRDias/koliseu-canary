@@ -54,6 +54,18 @@ public:
 	 * @endcode
 	 */
 	void logProfile(const std::string &name, double duration_ms) const;
+	void logMarket(const std::string &msg) const;
+	void logParcel(const std::string &msg) const;
+
+	template <typename... Args>
+	void logMarket(const fmt::format_string<Args...> &fmt, Args &&... args) const {
+		logMarket(fmt::format(fmt, std::forward<Args>(args)...));
+	}
+
+	template <typename... Args>
+	void logParcel(const fmt::format_string<Args...> &fmt, Args &&... args) const {
+		logParcel(fmt::format(fmt, std::forward<Args>(args)...));
+	}
 
 	virtual void info(const std::string &msg) const;
 	virtual void warn(const std::string &msg) const;
@@ -126,6 +138,20 @@ private:
 		TransparentStringHasher,
 		std::equal_to<>>
 		profile_loggers_;
+
+	mutable std::unordered_map<
+		std::string,
+		std::shared_ptr<spdlog::logger>,
+		TransparentStringHasher,
+		std::equal_to<>>
+		market_loggers_;
+
+	mutable std::unordered_map<
+		std::string,
+		std::shared_ptr<spdlog::logger>,
+		TransparentStringHasher,
+		std::equal_to<>>
+		parcel_loggers_;
 
 	std::tm get_local_time() const {
 		const auto now = std::chrono::system_clock::now();

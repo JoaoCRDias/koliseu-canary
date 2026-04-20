@@ -10755,8 +10755,12 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 			return;
 		}
 
+		g_logger().logMarket("[BUY-ACCEPT] Seller {} (balance: {}) receiving {} gold for {}x {} (itemId: {}) from buyer {} (online: {})", player->getName(), player->getBankBalance(), totalPrice, amount, it.name, it.id, buyerPlayer->getName(), buyerPlayer->isOnline() ? "yes" : "no");
+
 		player->setBankBalance(player->getBankBalance() + totalPrice);
 		g_metrics().addCounter("balance_increase", totalPrice, { { "player", player->getName() }, { "context", "market_sale" } });
+
+		g_logger().logMarket("[BUY-ACCEPT] Seller {} new balance: {} | Buyer {} (offerId: {})", player->getName(), player->getBankBalance(), buyerPlayer->getName(), offer.id);
 
 		if (it.id == ITEM_STORE_COIN) {
 			buyerPlayer->getAccount()->addCoins(CoinType::Transferable, amount, "Purchased on Market");
@@ -10798,6 +10802,8 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 		}
 		g_metrics().addCounter("balance_decrease", totalPrice, { { "player", player->getName() }, { "context", "market_purchase" } });
 
+		g_logger().logMarket("[SELL-ACCEPT] Buyer {} paid {} gold | Seller {} (balance: {}, online: {}) receiving payment for {}x {} (itemId: {}, offerId: {})", player->getName(), totalPrice, sellerPlayer->getName(), sellerPlayer->getBankBalance(), sellerPlayer->isOnline() ? "yes" : "no", amount, it.name, it.id, offer.id);
+
 		if (it.id == ITEM_STORE_COIN) {
 			player->getAccount()->addCoins(CoinType::Transferable, amount, "Purchased on Market");
 		} else {
@@ -10813,6 +10819,8 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 		if (it.id == ITEM_STORE_COIN) {
 			sellerPlayer->getAccount()->registerCoinTransaction(CoinTransactionType::Remove, CoinType::Transferable, amount, "Sold on Market");
 		}
+
+		g_logger().logMarket("[SELL-ACCEPT] Seller {} new balance: {} (saved) | Delivering items to buyer {}", sellerPlayer->getName(), sellerPlayer->getBankBalance(), player->getName());
 
 		if (it.id != ITEM_STORE_COIN) {
 			player->onReceiveMail();
@@ -10842,8 +10850,10 @@ void Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 
 	if (offer.amount == 0) {
 		IOMarket::deleteOffer(offer.id);
+		g_logger().logMarket("[OFFER-COMPLETE] Offer {} fully consumed and deleted", offer.id);
 	} else {
 		IOMarket::acceptOffer(offer.id, amount);
+		g_logger().logMarket("[OFFER-PARTIAL] Offer {} partially accepted, {} remaining", offer.id, offer.amount);
 	}
 
 	offer.timestamp += marketOfferDuration;

@@ -15,6 +15,7 @@ public:
 
 private:
 	static int luaAddEvent(lua_State* L);
+	static int luaBackupDatabase(lua_State* L);
 	static int luaCleanMap(lua_State* L);
 	static int luaCreateCombatArea(lua_State* L);
 	static int luaDebugPrint(lua_State* L);

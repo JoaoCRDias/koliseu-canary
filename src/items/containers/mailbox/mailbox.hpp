@@ -45,6 +45,9 @@ public:
 private:
 	bool getReceiver(const std::shared_ptr<Item> &item, std::string &name) const;
 	bool sendItem(const std::shared_ptr<Item> &item) const;
+	void logParcelItems(const std::string &senderName, const std::string &receiverName, const std::shared_ptr<Item> &item) const;
 
 	static bool canSend(const std::shared_ptr<Item> &item);
+
+	mutable std::string lastSenderName_;
 };

@@ -15,9 +15,12 @@
 #include "items/containers/inbox/inbox.hpp"
 #include "map/spectators.hpp"
 
-ReturnValue Mailbox::queryAdd(int32_t, const std::shared_ptr<Thing> &thing, uint32_t, uint32_t, const std::shared_ptr<Creature> &) {
+ReturnValue Mailbox::queryAdd(int32_t, const std::shared_ptr<Thing> &thing, uint32_t, uint32_t, const std::shared_ptr<Creature> &actor) {
 	const auto &item = thing->getItem();
 	if (item && Mailbox::canSend(item)) {
+		if (actor) {
+			lastSenderName_ = actor->getName();
+		}
 		return RETURNVALUE_NOERROR;
 	}
 	return RETURNVALUE_NOTPOSSIBLE;
@@ -100,6 +103,29 @@ bool Mailbox::sendItem(const std::shared_ptr<Item> &item) const {
 	if (player && item) {
 		const auto &playerInbox = player->getInbox();
 		const auto &itemParent = item->getParent();
+
+		// If the actor-based sender is unknown, try to derive it from context:
+		// 1) letter writer attribute (player that wrote the letter)
+		// 2) any player standing on the mailbox tile (drag-and-drop without actor)
+		std::string senderForLog = lastSenderName_;
+		if (senderForLog.empty()) {
+			if (!writer.empty()) {
+				senderForLog = writer;
+			} else {
+				// Fallback: any player standing on the mailbox tile (single-floor)
+				const Position mailboxPos = getPosition();
+				for (const auto &spectator : Spectators().find<Player>(mailboxPos)) {
+					const auto &spectatorPlayer = spectator->getPlayer();
+					if (spectatorPlayer && spectatorPlayer->getPosition() == mailboxPos) {
+						senderForLog = spectatorPlayer->getName();
+						break;
+					}
+				}
+			}
+		}
+
+		// Log parcel contents BEFORE moving/transforming, since transformItem may invalidate the container
+		logParcelItems(senderForLog, receiver, item);
 		if (g_game().internalMoveItem(itemParent, playerInbox, INDEX_WHEREEVER, item, item->getItemCount(), nullptr, FLAG_NOLIMIT) == RETURNVALUE_NOERROR) {
 			const auto &newItem = g_game().transformItem(item, item->getID() + 1);
 			if (newItem && newItem->getID() == ITEM_LETTER_STAMPED && !writer.empty()) {
@@ -141,4 +167,39 @@ bool Mailbox::getReceiver(const std::shared_ptr<Item> &item, std::string &name) 
 
 bool Mailbox::canSend(const std::shared_ptr<Item> &item) {
 	return !item->hasOwner() && (item->getID() == ITEM_PARCEL || item->getID() == ITEM_LETTER);
+}
+
+void Mailbox::logParcelItems(const std::string &senderName, const std::string &receiverName, const std::shared_ptr<Item> &item) const {
+	const std::string &sender = senderName.empty() ? "unknown" : senderName;
+
+	std::string itemList;
+	const auto &container = item->getContainer();
+	if (container) {
+		for (const auto &containerItem : container->getItemList()) {
+			if (containerItem->getID() == ITEM_LABEL) {
+				continue;
+			}
+			if (!itemList.empty()) {
+				itemList += ", ";
+			}
+			itemList += fmt::format("{}(id:{}) x{}", containerItem->getName(), containerItem->getID(), containerItem->getItemCount());
+
+			// Log items inside sub-containers
+			const auto &subContainer = containerItem->getContainer();
+			if (subContainer) {
+				for (const auto &subItem : subContainer->getItemList()) {
+					itemList += fmt::format(", {}(id:{}) x{} [inside {}]", subItem->getName(), subItem->getID(), subItem->getItemCount(), containerItem->getName());
+				}
+			}
+		}
+	}
+
+	if (itemList.empty()) {
+		itemList = "(empty parcel or letter)";
+	}
+
+	g_logger().logParcel(
+		"FROM: {} | TO: {} | ITEMS: [{}]",
+		sender, receiverName, itemList
+	);
 }

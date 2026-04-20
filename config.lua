@@ -443,6 +443,7 @@ mysqlUser = "root"
 mysqlPass = "13john13"
 mysqlDatabase = "koliseu"
 mysqlDatabaseBackup = false
+mysqlDatabaseBackupUploadCommand = ""
 mysqlPort = 3306
 mysqlSock = ""
 passwordType = "sha1"
@@ -467,7 +468,7 @@ resetSessionsOnStartup = false
 -- NOTE: disableLegacyRaids: set to true to disable legacy XML raids
 allowChangeOutfit = true
 toggleMountInProtectionZone = false
-freePremium = false
+freePremium = true
 kickIdlePlayerAfterMinutes = 15
 maxMessageBuffer = 4
 emoteSpells = false

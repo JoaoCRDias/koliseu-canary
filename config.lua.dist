@@ -441,6 +441,9 @@ mysqlUser = "root"
 mysqlPass = "root"
 mysqlDatabase = "otservbr-global"
 mysqlDatabaseBackup = false
+-- Optional command executed after each backup. The final backup file path is appended as the last argument.
+-- Example: "python3 scripts/upload_backup.py --gcs-bucket my-backups --gcs-credentials /opt/keys/gcs.json"
+mysqlDatabaseBackupUploadCommand = ""
 mysqlPort = 3306
 mysqlSock = ""
 passwordType = "sha1"

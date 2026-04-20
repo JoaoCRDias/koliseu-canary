@@ -61,8 +61,13 @@ end
 
 local function saveDeathRecord(playerGuid, player, killerName, byPlayer, mostDamageName, byPlayerMostDamage, unjustified, mostDamageUnjustified, participants)
 	local participantsString = serializeParticipants(participants)
+	local pos = player:getPosition()
+	local positionString = string.format("%d,%d,%d", pos.x, pos.y, pos.z)
+	local expLoss = math.ceil(player:getExperience() * player:getDeathPenalty() / 100)
+	local blessCount = #player:getBlessings()
+	local hasBless = blessCount >= 5 and 1 or 0
 	local query = string.format(
-		"INSERT INTO `player_deaths` (`player_id`, `time`, `level`, `killed_by`, `is_player`, `mostdamage_by`, `mostdamage_is_player`, `unjustified`, `mostdamage_unjustified`, `participants`) " .. "VALUES (%d, %d, %d, %s, %d, %s, %d, %d, %d, %s)",
+		"INSERT INTO `player_deaths` (`player_id`, `time`, `level`, `killed_by`, `is_player`, `mostdamage_by`, `mostdamage_is_player`, `unjustified`, `mostdamage_unjustified`, `participants`, `position`, `exp_loss`, `has_blessings`, `blessings_count`) " .. "VALUES (%d, %d, %d, %s, %d, %s, %d, %d, %d, %s, %s, %d, %d, %d)",
 		playerGuid,
 		os.time(),
 		player:getLevel(),
@@ -72,7 +77,11 @@ local function saveDeathRecord(playerGuid, player, killerName, byPlayer, mostDam
 		byPlayerMostDamage,
 		unjustified and 1 or 0,
 		mostDamageUnjustified and 1 or 0,
-		db.escapeString(participantsString)
+		db.escapeString(participantsString),
+		db.escapeString(positionString),
+		expLoss,
+		hasBless,
+		blessCount
 	)
 	db.query(query)
 end

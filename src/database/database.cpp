@@ -106,31 +106,48 @@ void Database::createDatabaseBackup(bool compress) const {
 	}
 
 	// Compress the backup file if requested
-	std::string compressedFileName;
-	compressedFileName = backupFileName + ".gz";
-	gzFile gzFile = gzopen(compressedFileName.c_str(), "wb9");
-	if (!gzFile) {
-		g_logger().error("Failed to open gzip file for compression.");
-		return;
-	}
+	std::string finalBackupPath = backupFileName;
+	if (compress) {
+		std::string compressedFileName = backupFileName + ".gz";
+		gzFile gzFile = gzopen(compressedFileName.c_str(), "wb9");
+		if (!gzFile) {
+			g_logger().error("Failed to open gzip file for compression.");
+			return;
+		}
 
-	std::ifstream backupFile(backupFileName, std::ios::binary);
-	if (!backupFile.is_open()) {
-		g_logger().error("Failed to open backup file for compression: {}", backupFileName);
+		std::ifstream backupFile(backupFileName, std::ios::binary);
+		if (!backupFile.is_open()) {
+			g_logger().error("Failed to open backup file for compression: {}", backupFileName);
+			gzclose(gzFile);
+			return;
+		}
+
+		std::string buffer(8192, '\0');
+		while (backupFile.read(&buffer[0], buffer.size()) || backupFile.gcount() > 0) {
+			gzwrite(gzFile, buffer.data(), backupFile.gcount());
+		}
+
+		backupFile.close();
 		gzclose(gzFile);
-		return;
+		std::filesystem::remove(backupFileName);
+
+		g_logger().info("Database backup successfully compressed to: {}", compressedFileName);
+		finalBackupPath = compressedFileName;
+	} else {
+		g_logger().info("Database backup saved to: {}", backupFileName);
 	}
 
-	std::string buffer(8192, '\0');
-	while (backupFile.read(&buffer[0], buffer.size()) || backupFile.gcount() > 0) {
-		gzwrite(gzFile, buffer.data(), backupFile.gcount());
+	// Optional upload command (e.g., upload to cloud storage). The final backup path is appended.
+	const auto &uploadCommand = g_configManager().getString(MYSQL_DB_BACKUP_UPLOAD_COMMAND);
+	if (!uploadCommand.empty()) {
+		std::string uploadCommandWithPath = fmt::format("{} \"{}\"", uploadCommand, finalBackupPath);
+		int uploadResult = std::system(uploadCommandWithPath.c_str());
+		if (uploadResult != 0) {
+			g_logger().error("Backup upload command failed with exit code {}.", uploadResult);
+		} else {
+			g_logger().info("Backup upload command completed successfully for file: {}", finalBackupPath);
+		}
 	}
-
-	backupFile.close();
-	gzclose(gzFile);
-	std::filesystem::remove(backupFileName);
-
-	g_logger().info("Database backup successfully compressed to: {}", compressedFileName);
 
 	// Delete backups older than 7 days
 	auto nowTime = std::chrono::system_clock::now();

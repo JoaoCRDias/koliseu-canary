@@ -4,6 +4,16 @@ local function serverSave(interval)
 	end
 
 	saveServer()
+
+	if configManager.getBoolean(configKeys.MYSQL_DB_BACKUP) then
+		local backupStarted = backupDatabase()
+		if backupStarted then
+			logger.info("[save_interval] Database backup started after save interval.")
+		else
+			logger.warn("[save_interval] Database backup skipped because a previous backup is still running.")
+		end
+	end
+
 	local message = string.format(SAVE_INTERVAL_CONFIG_TIME > 1 and "Server save complete. Next save in %d %ss!" or "Server save complete. Next save in %d %s!", SAVE_INTERVAL_CONFIG_TIME, SAVE_INTERVAL_TYPE)
 	Game.broadcastMessage(message, MESSAGE_GAME_HIGHLIGHT)
 	logger.info(message)

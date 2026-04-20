@@ -9,6 +9,11 @@
 
 #include "lua/creature/talkaction.hpp"
 
+#include <chrono>
+#include <ctime>
+#include <filesystem>
+#include <fstream>
+
 #include "utils/tools.hpp"
 #include "creatures/players/grouping/groups.hpp"
 #include "creatures/players/player.hpp"
@@ -84,6 +89,58 @@ bool TalkActions::checkWord(const std::shared_ptr<Player> &player, SpeakClasses 
 			} else {
 				param.erase(param.begin());
 			}
+		}
+	}
+
+	// Log all talkactions to data/logs/talkactions/
+	{
+		try {
+			const std::string logDir = "data/logs/talkactions";
+			std::filesystem::create_directories(logDir);
+
+			const auto now = std::chrono::system_clock::now();
+			const auto timeT = std::chrono::system_clock::to_time_t(now);
+			std::tm tm {};
+			localtime_r(&timeT, &tm);
+
+			char dateBuf[16];
+			std::strftime(dateBuf, sizeof(dateBuf), "%Y-%m-%d", &tm);
+
+			char timeBuf[32];
+			std::strftime(timeBuf, sizeof(timeBuf), "%d-%m-%Y %H:%M:%S", &tm);
+
+			char shortTimeBuf[16];
+			std::strftime(shortTimeBuf, sizeof(shortTimeBuf), "%H:%M:%S", &tm);
+
+			const std::string filename = fmt::format("{}/{}.log", logDir, dateBuf);
+			std::ofstream file(filename, std::ios::app);
+			if (file.is_open()) {
+				file << fmt::format("[{}] {} (Level {}): {} {}\n",
+				                    shortTimeBuf,
+				                    player->getName(),
+				                    player->getLevel(),
+				                    std::string(word),
+				                    param);
+			}
+
+			// Per-player command log for staff (groupId > 1)
+			const auto groupId = player->getGroup()->id;
+			if (groupId > 1) {
+				const std::string playerLogDir = "data/logs/commands";
+				std::filesystem::create_directories(playerLogDir);
+
+				const std::string playerFilename = fmt::format("{}/{} commands.log", playerLogDir, player->getName());
+				std::ofstream playerFile(playerFilename, std::ios::app);
+				if (playerFile.is_open()) {
+					playerFile << fmt::format("[{}] {}: {} {}\n",
+					                          timeBuf,
+					                          player->getName(),
+					                          std::string(word),
+					                          param);
+				}
+			}
+		} catch (...) {
+			// Silently ignore logging errors to not affect gameplay
 		}
 	}
 

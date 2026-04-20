@@ -7,6 +7,50 @@ if not config.enabled then
 	return
 end
 
+local function getPlayerBankBalance(name)
+	local player = Player(name)
+	if player then
+		return Bank.balance(player)
+	end
+	local resultId = db.storeQuery("SELECT `balance` FROM `players` WHERE `name` = " .. db.escapeString(name))
+	if resultId then
+		local balance = Result.getNumber(resultId, "balance")
+		Result.free(resultId)
+		return balance
+	end
+	return 0
+end
+
+local function logBankTransaction(action, playerName, amount, balanceBefore, balanceAfter, extra)
+	local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+	local date = os.date("%d-%m")
+	local filePath = string.format("%s/logs/bank_transactions-%s.log", CORE_DIRECTORY, date)
+	local file = io.open(filePath, "a")
+	if not file then
+		logger.error("[Bank Log] Failed to open log file: {}", filePath)
+		return
+	end
+
+	local ip = extra and extra.ip or "unknown"
+	local line = string.format(
+		"[%s] ACTION: %s | PLAYER: %s | IP: %s | AMOUNT: %s | BALANCE_BEFORE: %s | BALANCE_AFTER: %s",
+		timestamp, action, playerName, ip, FormatNumber(amount), FormatNumber(balanceBefore), FormatNumber(balanceAfter)
+	)
+	if extra and extra.target then
+		line = line .. string.format(" | TARGET: %s", extra.target)
+	end
+	if extra and extra.targetBalanceBefore then
+		line = line .. string.format(" | TARGET_BALANCE_BEFORE: %s | TARGET_BALANCE_AFTER: %s", FormatNumber(extra.targetBalanceBefore), FormatNumber(extra.targetBalanceAfter))
+	end
+	if extra and extra.reason then
+		line = line .. string.format(" | REASON: %s", extra.reason)
+	end
+
+	io.output(file)
+	io.write(line .. "\n")
+	io.close(file)
+end
+
 local balance = TalkAction("!balance")
 
 function balance.onSay(player, words, param)
@@ -32,10 +76,16 @@ function deposit.onSay(player, words, param)
 		end
 	end
 
+	local balanceBefore = Bank.balance(player)
 	if not Bank.deposit(player, amount) then
 		player:sendTextMessage(config.messageStyle, "You don't have enough money.")
 		return true
 	end
+	local balanceAfter = Bank.balance(player)
+
+	logBankTransaction("DEPOSIT", player:getName(), amount, balanceBefore, balanceAfter, {
+		ip = Game.convertIpToString(player:getIp()),
+	})
 
 	player:sendTextMessage(config.messageStyle, "You have deposited " .. FormatNumber(amount) .. " gold coins.")
 	return true
@@ -54,10 +104,16 @@ function withdraw.onSay(player, words, param)
 		return true
 	end
 
+	local balanceBefore = Bank.balance(player)
 	if not Bank.withdraw(player, amount) then
 		player:sendTextMessage(config.messageStyle, "You don't have enough money.")
 		return true
 	end
+	local balanceAfter = Bank.balance(player)
+
+	logBankTransaction("WITHDRAW", player:getName(), amount, balanceBefore, balanceAfter, {
+		ip = Game.convertIpToString(player:getIp()),
+	})
 
 	player:sendTextMessage(config.messageStyle, "You have withdrawn " .. FormatNumber(amount) .. " gold coins.")
 	return true
@@ -90,10 +146,23 @@ function transfer.onSay(player, words, param)
 	end
 	name = normalizedName
 
+	local balanceBefore = Bank.balance(player)
+	local targetBalanceBefore = getPlayerBankBalance(name)
+
 	if not player:transferMoneyTo(name, amount) then
 		player:sendTextMessage(config.messageStyle, "You don't have enough money.")
 		return true
 	end
+
+	local balanceAfter = Bank.balance(player)
+	local targetBalanceAfter = getPlayerBankBalance(name)
+
+	logBankTransaction("TRANSFER", player:getName(), amount, balanceBefore, balanceAfter, {
+		ip = Game.convertIpToString(player:getIp()),
+		target = name,
+		targetBalanceBefore = targetBalanceBefore,
+		targetBalanceAfter = targetBalanceAfter,
+	})
 
 	player:sendTextMessage(config.messageStyle, "You have transferred " .. FormatNumber(amount) .. " gold coins to " .. name .. ".")
 	return true
