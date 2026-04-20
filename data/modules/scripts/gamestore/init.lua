@@ -311,7 +311,7 @@ function parseTransferableCoins(playerId, msg)
 	GameStore.insertHistory(accountId, GameStore.HistoryTypes.HISTORY_TYPE_TRANSFER, player:getName() .. " transferred you this amount.", amount, GameStore.CoinType.Transferable, nil)
 	GameStore.insertHistory(player:getAccountId(), GameStore.HistoryTypes.HISTORY_TYPE_TRANSFER, "You transferred this amount to " .. reciver, -1 * amount, GameStore.CoinType.Transferable, player:getGuid())
 	openStore(playerId)
-	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
+	local exhausted = configManager.getNumber(configKeys.EX_ACTIONS_DELAY_INTERVAL)
 end
 
 function parseOpenStore(playerId, msg)
@@ -402,7 +402,7 @@ function parseRequestStoreOffers(playerId, msg)
 
 		addPlayerEvent(sendShowStoreOffers, 250, playerId, searchResultsCategory)
 	end
-	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
+	local exhausted = configManager.getNumber(configKeys.EX_ACTIONS_DELAY_INTERVAL)
 end
 
 -- Used on cyclopedia store summary
@@ -593,7 +593,7 @@ function parseBuyStoreOffer(playerId, msg)
 		return addPlayerEvent(sendStorePurchaseSuccessful, 650, playerId, message)
 	end
 
-	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
+	local exhausted = configManager.getNumber(configKeys.EX_ACTIONS_DELAY_INTERVAL)
 	return true
 end
 
@@ -607,7 +607,7 @@ function parseOpenTransactionHistory(playerId, msg)
 	local page = 1
 	GameStore.DefaultValues.DEFAULT_VALUE_ENTRIES_PER_PAGE = msg:getByte()
 	sendStoreTransactionHistory(playerId, page, GameStore.DefaultValues.DEFAULT_VALUE_ENTRIES_PER_PAGE)
-	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
+	local exhausted = configManager.getNumber(configKeys.EX_ACTIONS_DELAY_INTERVAL)
 end
 
 function parseRequestTransactionHistory(playerId, msg)
@@ -618,7 +618,7 @@ function parseRequestTransactionHistory(playerId, msg)
 
 	local page = msg:getU32()
 	sendStoreTransactionHistory(playerId, page + 1, GameStore.DefaultValues.DEFAULT_VALUE_ENTRIES_PER_PAGE)
-	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
+	local exhausted = configManager.getNumber(configKeys.EX_ACTIONS_DELAY_INTERVAL)
 end
 
 local function getCategoriesRook()

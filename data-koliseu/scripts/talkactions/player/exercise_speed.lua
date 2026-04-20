@@ -27,7 +27,7 @@ function exerciseSpeed.onSay(player, words, param)
 
 	local timeStr = table.concat(parts, " and ")
 	player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Exercise speed improvement remaining: " .. timeStr .. ".")
-	return false
+	return true
 end
 
 exerciseSpeed:separator(" ")

@@ -1,9 +1,6 @@
 local kegCooldowns = {}
-local kegInProgress = {} -- Track players currently receiving potions
 local COOLDOWN_TIME = 60 -- 1 minute in seconds
 local POTION_AMOUNT = 500 -- Amount of potions to give
-local BATCH_SIZE = 100 -- Potions per batch to avoid client freeze
-local BATCH_DELAY = 100 -- Delay between batches in milliseconds
 
 local kegs = {
 	-- Supreme Health Kegs
@@ -51,55 +48,16 @@ local kegs = {
 	[25883] = { potion = 268, name = "ultimate health potion" },
 }
 
--- Function to add potions in batches
-local function addPotionBatch(playerId, potionId, potionName, remaining, totalAmount)
-	local player = Player(playerId)
-	if not player then
-		kegInProgress[playerId] = nil
-		return
-	end
-
-	local toAdd = math.min(BATCH_SIZE, remaining)
-	local addedItem = player:addItem(potionId, toAdd, true)
-
-	if not addedItem then
-		player:sendCancelMessage("Could not add more potions. Check your capacity.")
-		kegInProgress[playerId] = nil
-		return
-	end
-
-	remaining = remaining - toAdd
-
-	if remaining > 0 then
-		-- Schedule next batch
-		addEvent(addPotionBatch, BATCH_DELAY, playerId, potionId, potionName, remaining, totalAmount)
-	else
-		-- All done
-		kegInProgress[playerId] = nil
-		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You received " .. totalAmount .. " " .. potionName .. "s from the keg.")
-		player:getPosition():sendMagicEffect(CONST_ME_MAGIC_BLUE)
-	end
-end
-
 local function onUseKeg(player, item, fromPosition, target, toPosition, isHotkey)
 	local playerId = player:getId()
 	local itemId = item:getId()
 	local currentTime = os.time()
 
-	-- Get keg configuration
 	local kegConfig = kegs[itemId]
 	if not kegConfig then
 		return false
 	end
 
-	-- Check if already receiving potions
-	if kegInProgress[playerId] then
-		player:sendCancelMessage("Please wait, you are still receiving potions.")
-		player:getPosition():sendMagicEffect(CONST_ME_POFF)
-		return true
-	end
-
-	-- Check cooldown
 	if kegCooldowns[playerId] and kegCooldowns[playerId][itemId] then
 		local timeLeft = kegCooldowns[playerId][itemId] - currentTime
 		if timeLeft > 0 then
@@ -109,31 +67,31 @@ local function onUseKeg(player, item, fromPosition, target, toPosition, isHotkey
 		end
 	end
 
-	-- Check if player has capacity for at least one batch
 	local potionWeight = ItemType(kegConfig.potion):getWeight()
-	if player:getFreeCapacity() < (potionWeight * BATCH_SIZE) then
+	if player:getFreeCapacity() < (potionWeight * POTION_AMOUNT) then
 		player:sendCancelMessage("You don't have enough capacity.")
 		player:getPosition():sendMagicEffect(CONST_ME_POFF)
 		return true
 	end
 
-	-- Set cooldown immediately
+	local addedItem = player:addItem(kegConfig.potion, POTION_AMOUNT, true)
+	if not addedItem then
+		player:sendCancelMessage("Could not add the potions. Check your capacity.")
+		player:getPosition():sendMagicEffect(CONST_ME_POFF)
+		return true
+	end
+
 	if not kegCooldowns[playerId] then
 		kegCooldowns[playerId] = {}
 	end
 	kegCooldowns[playerId][itemId] = currentTime + COOLDOWN_TIME
 
-	-- Mark as in progress
-	kegInProgress[playerId] = true
-
-	-- Start adding potions in batches
-	player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Receiving " .. POTION_AMOUNT .. " " .. kegConfig.name .. "s...")
-	addPotionBatch(playerId, kegConfig.potion, kegConfig.name, POTION_AMOUNT, POTION_AMOUNT)
+	player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You received " .. POTION_AMOUNT .. " " .. kegConfig.name .. "s from the keg.")
+	player:getPosition():sendMagicEffect(CONST_ME_MAGIC_BLUE)
 
 	return true
 end
 
--- Register all kegs
 for kegId, _ in pairs(kegs) do
 	local keg = Action()
 	keg:id(kegId)
