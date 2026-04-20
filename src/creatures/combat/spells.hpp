@@ -231,6 +231,9 @@ public:
 	[[nodiscard]] bool getHarmonyCost() const;
 	void setHarmonyCost(bool h);
 
+	static float getAttackSpeedCDRPercent(const std::shared_ptr<Player> &player);
+	int32_t getAbsoluteFloor(uint32_t baseCooldown, SpellGroup_t spellGroup) const;
+
 protected:
 	void applyCooldownConditions(const std::shared_ptr<Player> &player) const;
 	bool playerSpellCheck(const std::shared_ptr<Player> &player) const;

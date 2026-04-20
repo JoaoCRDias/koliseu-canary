@@ -12274,45 +12274,41 @@ const std::unordered_map<uint16_t, std::string> &Game::getHirelingOutfits() {
 }
 
 void Game::updatePlayersOnline() const {
-	// Function to be executed within the transaction
+	// Function to be executed within the transaction.
+	// Always returns true on success — `changesMade = false` (empty table + no
+	// online players) is a no-op, not an error, so we don't want the caller
+	// to log it as a failure.
 	auto updateOperation = [this]() {
 		const auto &m_players = getPlayers();
-		bool changesMade = false;
-
-		// g_metrics().addUpDownCounter("players_online", 1);
-		// g_metrics().addUpDownCounter("players_online", -1);
 
 		if (m_players.empty()) {
-			std::string query = "SELECT COUNT(*) AS count FROM players_online;";
-			auto result = g_database().storeQuery(query);
-			int count = result->getNumber<int>("count");
-			if (count > 0) {
+			const auto result = g_database().storeQuery("SELECT COUNT(*) AS count FROM players_online;");
+			if (result && result->getNumber<int>("count") > 0) {
 				g_database().executeQuery("DELETE FROM `players_online`;");
-				changesMade = true;
 			}
-		} else {
-			// Insert the current players
-			DBInsert stmt("INSERT IGNORE INTO `players_online` (player_id) VALUES ");
-			for (const auto &[key, player] : m_players) {
-				std::ostringstream playerQuery;
-				playerQuery << "(" << player->getGUID() << ")";
-				stmt.addRow(playerQuery.str());
-			}
-			stmt.execute();
-			changesMade = true;
-
-			// Remove players who are no longer online
-			std::ostringstream cleanupQuery;
-			cleanupQuery << "DELETE FROM `players_online` WHERE `player_id` NOT IN (";
-			for (const auto &[key, player] : m_players) {
-				cleanupQuery << player->getGUID() << ",";
-			}
-			cleanupQuery.seekp(-1, std::ostringstream::cur); // Remove the last comma
-			cleanupQuery << ");";
-			g_database().executeQuery(cleanupQuery.str());
+			return true;
 		}
 
-		return changesMade;
+		// Insert the current players
+		DBInsert stmt("INSERT IGNORE INTO `players_online` (player_id) VALUES ");
+		for (const auto &[key, player] : m_players) {
+			std::ostringstream playerQuery;
+			playerQuery << "(" << player->getGUID() << ")";
+			stmt.addRow(playerQuery.str());
+		}
+		stmt.execute();
+
+		// Remove players who are no longer online
+		std::ostringstream cleanupQuery;
+		cleanupQuery << "DELETE FROM `players_online` WHERE `player_id` NOT IN (";
+		for (const auto &[key, player] : m_players) {
+			cleanupQuery << player->getGUID() << ",";
+		}
+		cleanupQuery.seekp(-1, std::ostringstream::cur); // Remove the last comma
+		cleanupQuery << ");";
+		g_database().executeQuery(cleanupQuery.str());
+
+		return true;
 	};
 
 	const bool success = DBTransaction::executeWithinTransaction(updateOperation);

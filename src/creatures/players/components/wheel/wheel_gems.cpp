@@ -314,12 +314,12 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			break;
 
 		case WheelGemSupremeModifier_t::Knight_AvatarOfSteel_Cooldown:
-			bonus.decrease.cooldown = 900 * 1000;
+			bonus.decrease.cooldown = 450 * 1000; // Reduced from 900s to 450s (50%) for attack speed CDR system
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Avatar of Steel", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Knight_ExecutionersThrow_Cooldown:
-			bonus.decrease.cooldown = 2 * 1000;
+			bonus.decrease.cooldown = 500; // Reduced from 2s to 0.5s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Executioner's Throw", bonus));
 			break;
@@ -377,12 +377,12 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			break;
 
 		case WheelGemSupremeModifier_t::Paladin_AvatarOfLight_Cooldown:
-			bonus.decrease.cooldown = 900 * 1000;
+			bonus.decrease.cooldown = 450 * 1000; // Reduced from 900s to 450s (50%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Avatar of Light", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Paladin_DivineDazzle_Cooldown:
-			bonus.decrease.cooldown = 4 * 1000;
+			bonus.decrease.cooldown = 1 * 1000; // Reduced from 4s to 1s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Divine Dazzle", bonus));
 			break;
@@ -427,12 +427,12 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Strong Ethereal Spear", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Paladin_DivineEmpowerment_Cooldown:
-			bonus.decrease.cooldown = 6 * 1000;
+			bonus.decrease.cooldown = 1500; // Reduced from 6s to 1.5s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Divine Empowerment", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Paladin_DivineGrenade_Cooldown:
-			bonus.decrease.cooldown = 2 * 1000;
+			bonus.decrease.cooldown = 500; // Reduced from 2s to 0.5s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Divine Grenade", bonus));
 			break;
@@ -442,12 +442,12 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			break;
 
 		case WheelGemSupremeModifier_t::Sorcerer_AvatarOfStorm_Cooldown:
-			bonus.decrease.cooldown = 900 * 1000;
+			bonus.decrease.cooldown = 450 * 1000; // Reduced from 900s to 450s (50%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Avatar of Storm", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Sorcerer_EnergyWave_Cooldown:
-			bonus.decrease.cooldown = 1 * 1000;
+			bonus.decrease.cooldown = 250; // Reduced from 1s to 0.25s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Energy Wave", bonus));
 			break;
@@ -501,12 +501,12 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			break;
 
 		case WheelGemSupremeModifier_t::Druid_AvatarOfNature_Cooldown:
-			bonus.decrease.cooldown = 900 * 1000;
+			bonus.decrease.cooldown = 450 * 1000; // Reduced from 900s to 450s (50%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Avatar of Nature", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Druid_NaturesEmbrace_Cooldown:
-			bonus.decrease.cooldown = 5 * 1000;
+			bonus.decrease.cooldown = 1250; // Reduced from 5s to 1.25s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Nature's Embrace", bonus));
 			break;
@@ -561,7 +561,7 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 
 		// Monk
 		case WheelGemSupremeModifier_t::Monk_AvatarOfBalance_Cooldown:
-			bonus.decrease.cooldown = 900 * 1000;
+			bonus.decrease.cooldown = 450 * 1000; // Reduced from 900s to 450s (50%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Avatar of Balance", bonus));
 			break;
@@ -610,12 +610,12 @@ void WheelModifierContext::addStrategies(WheelGemSupremeModifier_t modifier, uin
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Sweeping Takedown", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Monk_FocusSerenety:
-			bonus.decrease.cooldown = 150 * 1000;
+			bonus.decrease.cooldown = 37500; // Reduced from 150s to 37.5s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Focus Serenity", bonus));
 			break;
 		case WheelGemSupremeModifier_t::Monk_FocusHarmony:
-			bonus.decrease.cooldown = 30 * 1000;
+			bonus.decrease.cooldown = 7500; // Reduced from 30s to 7.5s (25%)
 			wheelBonus.momentum += grade < 3 ? 0.33 * grade : 1;
 			m_strategies.emplace_back(std::make_unique<GemModifierSpellBonusStrategy>(m_wheel, "Focus Harmony", bonus));
 			break;

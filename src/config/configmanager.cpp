@@ -140,6 +140,7 @@ bool ConfigManager::load() {
 	loadBoolConfig(L, TELEPORT_PLAYER_TO_VOCATION_ROOM, "teleportPlayerToVocationRoom", true);
 	loadBoolConfig(L, TELEPORT_SUMMONS, "teleportSummons", false);
 	loadBoolConfig(L, TOGGLE_ATTACK_SPEED_ONFIST, "toggleAttackSpeedOnFist", false);
+	loadBoolConfig(L, TOGGLE_ATTACK_SPEED_SPELL_CDR, "toggleAttackSpeedSpellCdr", true);
 	loadBoolConfig(L, TOGGLE_CHAIN_SYSTEM, "toggleChainSystem", true);
 	loadBoolConfig(L, TOGGLE_DOWNLOAD_MAP, "toggleDownloadMap", false);
 	loadBoolConfig(L, TOGGLE_FREE_QUEST, "toggleFreeQuest", true);
@@ -167,6 +168,9 @@ bool ConfigManager::load() {
 	loadBoolConfig(L, CYCLOPEDIA_HOUSE_AUCTION, "toggleCyclopediaHouseAuction", true);
 	loadBoolConfig(L, LEAVE_PARTY_ON_DEATH, "leavePartyOnDeath", false);
 
+	loadFloatConfig(L, ATTACK_SPEED_CDR_DIVISOR, "attackSpeedCdrDivisor", 100.0);
+	loadFloatConfig(L, ATTACK_SPEED_CDR_MAX_PERCENT, "attackSpeedCdrMaxPercent", 0.50);
+	loadFloatConfig(L, ATTACK_SPEED_CDR_SCALE_FACTOR, "attackSpeedCdrScaleFactor", 18.5);
 	loadFloatConfig(L, BESTIARY_RATE_CHARM_SHOP_PRICE, "bestiaryRateCharmShopPrice", 1.0);
 	loadFloatConfig(L, COMBAT_CHAIN_SKILL_FORMULA_WANDS_AND_RODS, "combatChainSkillFormulaWandsAndRods", 1.0);
 	loadFloatConfig(L, FORGE_AMOUNT_MULTIPLIER, "forgeAmountMultiplier", 3.0);
@@ -218,6 +222,11 @@ bool ConfigManager::load() {
 
 	loadIntConfig(L, ACTIONS_DELAY_INTERVAL, "timeBetweenActions", 200);
 	loadIntConfig(L, ADVENTURERSBLESSING_LEVEL, "adventurersBlessingLevel", 21);
+	loadIntConfig(L, ATTACK_SPEED_CDR_FLOOR_ATTACK_MEDIUM, "attackSpeedCdrFloorAttackMedium", 2000);
+	loadIntConfig(L, ATTACK_SPEED_CDR_FLOOR_ATTACK_SHORT, "attackSpeedCdrFloorAttackShort", 500);
+	loadIntConfig(L, ATTACK_SPEED_CDR_FLOOR_AVATAR, "attackSpeedCdrFloorAvatar", 300000);
+	loadIntConfig(L, ATTACK_SPEED_CDR_FLOOR_HEALING, "attackSpeedCdrFloorHealing", 250);
+	loadIntConfig(L, ATTACK_SPEED_CDR_FLOOR_LONG, "attackSpeedCdrFloorLong", 30000);
 	loadIntConfig(L, BESTIARY_KILL_MULTIPLIER, "bestiaryKillMultiplier", 1);
 	loadIntConfig(L, BLACK_SKULL_DURATION, "blackSkullDuration", 45);
 	loadIntConfig(L, BOOSTED_BOSS_KILL_BONUS, "boostedBossKillBonus", 3);

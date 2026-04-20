@@ -2183,7 +2183,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Divine Empowerment", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 4 * 1000;
+		bonus.decrease.cooldown = 1 * 1000; // Reduced from 4s to 1s (25%) for attack speed CDR system
 
 		if (m_playerBonusData.stages.divineEmpowerment >= 2) {
 			addSpellBonus("Divine Empowerment", bonus);
@@ -2201,12 +2201,12 @@ void PlayerWheel::registerPlayerBonusData() {
 		}
 		if (m_playerBonusData.stages.divineGrenade >= 2) {
 			WheelSpells::Bonus bonus;
-			bonus.decrease.cooldown = 4 * 1000;
+			bonus.decrease.cooldown = 1 * 1000; // Reduced from 4s to 1s (25%)
 			addSpellBonus("Divine Grenade", bonus);
 		}
 		if (m_playerBonusData.stages.divineGrenade >= 3) {
 			WheelSpells::Bonus bonus;
-			bonus.decrease.cooldown = 6 * 1000;
+			bonus.decrease.cooldown = 1500; // Reduced from 6s to 1.5s (25%)
 			addSpellBonus("Divine Grenade", bonus);
 		}
 	} else {
@@ -2228,7 +2228,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Beam Mastery", true);
 		}
 		WheelSpells::Bonus deathBeamBonus;
-		deathBeamBonus.decrease.cooldown = 2 * 1000;
+		deathBeamBonus.decrease.cooldown = 500; // Reduced from 2s to 0.5s (25%)
 		deathBeamBonus.increase.damage = 6;
 		if (m_playerBonusData.stages.beamMastery >= 2) {
 			addSpellBonus("Great Death Beam", deathBeamBonus);
@@ -2245,8 +2245,8 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Twin Burst", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 4 * 1000;
-		bonus.decrease.secondaryGroupCooldown = 4 * 1000;
+		bonus.decrease.cooldown = 1 * 1000; // Reduced from 4s to 1s (25%)
+		bonus.decrease.secondaryGroupCooldown = 1 * 1000; // Reduced from 4s to 1s (25%)
 		if (m_playerBonusData.stages.twinBurst >= 2) {
 			addSpellBonus("Ice Burst", bonus);
 			addSpellBonus("Terra Burst", bonus);
@@ -2264,7 +2264,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Executioner's Throw", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 4 * 1000;
+		bonus.decrease.cooldown = 1 * 1000; // Reduced from 4s to 1s (25%)
 		if (m_playerBonusData.stages.executionersThrow >= 2) {
 			addSpellBonus("Executioner's Throw", bonus);
 		}
@@ -2280,7 +2280,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Spiritual Outburst", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 4 * 1000;
+		bonus.decrease.cooldown = 1 * 1000; // Reduced from 4s to 1s (25%)
 		if (m_playerBonusData.stages.spiritualOutburst >= 2) {
 			addSpellBonus("Spiritual Outburst", bonus);
 		}
@@ -2305,7 +2305,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Avatar of Light", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
+		bonus.decrease.cooldown = 15 * 60 * 1000; // Reduced from 30min to 15min (50%) for attack speed CDR system
 
 		if (m_playerBonusData.avatar.light >= 2) {
 			addSpellBonus("Avatar of Light", bonus);
@@ -2322,7 +2322,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Avatar of Nature", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
+		bonus.decrease.cooldown = 15 * 60 * 1000; // Reduced from 30min to 15min (50%) for attack speed CDR system
 
 		if (m_playerBonusData.avatar.nature >= 2) {
 			addSpellBonus("Avatar of Nature", bonus);
@@ -2339,7 +2339,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Avatar of Steel", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
+		bonus.decrease.cooldown = 15 * 60 * 1000; // Reduced from 30min to 15min (50%) for attack speed CDR system
 		if (m_playerBonusData.avatar.steel >= 2) {
 			addSpellBonus("Avatar of Steel", bonus);
 		}
@@ -2355,7 +2355,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Avatar of Storm", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
+		bonus.decrease.cooldown = 15 * 60 * 1000; // Reduced from 30min to 15min (50%) for attack speed CDR system
 		if (m_playerBonusData.avatar.storm >= 2) {
 			addSpellBonus("Avatar of Storm", bonus);
 		}
@@ -2371,7 +2371,7 @@ void PlayerWheel::registerPlayerBonusData() {
 			setConvictionOrRevelationPerk("Avatar of Balance", true);
 		}
 		WheelSpells::Bonus bonus;
-		bonus.decrease.cooldown = 30 * 60 * 1000; // 30 minutes
+		bonus.decrease.cooldown = 15 * 60 * 1000; // Reduced from 30min to 15min (50%) for attack speed CDR system
 		if (m_playerBonusData.avatar.balance >= 2) {
 			addSpellBonus("Avatar of Balance", bonus);
 		}

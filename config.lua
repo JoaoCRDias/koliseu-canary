@@ -499,6 +499,18 @@ experienceDisplayRates = true
 toggleAttackSpeedOnFist = true
 multiplierSpeedOnFist = 1
 maxSpeedOnFist = 250
+
+-- Attack Speed -> Spell Cooldown Reduction (CDR) system
+toggleAttackSpeedSpellCdr = true
+attackSpeedCdrScaleFactor = 18.5
+attackSpeedCdrDivisor = 100.0
+attackSpeedCdrMaxPercent = 0.50
+attackSpeedCdrFloorHealing = 250
+attackSpeedCdrFloorAttackShort = 500
+attackSpeedCdrFloorAttackMedium = 2000
+attackSpeedCdrFloorLong = 30000
+attackSpeedCdrFloorAvatar = 300000
+
 disableLegacyRaids = false
 disableMonsterArmor = false
 minElementalResistance = -200

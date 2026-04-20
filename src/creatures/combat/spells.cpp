@@ -766,6 +766,38 @@ void Spell::getCombatDataAugment(const std::shared_ptr<Player> &player, CombatDa
 	}
 }
 
+float Spell::getAttackSpeedCDRPercent(const std::shared_ptr<Player> &player) {
+	if (!g_configManager().getBoolean(TOGGLE_ATTACK_SPEED_SPELL_CDR)) {
+		return 0.0f;
+	}
+	const auto skillLevel = static_cast<float>(player->getSkillLevel(SKILL_ATTACK_SPEED));
+	if (skillLevel <= 0.0f) {
+		return 0.0f;
+	}
+	const float scaleFactor = g_configManager().getFloat(ATTACK_SPEED_CDR_SCALE_FACTOR);
+	const float divisor = g_configManager().getFloat(ATTACK_SPEED_CDR_DIVISOR);
+	const float maxPercent = g_configManager().getFloat(ATTACK_SPEED_CDR_MAX_PERCENT);
+
+	const float cdr = (scaleFactor * std::log(1.0f + skillLevel / divisor)) / 100.0f;
+	return std::min(cdr, maxPercent);
+}
+
+int32_t Spell::getAbsoluteFloor(uint32_t baseCooldown, SpellGroup_t spellGroup) const {
+	if (spellGroup == SPELLGROUP_HEALING) {
+		return g_configManager().getNumber(ATTACK_SPEED_CDR_FLOOR_HEALING);
+	}
+	if (baseCooldown >= 600000) {
+		return g_configManager().getNumber(ATTACK_SPEED_CDR_FLOOR_AVATAR);
+	}
+	if (baseCooldown >= 60000) {
+		return g_configManager().getNumber(ATTACK_SPEED_CDR_FLOOR_LONG);
+	}
+	if (baseCooldown > 8000) {
+		return g_configManager().getNumber(ATTACK_SPEED_CDR_FLOOR_ATTACK_MEDIUM);
+	}
+	return g_configManager().getNumber(ATTACK_SPEED_CDR_FLOOR_ATTACK_SHORT);
+}
+
 int32_t Spell::calculateAugmentSpellCooldownReduction(const std::shared_ptr<Player> &player) const {
 	int32_t spellCooldown = 0;
 	const auto &equippedAugmentItems = player->getEquippedAugmentItemsByType(Augment_t::Cooldown);
@@ -797,20 +829,28 @@ void Spell::applyCooldownConditions(const std::shared_ptr<Player> &player) const
 		rateCooldown = 0.1; // Safe minimum value
 	}
 
+	// Attack Speed CDR percentage (cached once for all cooldown types).
+	// Applied multiplicatively AFTER flat reductions (wheel/gems/augment),
+	// so those bonuses remain meaningful when CDR% is high.
+	const float cdrPercent = getAttackSpeedCDRPercent(player);
+
 	if (cooldown > 0) {
 		int32_t spellCooldown = cooldown;
 		if (isUpgraded) {
 			spellCooldown -= getWheelOfDestinyBoost(WheelSpellBoost_t::COOLDOWN, spellGrade);
 		}
 		int32_t augmentCooldownReduction = calculateAugmentSpellCooldownReduction(player);
-		g_logger().debug("[{}] spell name: {}, grade: {}, originalCooldown: {}, spellCooldown: {}, bonus: {}, augment {}", __FUNCTION__, name, spellGrade, cooldown, spellCooldown, player->wheel().getSpellBonus(name, WheelSpellBoost_t::COOLDOWN), augmentCooldownReduction);
 		spellCooldown -= player->wheel().getSpellBonus(name, WheelSpellBoost_t::COOLDOWN);
 		spellCooldown -= augmentCooldownReduction;
-		const int32_t halfBaseCooldown = cooldown / 2;
-		spellCooldown = halfBaseCooldown > spellCooldown ? halfBaseCooldown : spellCooldown; // The cooldown should never be reduced less than half (50%) of its base cooldown
-		if (spellCooldown > 0) {
-			player->wheel().handleTwinBurstsCooldown(player, name, spellCooldown, rateCooldown);
-			const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLCOOLDOWN, spellCooldown / rateCooldown, 0, false, m_spellId);
+		if (cdrPercent > 0.0f) {
+			spellCooldown = static_cast<int32_t>(spellCooldown * (1.0f - cdrPercent));
+		}
+		int32_t effectiveCooldown = static_cast<int32_t>(spellCooldown / rateCooldown);
+		const int32_t floorCooldown = getAbsoluteFloor(cooldown, group);
+		effectiveCooldown = std::max(effectiveCooldown, floorCooldown);
+		if (effectiveCooldown > 0) {
+			player->wheel().handleTwinBurstsCooldown(player, name, effectiveCooldown, 1.0f);
+			const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLCOOLDOWN, effectiveCooldown, 0, false, m_spellId);
 			player->addCondition(condition);
 		}
 	}
@@ -820,8 +860,14 @@ void Spell::applyCooldownConditions(const std::shared_ptr<Player> &player) const
 		if (isUpgraded) {
 			spellGroupCooldown -= getWheelOfDestinyBoost(WheelSpellBoost_t::GROUP_COOLDOWN, spellGrade);
 		}
+		if (cdrPercent > 0.0f) {
+			spellGroupCooldown = static_cast<int32_t>(spellGroupCooldown * (1.0f - cdrPercent));
+		}
 		if (spellGroupCooldown > 0) {
-			const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN, spellGroupCooldown / rateCooldown, 0, false, group);
+			int32_t effectiveGroupCooldown = static_cast<int32_t>(spellGroupCooldown / rateCooldown);
+			const int32_t floorGroupCooldown = getAbsoluteFloor(groupCooldown, group);
+			effectiveGroupCooldown = std::max(effectiveGroupCooldown, floorGroupCooldown);
+			const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN, effectiveGroupCooldown, 0, false, group);
 			player->addCondition(condition);
 		}
 	}
@@ -832,9 +878,15 @@ void Spell::applyCooldownConditions(const std::shared_ptr<Player> &player) const
 			spellSecondaryGroupCooldown -= getWheelOfDestinyBoost(WheelSpellBoost_t::SECONDARY_GROUP_COOLDOWN, spellGrade);
 		}
 		spellSecondaryGroupCooldown -= player->wheel().getSpellBonus(name, WheelSpellBoost_t::SECONDARY_GROUP_COOLDOWN);
+		if (cdrPercent > 0.0f) {
+			spellSecondaryGroupCooldown = static_cast<int32_t>(spellSecondaryGroupCooldown * (1.0f - cdrPercent));
+		}
 		if (spellSecondaryGroupCooldown > 0) {
 			player->wheel().handleBeamMasteryCooldown(player, name, spellSecondaryGroupCooldown, rateCooldown);
-			const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN, spellSecondaryGroupCooldown / rateCooldown, 0, false, secondaryGroup);
+			int32_t effectiveSecGroupCooldown = static_cast<int32_t>(spellSecondaryGroupCooldown / rateCooldown);
+			const int32_t floorSecGroupCooldown = getAbsoluteFloor(secondaryGroupCooldown, secondaryGroup);
+			effectiveSecGroupCooldown = std::max(effectiveSecGroupCooldown, floorSecGroupCooldown);
+			const auto &condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SPELLGROUPCOOLDOWN, effectiveSecGroupCooldown, 0, false, secondaryGroup);
 			player->addCondition(condition);
 		}
 	}

@@ -239,7 +239,7 @@ void IOWheel::initializeDruidConvictionPerkAugmented() {
 
 	m_wheelBonusData.convictionPerkAugmented.druid[2].name = "Nature's Embrace";
 	m_wheelBonusData.convictionPerkAugmented.druid[2].grade[1].increase.heal = 11;
-	m_wheelBonusData.convictionPerkAugmented.druid[2].grade[2].decrease.cooldown = 10;
+	m_wheelBonusData.convictionPerkAugmented.druid[2].grade[2].decrease.cooldown = 2; // Reduced from 10s to 2s (25%) for attack speed CDR system
 
 	m_wheelBonusData.convictionPerkAugmented.druid[3].name = "Terra Wave";
 	m_wheelBonusData.convictionPerkAugmented.druid[3].grade[1].increase.damage = static_cast<int>(std::round(6.5));
@@ -257,7 +257,7 @@ void IOWheel::initializeKnightConvictionPerkAugmented() {
 
 	m_wheelBonusData.convictionPerkAugmented.knight[1].name = "Groundshaker";
 	m_wheelBonusData.convictionPerkAugmented.knight[1].grade[1].increase.damage = static_cast<int>(std::round(12.5));
-	m_wheelBonusData.convictionPerkAugmented.knight[1].grade[2].decrease.cooldown = 2;
+	m_wheelBonusData.convictionPerkAugmented.knight[1].grade[2].decrease.cooldown = 1; // Reduced from 2s (25%)
 
 	m_wheelBonusData.convictionPerkAugmented.knight[2].name = "Chivalrous Challenge";
 	m_wheelBonusData.convictionPerkAugmented.knight[2].grade[1].decrease.manaCost = 20;
@@ -265,7 +265,7 @@ void IOWheel::initializeKnightConvictionPerkAugmented() {
 
 	m_wheelBonusData.convictionPerkAugmented.knight[3].name = "Intense Wound Cleansing";
 	m_wheelBonusData.convictionPerkAugmented.knight[3].grade[1].increase.heal = 125;
-	m_wheelBonusData.convictionPerkAugmented.knight[3].grade[2].decrease.cooldown = 300;
+	m_wheelBonusData.convictionPerkAugmented.knight[3].grade[2].decrease.cooldown = 75; // Reduced from 300s to 75s (25%)
 
 	m_wheelBonusData.convictionPerkAugmented.knight[4].name = "Fierce Berserk";
 	m_wheelBonusData.convictionPerkAugmented.knight[4].grade[1].decrease.manaCost = 30;
@@ -274,21 +274,21 @@ void IOWheel::initializeKnightConvictionPerkAugmented() {
 
 void IOWheel::initializePaladinConvictionPerkAugmented() {
 	m_wheelBonusData.convictionPerkAugmented.paladin[0].name = "Sharpshooter";
-	m_wheelBonusData.convictionPerkAugmented.paladin[0].grade[1].decrease.secondaryGroupCooldown = 8;
-	m_wheelBonusData.convictionPerkAugmented.paladin[0].grade[2].decrease.cooldown = 6;
+	m_wheelBonusData.convictionPerkAugmented.paladin[0].grade[1].decrease.secondaryGroupCooldown = 2; // Reduced from 8s (25%)
+	m_wheelBonusData.convictionPerkAugmented.paladin[0].grade[2].decrease.cooldown = 1; // Reduced from 6s (25%)
 
 	m_wheelBonusData.convictionPerkAugmented.paladin[1].name = "Strong Ethereal Spear";
-	m_wheelBonusData.convictionPerkAugmented.paladin[1].grade[1].decrease.cooldown = 2;
+	m_wheelBonusData.convictionPerkAugmented.paladin[1].grade[1].decrease.cooldown = 1; // Reduced from 2s (25%)
 	m_wheelBonusData.convictionPerkAugmented.paladin[1].grade[2].increase.damage = 380;
 
 	m_wheelBonusData.convictionPerkAugmented.paladin[2].name = "Divine Dazzle";
 	m_wheelBonusData.convictionPerkAugmented.paladin[2].grade[1].increase.aditionalTarget = 1;
 	m_wheelBonusData.convictionPerkAugmented.paladin[2].grade[2].increase.duration = 4;
-	m_wheelBonusData.convictionPerkAugmented.paladin[2].grade[2].decrease.cooldown = 4;
+	m_wheelBonusData.convictionPerkAugmented.paladin[2].grade[2].decrease.cooldown = 1; // Reduced from 4s (25%)
 
 	m_wheelBonusData.convictionPerkAugmented.paladin[3].name = "Swift Foot";
-	m_wheelBonusData.convictionPerkAugmented.paladin[3].grade[1].decrease.secondaryGroupCooldown = 8;
-	m_wheelBonusData.convictionPerkAugmented.paladin[3].grade[2].decrease.cooldown = 6;
+	m_wheelBonusData.convictionPerkAugmented.paladin[3].grade[1].decrease.secondaryGroupCooldown = 2; // Reduced from 8s (25%)
+	m_wheelBonusData.convictionPerkAugmented.paladin[3].grade[2].decrease.cooldown = 1; // Reduced from 6s (25%)
 
 	m_wheelBonusData.convictionPerkAugmented.paladin[4].name = "Divine Caldera";
 	m_wheelBonusData.convictionPerkAugmented.paladin[4].grade[1].decrease.manaCost = 20;
@@ -297,7 +297,7 @@ void IOWheel::initializePaladinConvictionPerkAugmented() {
 
 void IOWheel::initializeSorcererConvictionPerkAugmented() {
 	m_wheelBonusData.convictionPerkAugmented.sorcerer[0].name = "Magic Shield";
-	m_wheelBonusData.convictionPerkAugmented.sorcerer[0].grade[2].decrease.cooldown = 6;
+	m_wheelBonusData.convictionPerkAugmented.sorcerer[0].grade[2].decrease.cooldown = 1; // Reduced from 6s (25%)
 
 	m_wheelBonusData.convictionPerkAugmented.sorcerer[1].name = "Sap Strength";
 	m_wheelBonusData.convictionPerkAugmented.sorcerer[1].grade[1].increase.area = true;
@@ -314,8 +314,8 @@ void IOWheel::initializeSorcererConvictionPerkAugmented() {
 
 	m_wheelBonusData.convictionPerkAugmented.sorcerer[4].name = "Any_Focus_Mage_Spell";
 	m_wheelBonusData.convictionPerkAugmented.sorcerer[4].grade[1].increase.damage = 5;
-	m_wheelBonusData.convictionPerkAugmented.sorcerer[4].grade[2].decrease.cooldown = 4;
-	m_wheelBonusData.convictionPerkAugmented.sorcerer[4].grade[2].decrease.secondaryGroupCooldown = 4;
+	m_wheelBonusData.convictionPerkAugmented.sorcerer[4].grade[2].decrease.cooldown = 1; // Reduced from 4s (25%)
+	m_wheelBonusData.convictionPerkAugmented.sorcerer[4].grade[2].decrease.secondaryGroupCooldown = 1; // Reduced from 4s (25%)
 }
 
 void IOWheel::initializeMonkConvictionPerkAugmented() {
@@ -324,7 +324,7 @@ void IOWheel::initializeMonkConvictionPerkAugmented() {
 	m_wheelBonusData.convictionPerkAugmented.monk[0].grade[2].increase.area = true;
 
 	m_wheelBonusData.convictionPerkAugmented.monk[1].name = "Mystic Repulse";
-	m_wheelBonusData.convictionPerkAugmented.monk[1].grade[1].decrease.cooldown = 4;
+	m_wheelBonusData.convictionPerkAugmented.monk[1].grade[1].decrease.cooldown = 1; // Reduced from 4s (25%)
 	m_wheelBonusData.convictionPerkAugmented.monk[1].grade[2].increase.damage = 40;
 
 	m_wheelBonusData.convictionPerkAugmented.monk[2].name = "Chained Penance";
