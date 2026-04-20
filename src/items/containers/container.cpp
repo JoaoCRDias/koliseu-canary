@@ -23,6 +23,13 @@ Container::Container(uint16_t type) :
 		maxSize = 32;
 	}
 
+	// Ring/amulet pouch: same infinite-bag UX as gold pouch (paginated client-side).
+	if (getID() == ITEM_RING_POUCH || getID() == ITEM_AMULET_POUCH) {
+		pagination = true;
+		m_maxItems = g_configManager().getNumber(LOOTPOUCH_MAXLIMIT);
+		maxSize = 32;
+	}
+
 	if (isStoreInbox()) {
 		pagination = true;
 		m_maxItems = g_configManager().getNumber(STOREINBOX_MAXLIMIT);
@@ -495,6 +502,15 @@ ReturnValue Container::queryAdd(int32_t addIndex, const std::shared_ptr<Thing> &
 
 	if (!item->isPickupable()) {
 		return RETURNVALUE_CANNOTPICKUP;
+	}
+
+	// Restrict ring pouch / amulet pouch to their matching slot type.
+	// Only items wearable on the ring / necklace slot may enter.
+	if (getID() == ITEM_RING_POUCH || getID() == ITEM_AMULET_POUCH) {
+		const uint16_t requiredSlot = (getID() == ITEM_RING_POUCH) ? SLOTP_RING : SLOTP_NECKLACE;
+		if ((Item::items[item->getID()].slotPosition & requiredSlot) == 0) {
+			return RETURNVALUE_NOTPOSSIBLE;
+		}
 	}
 
 	if (item == getItem()) {

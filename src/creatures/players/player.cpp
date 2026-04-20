@@ -1606,6 +1606,25 @@ void Player::onReceiveMail() {
 }
 
 std::shared_ptr<Container> Player::refreshManagedContainer(ObjectCategory_t category, const std::shared_ptr<Container> &container, bool isLootContainer, bool loading /* = false*/) {
+	// Ring pouch (60162) and amulet pouch (60161) are restricted to their
+	// matching category and only as "obtain" containers (isLootContainer=false).
+	// Reject invalid assignments silently so the client falls back to the
+	// default backpack instead of binding the pouch to a bogus slot.
+	if (container && !loading) {
+		const uint16_t containerId = container->getID();
+		if (containerId == ITEM_RING_POUCH) {
+			if (isLootContainer || category != OBJECTCATEGORY_RINGS) {
+				sendTextMessage(MESSAGE_FAILURE, "The ring pouch can only be assigned to obtain rings.");
+				return nullptr;
+			}
+		} else if (containerId == ITEM_AMULET_POUCH) {
+			if (isLootContainer || category != OBJECTCATEGORY_NECKLACES) {
+				sendTextMessage(MESSAGE_FAILURE, "The amulet pouch can only be assigned to obtain amulets.");
+				return nullptr;
+			}
+		}
+	}
+
 	std::shared_ptr<Container> previousContainer = nullptr;
 	const auto toSetAttribute = isLootContainer ? ItemAttribute_t::QUICKLOOTCONTAINER : ItemAttribute_t::OBTAINCONTAINER;
 	if (auto it = m_managedContainers.find(category); it != m_managedContainers.end() && !loading) {
