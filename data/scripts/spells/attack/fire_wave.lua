@@ -5,13 +5,16 @@ combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_HITBYFIRE)
 local area = createCombatArea(AREA_WAVE4, AREADIAGONAL_WAVE4)
 combat:setArea(area)
 
-function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 1.25) + 4
-	local max = (level / 5) + (maglevel * 2) + 12
-	return -min, -max
+function onGetFormulaValues(player, skill, attack, factor)
+	local level = player:getLevel()
+	local maglevel = player:getMagicLevel()
+	local min = (level / 4) + (maglevel * 1.25) + 4
+	local max = (level / 4) + (maglevel * 2) + 12
+	local weaponBonus = 1 + (attack * 0.002)
+	return -min * weaponBonus, -max * weaponBonus
 end
 
-combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
+combat:setCallback(CALLBACK_PARAM_SKILLVALUE, "onGetFormulaValues")
 
 local spell = Spell("instant")
 

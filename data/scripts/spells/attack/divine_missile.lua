@@ -3,13 +3,16 @@ combat:setParameter(COMBAT_PARAM_TYPE, COMBAT_HOLYDAMAGE)
 combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_HOLYDAMAGE)
 combat:setParameter(COMBAT_PARAM_DISTANCEEFFECT, CONST_ANI_SMALLHOLY)
 
-function onGetFormulaValues(player, level, maglevel)
+function onGetFormulaValues(player, skill, attack, factor)
+	local level = player:getLevel()
+	local maglevel = player:getMagicLevel()
 	local min = (level / 5) + (maglevel * 1.79) + 11
 	local max = (level / 5) + (maglevel * 3) + 18
-	return -min, -max
+	local weaponBonus = 1 + (attack * 0.002)
+	return -min * weaponBonus, -max * weaponBonus
 end
 
-combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
+combat:setCallback(CALLBACK_PARAM_SKILLVALUE, "onGetFormulaValues")
 
 local spell = Spell("instant")
 

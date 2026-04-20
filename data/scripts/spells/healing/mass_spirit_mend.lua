@@ -1,21 +1,15 @@
--- harmony loses (spender)
-
 local function targetFunction(creature, target)
 	local player = creature:getPlayer()
 	if not player then
 		return
 	end
 
-	local min = math.floor(((player:getLevel() / 5) + (player:getMagicLevel() * 5.7) + 26))
-	local max = math.floor(((player:getLevel() / 5) + (player:getMagicLevel() * 10.43) + 62))
+	local min = math.floor(((player:getLevel() * 0.325) + (player:getMagicLevel() * 8.55) + 35.75))
+	local max = math.floor(((player:getLevel() * 0.325) + (player:getMagicLevel() * 15.65) + 85.25))
 
 	local harmony = player:getHarmony()
-	local multiplier = 1 + (harmony * 0.6)
+	local multiplier = 1 + (harmony * 0.3)
 	local healAmount = math.floor(math.random(min, max) * multiplier)
-
-	local bonusFactor = 1
-
-	healAmount = math.ceil(healAmount * bonusFactor)
 
 	local excludeCreature = "specific_creature_name"
 

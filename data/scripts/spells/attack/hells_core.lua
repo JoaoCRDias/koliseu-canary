@@ -4,8 +4,9 @@ combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_FIREAREA)
 combat:setArea(createCombatArea(AREA_CIRCLE5X5))
 
 function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 10)
-	local max = (level / 5) + (maglevel * 14)
+	-- UE: 30% stronger than SD (SD = 1.95)
+	local min = ((level / 1.15) + (maglevel * 12.0) + 50) * 2.535
+	local max = ((level / 1.15) + (maglevel * 17.0) + 80) * 2.535
 	return -min, -max
 end
 
@@ -26,8 +27,8 @@ spell:level(60)
 spell:mana(1100)
 spell:isSelfTarget(true)
 spell:isPremium(true)
-spell:cooldown(40 * 1000)
-spell:groupCooldown(4 * 1000, 40 * 1000)
+spell:cooldown(20 * 1000)
+spell:groupCooldown(2 * 1000)
 spell:needLearn(false)
 spell:vocation("sorcerer;true", "master sorcerer;true")
 spell:register()

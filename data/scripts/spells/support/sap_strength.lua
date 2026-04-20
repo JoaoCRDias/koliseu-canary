@@ -16,9 +16,18 @@ local function targetFunction(creature, target)
 		end
 	end
 
+	local relicExtra = 0
+	if creature and creature:getPlayer() then
+		local rb = creature:getStorageValue(920029)
+		if rb and rb > 0 then
+			relicExtra = rb / 100
+			creature:sendTextMessage(MESSAGE_EVENT_ADVANCE, "[Relic] Sap Strength +" .. relicExtra .. "% extra debuff")
+		end
+	end
+
 	local condition = Condition(CONDITION_ATTRIBUTES)
 	condition:setParameter(CONDITION_PARAM_TICKS, 16000)
-	condition:setParameter(CONDITION_PARAM_BUFF_DAMAGEDEALT, buff)
+	condition:setParameter(CONDITION_PARAM_BUFF_DAMAGEDEALT, buff - relicExtra)
 
 	local gradeBuff = 0
 	if creature and creature:getPlayer() then

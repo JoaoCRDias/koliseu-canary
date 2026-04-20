@@ -2,22 +2,31 @@ local combat = Combat()
 combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_MAGIC_GREEN)
 combat:setParameter(COMBAT_PARAM_AGGRESSIVE, false)
 
-local skill = Condition(CONDITION_ATTRIBUTES)
-skill:setParameter(CONDITION_PARAM_SUBID, AttrSubId_BloodRageProtector)
-skill:setParameter(CONDITION_PARAM_TICKS, 13000)
-skill:setParameter(CONDITION_PARAM_SKILL_SHIELDPERCENT, 220)
-skill:setParameter(CONDITION_PARAM_BUFF_DAMAGEDEALT, 65)
-skill:setParameter(CONDITION_PARAM_BUFF_DAMAGERECEIVED, 85)
-skill:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
-combat:addCondition(skill)
-
 local spell = Spell("instant")
 
 function spell.onCastSpell(creature, variant)
 	if creature:getCondition(CONDITION_ATTRIBUTES, CONDITIONID_COMBAT, AttrSubId_BloodRageProtector) then
 		creature:removeCondition(CONDITION_ATTRIBUTES, CONDITIONID_COMBAT, AttrSubId_BloodRageProtector)
 	end
-	return combat:execute(creature, variant)
+
+	local damageReceived = 90
+	local relicBonus = creature:getStorageValue(920036)
+	if relicBonus and relicBonus > 0 then
+		local extra = relicBonus / 100
+		damageReceived = damageReceived - extra
+		creature:sendTextMessage(MESSAGE_EVENT_ADVANCE, "[Relic] Protector +" .. extra .. "% extra damage reduction (total " .. (100 - damageReceived) .. "%)")
+	end
+
+	local skill = Condition(CONDITION_ATTRIBUTES)
+	skill:setParameter(CONDITION_PARAM_SUBID, AttrSubId_BloodRageProtector)
+	skill:setParameter(CONDITION_PARAM_TICKS, 13000)
+	skill:setParameter(CONDITION_PARAM_SKILL_SHIELDPERCENT, 170)
+	skill:setParameter(CONDITION_PARAM_BUFF_DAMAGEDEALT, 60)
+	skill:setParameter(CONDITION_PARAM_BUFF_DAMAGERECEIVED, damageReceived)
+	skill:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+	creature:addCondition(skill)
+	creature:getPosition():sendMagicEffect(CONST_ME_MAGIC_GREEN)
+	return true
 end
 
 spell:name("Protector")

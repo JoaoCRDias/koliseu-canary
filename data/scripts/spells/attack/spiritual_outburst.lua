@@ -81,11 +81,11 @@ local function executeChain(player, min, max, effectData, grade)
 
 			local damageMultiplier = 1.0
 			if grade == 1 then
-				damageMultiplier = 0.375
+				damageMultiplier = 1.375
 			elseif grade == 2 then
-				damageMultiplier = 0.5
+				damageMultiplier = 1.5
 			elseif grade == 3 then
-				damageMultiplier = 0.625
+				damageMultiplier = 1.625
 			end
 
 			local adjustedMin = math.floor(min * damageMultiplier + 0.5)
@@ -103,13 +103,13 @@ local config = {
 }
 
 local function onGetFormulaValues(player, weaponDamage)
-	local basePower = 42
+	local basePower = 115
 
 	local skill = player:getSkillLevel(SKILL_FIRST)
 	local attackValue = calculateAttackValue(player, skill, weaponDamage)
 
-	local spellFactor = 2.5
-	local total = (basePower * attackValue) / 100 + (spellFactor * attackValue)
+	local spellFactor = 3.6
+	local total = ((basePower * attackValue) / 100 + (spellFactor * attackValue)) * 2.2
 
 	local minDamage = -total * 0.9
 	local maxDamage = -total * 1.1
@@ -129,7 +129,7 @@ function spell.onCastSpell(creature, var)
 
 	--logger.warn("[SPELL SPIRITUAL OUTBURST] addTargetWheel {}", maxTargets)
 
-	local maxTargets = 4
+	local maxTargets = 7 + grade -- Base 3 targets, +1 per grade
 
 	creatureArrayListChain(creature:getId(), maxTargets)
 
@@ -139,35 +139,28 @@ function spell.onCastSpell(creature, var)
 		return false
 	end
 
-	local effectData = config["physical"]
 	local weaponDamage = 0
 
 	local weapon = creature:getSlotItem(CONST_SLOT_LEFT)
 	if weapon then
 		local itemType = weapon:getType()
 		weaponDamage = itemType:getAttack()
-		if itemType and itemType.getElementalBond then
-			local elementalBondType = itemType:getElementalBond():lower()
-			if elementalBondType then
-				effectData = config[elementalBondType]
-			end
-		end
 	end
+
+	local elementalBondType = getWeaponElementalBond(weapon)
+	local effectData = config[elementalBondType] or config["physical"]
 
 	local min, max = onGetFormulaValues(creature, weaponDamage)
-	executeChain(creature, min, max, effectData, 0)
+	executeChain(creature, min, max, effectData, grade)
 
-	if creature:getHarmony() == 5 then
-		addEvent(function()
-			creatureArrayListChain(creature, maxTargets)
-			if #creaturesArray > 0 then
-				local min, max = onGetFormulaValues(creature, weaponDamage)
-				executeChain(creature, min, max, effectData, grade)
-			end
-		end, 1500)
-	end
-
-	local cooldownByGrade = { 24, 20, 16 }
+	addEvent(function()
+		creatureArrayListChain(creature, maxTargets)
+		if #creaturesArray > 0 then
+			local min, max = onGetFormulaValues(creature, weaponDamage)
+			executeChain(creature, min, max, effectData, grade)
+		end
+	end, 1500)
+	local cooldownByGrade = { 16, 12, 8 }
 	local cooldown = cooldownByGrade[grade]
 
 	local condition = Condition(CONDITION_SPELLCOOLDOWN, CONDITIONID_DEFAULT, 295)
@@ -187,6 +180,6 @@ spell:harmony(true)
 spell:isPremium(true)
 spell:needLearn(false)
 spell:groupCooldown(2 * 1000)
-spell:cooldown(60 * 1000)
+spell:cooldown(1 * 1000)
 spell:vocation("monk;true", "exalted monk;true")
 spell:register()

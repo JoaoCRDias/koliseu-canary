@@ -5,8 +5,9 @@ combat:setParameter(COMBAT_PARAM_DISPEL, CONDITION_PARALYZE)
 combat:setParameter(COMBAT_PARAM_AGGRESSIVE, false)
 
 function onGetFormulaValues(player, level, magicLevel)
-	local min = (level * 0.2 + magicLevel * 70) + 438
-	local max = (level * 0.2 + magicLevel * 92) + 544
+	-- Level boost for EK healing
+	local min = (level * 1.0 + magicLevel * 87.5) + 438
+	local max = (level * 1.0 + magicLevel * 115) + 544
 	return min, max
 end
 

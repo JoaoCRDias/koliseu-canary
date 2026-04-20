@@ -1,4 +1,4 @@
-local condition = Condition(CONDITION_OUTFIT)
+local condition = Condition(CONDITION_OUTFIT, CONDITIONID_LEGS)
 condition:setOutfit({ lookType = 1595 }) -- Avatar of Storm lookType
 
 local spell = Spell("instant")
@@ -16,12 +16,25 @@ function spell.onCastSpell(creature, variant)
 	end
 
 	local duration = 15000
+	local relicBonus = creature:getStorageValue(920023)
+	if relicBonus and relicBonus > 0 then
+		local extraDuration = math.floor(duration * relicBonus / 10000)
+		duration = duration + extraDuration
+		creature:sendTextMessage(MESSAGE_EVENT_ADVANCE, "[Relic] Avatar of Storm duration +" .. (relicBonus / 100) .. "% (+" .. extraDuration .. "ms = " .. duration .. "ms)")
+	end
 	condition:setTicks(duration)
 	creature:getPosition():sendMagicEffect(CONST_ME_AVATAR_APPEAR)
 	creature:addCondition(condition)
 	creature:avatarTimer((os.time() * 1000) + duration)
 	creature:reloadData()
-	addEvent(ReloadDataEvent, duration, creature:getId())
+
+	addEvent(function(cid)
+		local c = Creature(cid)
+		if c then
+			c:reloadData()
+		end
+	end, duration, creature:getId())
+
 	return true
 end
 
@@ -35,7 +48,6 @@ spell:isPremium(true)
 spell:cooldown(2 * 60 * 60 * 1000) -- Default cooldown = 2 hours
 spell:groupCooldown(2 * 1000)
 spell:vocation("sorcerer;true", "master sorcerer;true")
-spell:hasParams(true)
 spell:isAggressive(false)
 spell:needLearn(true)
 spell:register()

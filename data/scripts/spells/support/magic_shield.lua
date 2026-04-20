@@ -13,6 +13,11 @@ function spell.onCastSpell(creature, var)
 	if grade >= WHEEL_GRADE_REGULAR then
 		shield = shield * 1.25
 	end
+	local relicBonus = player:getStorageValue(920034)
+	if relicBonus and relicBonus > 0 then
+		local extra = math.floor(shield * relicBonus / 10000)
+		shield = shield + extra
+	end
 	if player then
 		condition:setParameter(CONDITION_PARAM_MANASHIELD, math.min(player:getMaxMana(), shield))
 	end

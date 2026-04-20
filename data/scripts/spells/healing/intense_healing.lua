@@ -5,9 +5,18 @@ combat:setParameter(COMBAT_PARAM_DISPEL, CONDITION_PARALYZE)
 combat:setParameter(COMBAT_PARAM_AGGRESSIVE, false)
 
 function onGetFormulaValues(player, level, magicLevel) -- already compared to the official tibia | compared date: 05/07/19(m/d/y)
-	local min = (level * 0.2 + magicLevel * 3.184) + 20
-	local max = (level * 0.2 + magicLevel * 5.59) + 35
-	return min, max
+	local vocName = player:getVocation():getBase():getName()
+	local isEKorRP = (vocName == "Knight" or vocName == "Paladin")
+	local levelMult = isEKorRP and 1.0 or 0.2
+	local min = (level * levelMult + magicLevel * 3.184) + 20
+	local max = (level * levelMult + magicLevel * 5.59) + 35
+	local bonus = 1
+	if player:isMonk() then
+		bonus = 1.5
+	elseif vocName == "Sorcerer" or vocName == "Druid" then
+		bonus = 0.5
+	end
+	return min * bonus, max * bonus
 end
 
 combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")

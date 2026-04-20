@@ -5,8 +5,9 @@ combat:setParameter(COMBAT_PARAM_AGGRESSIVE, false)
 combat:setParameter(COMBAT_PARAM_DISPEL, CONDITION_PARALYZE)
 
 function onGetFormulaValues(_player, level, magicLevel) -- already compared to the official tibia | compared date: 05/07/19(m/d/y)
-	local min = (level * 0.2 + magicLevel * 4 + 25) * 2
-	local max = (level * 0.2 + magicLevel * 7.95 + 51) * 2
+	-- Level boost for EK healing
+	local min = (level * 0.7 + magicLevel * 5 + 31.25) * 2.5
+	local max = (level * 0.7 + magicLevel * 9.938 + 63.75) * 2.5
 	return min, max
 end
 

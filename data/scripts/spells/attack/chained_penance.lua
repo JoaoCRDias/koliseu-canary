@@ -88,9 +88,9 @@ local function executeChain(player, min, max, effectData)
 				end
 			end
 
-			local damageMultiplier = 1.00 - (0.09 ^ jump)
-			local adjustedMin = math.floor(min * damageMultiplier)
-			local adjustedMax = math.floor(max * damageMultiplier)
+			local damageMultiplier = 0.85 ^ (jump - 1)
+			local adjustedMin = math.floor(min * damageMultiplier + 0.5)
+			local adjustedMax = math.floor(max * damageMultiplier + 0.5)
 			doTargetCombatHealth(player, newCreature, effectData.combat, adjustedMin, adjustedMax, effectData.effect)
 			oldCreature = newCreature
 		else
@@ -104,26 +104,19 @@ local function executeChain(player, min, max, effectData)
 end
 
 local config = {
-	["energy"] = {effect = CONST_ME_YELLOW_ENERGYSHOCK, combat = COMBAT_ENERGYDAMAGE},
-	["earth"] = {effect = CONST_ME_GREEN_ENERGYSHOCK, combat = COMBAT_EARTHDAMAGE},
-	["physical"] = {effect = CONST_ME_WHITE_ENERGYSHOCK, combat = COMBAT_PHYSICALDAMAGE}
+	["energy"] = { effect = CONST_ME_YELLOW_ENERGYSHOCK, combat = COMBAT_ENERGYDAMAGE },
+	["earth"] = { effect = CONST_ME_GREEN_ENERGYSHOCK, combat = COMBAT_EARTHDAMAGE },
+	["physical"] = { effect = CONST_ME_WHITE_ENERGYSHOCK, combat = COMBAT_PHYSICALDAMAGE },
 }
 
 local function onGetFormulaValues(player, weaponDamage)
-	local basePower = 99
-
-	--[[
-	local helmetItem = player:getSlotItem(CONST_SLOT_HEAD)
-	if helmetItem and helmetItem:getId() == 50274 then -- coned hat of enlightenment
-		basePower = math.floor(basePower * 1.06) -- 6%
-	end
-	]]--
+	local basePower = 110
 
 	local skill = player:getSkillLevel(SKILL_FIRST)
 	local attackValue = calculateAttackValue(player, skill, weaponDamage)
 
-	local spellFactor = 2.0
-	local total = (basePower * attackValue) / 100 + (spellFactor * attackValue)
+	local spellFactor = 3.0
+	local total = ((basePower * attackValue) / 100 + (spellFactor * attackValue)) * 1.8
 
 	local minDamage = -total * 0.9
 	local maxDamage = -total * 1.1
@@ -134,7 +127,7 @@ end
 local spell = Spell("instant")
 
 function spell.onCastSpell(creature, var)
-	local maxTargets = 4
+	local maxTargets = 7
 	maxTargets = maxTargets + creature:getWheelSpellAdditionalTarget("Chained Penance") or 0
 
 	local legsItem = creature:getSlotItem(CONST_SLOT_LEGS)
@@ -152,20 +145,18 @@ function spell.onCastSpell(creature, var)
 		return false
 	end
 
-	local effectData = config["physical"]
 	local weaponDamage = 0
 
 	local weapon = creature:getSlotItem(CONST_SLOT_LEFT)
 	if weapon then
 		local itemType = weapon:getType()
-		if itemType and itemType.getElementalBond then
+		if itemType then
 			weaponDamage = itemType:getAttack()
-			local elementalBondType = itemType:getElementalBond()
-			if elementalBondType then
-				effectData = config[elementalBondType]
-			end
 		end
 	end
+
+	local elementalBondType = getWeaponElementalBond(weapon)
+	local effectData = config[elementalBondType] or config["physical"]
 
 	local min, max = onGetFormulaValues(creature, weaponDamage)
 	executeChain(creature, min, max, effectData)

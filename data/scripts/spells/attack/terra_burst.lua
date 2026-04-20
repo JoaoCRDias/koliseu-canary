@@ -1,15 +1,22 @@
 local combat = Combat()
 combat:setParameter(COMBAT_PARAM_TYPE, COMBAT_EARTHDAMAGE)
 combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_SMALLPLANTS)
-combat:setArea(createCombatArea(AREA_RING1_BURST3))
+combat:setArea(createCombatArea(AREA_BURST3))
 
-function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 7)
-	local max = (level / 5) + (maglevel * 10.5)
-	return -min, -max
+function onGetFormulaValues(player, skill, attack, factor)
+	local maglevel = player:getMagicLevel()
+	local skillTotal = maglevel * attack
+	local levelTotal = player:getLevel() / 4
+	-- Multiplicative formula
+	local minMult = ((skillTotal * 0.260) + 15) + levelTotal
+	local maxMult = ((skillTotal * 0.368) + 20) + levelTotal
+	-- Original formula as floor
+	local minOrig = levelTotal + (maglevel * 7)
+	local maxOrig = levelTotal + (maglevel * 10.5)
+	return -math.max(minMult, minOrig), -math.max(maxMult, maxOrig)
 end
 
-combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
+combat:setCallback(CALLBACK_PARAM_SKILLVALUE, "onGetFormulaValues")
 
 local spell = Spell("instant")
 

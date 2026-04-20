@@ -3,13 +3,20 @@ combat:setParameter(COMBAT_PARAM_TYPE, COMBAT_FIREDAMAGE)
 combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_FIREATTACK)
 combat:setParameter(COMBAT_PARAM_DISTANCEEFFECT, CONST_ANI_FIRE)
 
-function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 2.8) + 16
-	local max = (level / 5) + (maglevel * 4.4) + 28
-	return -min, -max
+function onGetFormulaValues(player, skill, attack, factor)
+	local maglevel = player:getMagicLevel()
+	local skillTotal = maglevel * attack
+	local levelTotal = player:getLevel() / 4
+	-- Multiplicative formula
+	local minMult = ((skillTotal * 0.089) + 16) + levelTotal
+	local maxMult = ((skillTotal * 0.178) + 28) + levelTotal
+	-- Original formula as floor
+	local minOrig = levelTotal + (maglevel * 2.8) + 16
+	local maxOrig = levelTotal + (maglevel * 4.4) + 28
+	return -math.max(minMult, minOrig), -math.max(maxMult, maxOrig)
 end
 
-combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
+combat:setCallback(CALLBACK_PARAM_SKILLVALUE, "onGetFormulaValues")
 
 local spell = Spell("instant")
 

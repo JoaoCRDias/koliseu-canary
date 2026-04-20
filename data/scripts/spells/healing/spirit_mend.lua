@@ -5,8 +5,8 @@ combat:setParameter(COMBAT_PARAM_DISPEL, CONDITION_PARALYZE)
 combat:setParameter(COMBAT_PARAM_AGGRESSIVE, false)
 
 function onGetFormulaValues(player, level, magicLevel)
-	local min = ((level * 0.2 + magicLevel * 12) + 75)
-	local max = ((level * 0.2 + magicLevel * 20) + 125)
+	local min = (level + magicLevel * 13.125) + 82.5
+	local max = (level + magicLevel * 21.875) + 137.5
 	return min, max
 end
 

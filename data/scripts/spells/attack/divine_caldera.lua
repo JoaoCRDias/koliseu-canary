@@ -3,13 +3,16 @@ combat:setParameter(COMBAT_PARAM_TYPE, COMBAT_HOLYDAMAGE)
 combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_HOLYAREA)
 combat:setArea(createCombatArea(AREA_CIRCLE3X3))
 
-function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 4)
-	local max = (level / 5) + (maglevel * 6)
-	return -min, -max
+function onGetFormulaValues(player, skill, attack, factor)
+	local level = player:getLevel()
+	local maglevel = player:getMagicLevel()
+	local min = (level / 3.8) + (maglevel * 12)
+	local max = (level / 3.8) + (maglevel * 24)
+	local weaponBonus = 1 + (attack * 0.002)
+	return -min * weaponBonus, -max * weaponBonus
 end
 
-combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
+combat:setCallback(CALLBACK_PARAM_SKILLVALUE, "onGetFormulaValues")
 
 local spell = Spell("instant")
 
@@ -26,7 +29,7 @@ spell:level(50)
 spell:mana(160)
 spell:isPremium(true)
 spell:isSelfTarget(true)
-spell:cooldown(4 * 1000)
+spell:cooldown(2 * 1000)
 spell:groupCooldown(2 * 1000)
 spell:needLearn(false)
 spell:vocation("paladin;true", "royal paladin;true")

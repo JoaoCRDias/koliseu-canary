@@ -3,13 +3,16 @@ combat:setParameter(COMBAT_PARAM_TYPE, COMBAT_ICEDAMAGE)
 combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_ICEATTACK)
 combat:setParameter(COMBAT_PARAM_DISTANCEEFFECT, CONST_ANI_SMALLICE)
 
-function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 1.403) + 8
-	local max = (level / 5) + (maglevel * 2.203) + 13
-	return -min, -max
+function onGetFormulaValues(player, skill, attack, factor)
+	local level = player:getLevel()
+	local maglevel = player:getMagicLevel()
+	local min = (level / 4) + (maglevel * 1.403) + 8
+	local max = (level / 4) + (maglevel * 2.203) + 13
+	local weaponBonus = 1 + (attack * 0.002)
+	return -min * weaponBonus, -max * weaponBonus
 end
 
-combat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
+combat:setCallback(CALLBACK_PARAM_SKILLVALUE, "onGetFormulaValues")
 
 local spell = Spell("instant")
 
@@ -23,7 +26,7 @@ spell:name("Ice Strike")
 spell:words("exori frigo")
 spell:castSound(SOUND_EFFECT_TYPE_SPELL_OR_RUNE)
 spell:impactSound(SOUND_EFFECT_TYPE_SPELL_ICE_STRIKE)
-spell:level(8)
+spell:level(15)
 spell:mana(20)
 spell:isPremium(true)
 spell:range(3)

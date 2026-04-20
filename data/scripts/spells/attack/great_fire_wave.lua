@@ -6,8 +6,9 @@ local area = createCombatArea(AREA_WAVE7, AREADIAGONAL_WAVE7)
 combat:setArea(area)
 
 function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 2.8) + 16
-	local max = (level / 5) + (maglevel * 4.4) + 28 -- TODO: Formulas (TibiaWiki says ~Strong Flame Strike but we need more acurracy)
+	-- Wave: 30% weaker than SD (20-40% range)
+	local min = ((level / 1.15) + (maglevel * 12.0) + 50) * 0.7
+	local max = ((level / 1.15) + (maglevel * 17.0) + 80) * 0.7
 	return -min, -max
 end
 

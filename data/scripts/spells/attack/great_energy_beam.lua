@@ -1,20 +1,27 @@
-local function formulaFunction(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 4)
-	local max = (level / 5) + (maglevel * 7)
-	return -min, -max
+local function formulaFunction(player, skill, attack, factor)
+	local maglevel = player:getMagicLevel()
+	local skillTotal = maglevel * attack
+	local levelTotal = player:getLevel() / 4
+	-- Multiplicative formula
+	local minMult = ((skillTotal * 0.123) + 10) + levelTotal
+	local maxMult = ((skillTotal * 0.232) + 15) + levelTotal
+	-- Original formula as floor
+	local minOrig = levelTotal + (maglevel * 4)
+	local maxOrig = levelTotal + (maglevel * 7)
+	return -math.max(minMult, minOrig), -math.max(maxMult, maxOrig)
 end
 
-function onGetFormulaValues(player, level, maglevel)
-	return formulaFunction(player, level, maglevel)
+function onGetFormulaValues(player, skill, attack, factor)
+	return formulaFunction(player, skill, attack, factor)
 end
 
-function onGetFormulaValuesWOD(player, level, maglevel)
-	return formulaFunction(player, level, maglevel)
+function onGetFormulaValuesWOD(player, skill, attack, factor)
+	return formulaFunction(player, skill, attack, factor)
 end
 
 local function createCombat(area, combatFunc)
 	local initCombat = Combat()
-	initCombat:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, combatFunc)
+	initCombat:setCallback(CALLBACK_PARAM_SKILLVALUE, combatFunc)
 	initCombat:setParameter(COMBAT_PARAM_TYPE, COMBAT_ENERGYDAMAGE)
 	initCombat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_ENERGYAREA)
 	initCombat:setArea(createCombatArea(area))

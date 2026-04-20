@@ -24,10 +24,10 @@ combatEarth:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_GREEN_FLURRYOFBLOWS)
 combatEarth:setArea(createCombatArea(AREA_WAVE))
 
 function onGetFormulaValues(player, skill, weaponDamage, attackFactor)
-	local basePower = 60
+	local basePower = 86
 	local attackValue = calculateAttackValue(player, skill, weaponDamage)
-	local spellFactor = 0.6
-	local total = (basePower * attackValue) / 100 + (spellFactor * attackValue)
+	local spellFactor = 1.2
+	local total = ((basePower * attackValue) / 100 + (spellFactor * attackValue)) * 1.8
 	return -total * 0.9, -total * 1.1
 end
 
@@ -48,17 +48,9 @@ local combatTypes = {
 local spell = Spell("instant")
 
 function spell.onCastSpell(creature, var)
-	local combat = combatPhysical
 	local weapon = creature:getSlotItem(CONST_SLOT_LEFT)
-	if weapon then
-		local itemType = weapon:getType()
-		if itemType and itemType.getElementalBond then
-			local elementalBondType = itemType:getElementalBond():lower()
-			if elementalBondType then
-				combat = combatTypes[elementalBondType] or combat
-			end
-		end
-	end
+	local elementalBondType = getWeaponElementalBond(weapon)
+	local combat = combatTypes[elementalBondType] or combatPhysical
 
 	creature:addHarmony(1)
 

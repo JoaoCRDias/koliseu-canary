@@ -4,8 +4,9 @@ combat:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_SMALLPLANTS)
 combat:setArea(createCombatArea(AREA_SQUAREWAVE5, AREADIAGONAL_SQUAREWAVE5))
 
 function onGetFormulaValues(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 3.5)
-	local max = (level / 5) + (maglevel * 7)
+	-- Wave: 30% weaker than SD (20-40% range)
+	local min = ((level / 1.15) + (maglevel * 12.0) + 50) * 0.7
+	local max = ((level / 1.15) + (maglevel * 17.0) + 80) * 0.7
 	return -min, -max
 end
 

@@ -13,10 +13,10 @@ combatEarth:setParameter(COMBAT_PARAM_TYPE, COMBAT_EARTHDAMAGE)
 combatEarth:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_GREEN_ENERGYPULSE)
 
 function onGetFormulaValues(player, skill, weaponDamage, attackFactor)
-	local basePower = 72
+	local basePower = 86.4
 	local attackValue = calculateAttackValue(player, skill, weaponDamage)
-	local spellFactor = 0.7
-	local total = (basePower * attackValue) / 100 + (spellFactor * attackValue)
+	local spellFactor = 0.84
+	local total = ((basePower * attackValue) / 100 + (spellFactor * attackValue)) * 1.5
 	return -total * 0.9, -total * 1.1
 end
 
@@ -37,17 +37,9 @@ local combatTypes = {
 local spell = Spell("instant")
 
 function spell.onCastSpell(creature, var)
-	local combat = combatPhysical
 	local weapon = creature:getSlotItem(CONST_SLOT_LEFT)
-	if weapon then
-		local itemType = weapon:getType()
-		if itemType and itemType.getElementalBond then
-			local elementalBondType = itemType:getElementalBond():lower()
-			if elementalBondType then
-				combat = combatTypes[elementalBondType] or combat
-			end
-		end
-	end
+	local elementalBondType = getWeaponElementalBond(weapon)
+	local combat = combatTypes[elementalBondType] or combatPhysical
 
 	creature:addHarmony(1)
 

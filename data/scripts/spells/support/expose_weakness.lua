@@ -8,9 +8,19 @@ function onTargetCreature(creature, target)
 		return true
 	end
 
+	local baseBuff = 105
+	local relicExtra = 0
+	if creature and creature:getPlayer() then
+		local rb = creature:getStorageValue(920028)
+		if rb and rb > 0 then
+			relicExtra = rb / 100
+			creature:sendTextMessage(MESSAGE_EVENT_ADVANCE, "[Relic] Expose Weakness +" .. relicExtra .. "% extra damage taken")
+		end
+	end
+
 	local condition = Condition(CONDITION_ATTRIBUTES)
 	condition:setParameter(CONDITION_PARAM_TICKS, 16000)
-	condition:setParameter(CONDITION_PARAM_BUFF_DAMAGERECEIVED, 105)
+	condition:setParameter(CONDITION_PARAM_BUFF_DAMAGERECEIVED, baseBuff + relicExtra)
 
 	local grade = 0
 	if creature and creature:getPlayer() then

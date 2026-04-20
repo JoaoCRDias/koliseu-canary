@@ -36,7 +36,14 @@ function spell.onCastSpell(creature, var)
 		end
 	end
 
-	addEvent(removeEmpowermentItem, 5000, position)
+	local empowerDuration = 5000
+	local relicBonus = creature:getStorageValue(920021)
+	if relicBonus and relicBonus > 0 then
+		local extraDuration = math.floor(empowerDuration * relicBonus / 10000)
+		empowerDuration = empowerDuration + extraDuration
+		creature:sendTextMessage(MESSAGE_EVENT_ADVANCE, "[Relic] Divine Empowerment duration +" .. (relicBonus / 100) .. "% (+" .. extraDuration .. "ms = " .. empowerDuration .. "ms)")
+	end
+	addEvent(removeEmpowermentItem, empowerDuration, position)
 	creature:onThinkWheelOfDestiny(true)
 	return true
 end

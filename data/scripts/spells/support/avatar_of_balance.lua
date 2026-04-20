@@ -1,4 +1,4 @@
-local condition = Condition(CONDITION_OUTFIT)
+local condition = Condition(CONDITION_OUTFIT, CONDITIONID_LEGS)
 condition:setOutfit({ lookType = 1823 }) -- Avatar of Balance lookType
 
 local spell = Spell("instant")
@@ -18,6 +18,12 @@ function spell.onCastSpell(creature, variant)
 	end
 
 	local duration = 15000
+	local relicBonus = creature:getStorageValue(920026)
+	if relicBonus and relicBonus > 0 then
+		local extraDuration = math.floor(duration * relicBonus / 10000)
+		duration = duration + extraDuration
+		creature:sendTextMessage(MESSAGE_EVENT_ADVANCE, "[Relic] Avatar of Balance duration +" .. (relicBonus / 100) .. "% (+" .. extraDuration .. "ms = " .. duration .. "ms)")
+	end
 	condition:setTicks(duration)
 	creature:getPosition():sendMagicEffect(CONST_ME_AVATAR_APPEAR)
 	creature:addCondition(condition)

@@ -10,6 +10,21 @@ combat:addCondition(condition)
 local spell = Spell("instant")
 
 function spell.onCastSpell(creature, variant)
+	if creature:getCondition(CONDITION_PARALYZE, CONDITIONID_COMBAT, 1) then
+		creature:getPosition():sendMagicEffect(CONST_ME_POFF)
+		creature:sendCancelMessage("You cannot use haste while paralyzed!")
+		return false
+	end
+	if creature:isPlayer() and CTF and CTF.state == "running" and creature:getStorageValue(CTF.config.storageHasFlag) > 0 then
+		creature:getPosition():sendMagicEffect(CONST_ME_POFF)
+		creature:sendCancelMessage("You cannot use haste while carrying the flag!")
+		return false
+	end
+	if creature:isPlayer() and Snowball and Snowball.state == "running" and creature:getStorageValue(Snowball.config.storageActive) == 1 then
+		creature:getPosition():sendMagicEffect(CONST_ME_POFF)
+		creature:sendCancelMessage("You cannot use haste during the Snowball Fight!")
+		return false
+	end
 	local summons = creature:getSummons()
 	if summons and type(summons) == "table" and #summons > 0 then
 		for i = 1, #summons do

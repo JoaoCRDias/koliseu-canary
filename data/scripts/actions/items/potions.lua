@@ -24,7 +24,6 @@ antidote:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_MAGIC_BLUE)
 antidote:setParameter(COMBAT_PARAM_DISPEL, CONDITION_POISON)
 antidote:setParameter(COMBAT_PARAM_AGGRESSIVE, false)
 antidote:setParameter(COMBAT_PARAM_TARGETCASTERORTOPMOST, true)
-
 local transcendence = Condition(CONDITION_ATTRIBUTES)
 transcendence:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
 transcendence:setParameter(CONDITION_PARAM_SUBID, JeanPierreMelee)
@@ -43,25 +42,27 @@ local function magicshield(player)
 end
 
 local potions = {
-	[236] = { health = { 250, 350 }, vocations = { VOCATION.BASE_ID.PALADIN, VOCATION.BASE_ID.KNIGHT, VOCATION.BASE_ID.MONK }, level = 50, flask = 283, description = "Only knights, monks and paladins of level 50 or above may drink this fluid." },
-	[237] = { mana = { 115, 185 }, level = 50, flask = 283, description = "Only players of level 50 or above may drink this fluid." },
-	[238] = { mana = { 150, 250 }, vocations = { VOCATION.BASE_ID.SORCERER, VOCATION.BASE_ID.DRUID, VOCATION.BASE_ID.PALADIN, VOCATION.BASE_ID.MONK }, level = 80, flask = 284, description = "Only sorcerers, druids, monks and paladins of level 80 or above may drink this fluid." },
-	[239] = { health = { 425, 575 }, vocations = { VOCATION.BASE_ID.KNIGHT }, level = 80, flask = 284, description = "Only knights of level 80 or above may drink this fluid." },
-	[266] = { health = { 125, 175 }, flask = 285 },
-	[268] = { mana = { 75, 125 }, flask = 285 },
+	[236] = { health = { 800, 1120 }, vocations = { VOCATION.BASE_ID.PALADIN, VOCATION.BASE_ID.KNIGHT }, level = 50, flask = 283, description = "Only knights, paladins of level 50 or above may drink this fluid." },
+	[237] = { mana = { 368, 592 }, level = 50, flask = 283, description = "Only players of level 50 or above may drink this fluid." },
+	[238] = { mana = { 480, 800 }, vocations = { VOCATION.BASE_ID.SORCERER, VOCATION.BASE_ID.DRUID, VOCATION.BASE_ID.PALADIN }, level = 80, flask = 284, description = "Only sorcerers, druids, paladins of level 80 or above may drink this fluid." },
+	[239] = { health = { 1360, 1840 }, vocations = { VOCATION.BASE_ID.KNIGHT }, level = 80, flask = 284, description = "Only knights of level 80 or above may drink this fluid." },
+	[266] = { health = { 400, 560 }, flask = 285 },
+	[268] = { mana = { 240, 400 }, flask = 285 },
 	[6558] = { transform = { id = { 236, 237 } }, effect = CONST_ME_DRAWBLOOD },
-	[7439] = { condition = berserk, effect = CONST_ME_MAGIC_RED, text = "You feel stronger.", achievement = "Berserker" },
-	[7440] = { condition = mastermind, effect = CONST_ME_MAGIC_BLUE, text = "You feel smarter.", achievement = "Mastermind" },
-	[7443] = { condition = bullseye, effect = CONST_ME_MAGIC_GREEN, text = "You feel more accurate.", achievement = "Sharpshooter" },
-	[7642] = { health = { 250, 350 }, mana = { 100, 200 }, vocations = { VOCATION.BASE_ID.PALADIN, VOCATION.BASE_ID.MONK }, level = 80, flask = 284, description = "Only monks and paladins of level 80 or above may drink this fluid." },
-	[7643] = { health = { 650, 850 }, vocations = { VOCATION.BASE_ID.KNIGHT }, level = 130, flask = 284, description = "Only knights of level 130 or above may drink this fluid." },
+	[7439] = { vocations = { VOCATION.BASE_ID.KNIGHT }, condition = berserk, effect = CONST_ME_MAGIC_RED, description = "Only knights may drink this potion.", text = "You feel stronger.", achievement = "Berserker" },
+	[7440] = { vocations = { VOCATION.BASE_ID.SORCERER, VOCATION.BASE_ID.DRUID }, condition = mastermind, effect = CONST_ME_MAGIC_BLUE, description = "Only sorcerers and druids may drink this potion.", text = "You feel smarter.", achievement = "Mastermind" },
+	[7443] = { vocations = { VOCATION.BASE_ID.PALADIN }, condition = bullseye, effect = CONST_ME_MAGIC_GREEN, description = "Only paladins may drink this potion.", text = "You feel more accurate.", achievement = "Sharpshooter" },
+	[7642] = { health = { 800, 1120 }, mana = { 320, 640 }, vocations = { VOCATION.BASE_ID.PALADIN }, level = 80, flask = 284, description = "Only paladins of level 80 or above may drink this fluid." },
+	[7643] = { health = { 2080, 2720 }, vocations = { VOCATION.BASE_ID.KNIGHT }, level = 130, flask = 284, description = "Only knights of level 130 or above may drink this fluid." },
 	[7644] = { combat = antidote, flask = 285 },
-	[7876] = { health = { 60, 90 }, flask = 285 },
+	[7876] = { health = { 192, 288 }, flask = 285 },
 	[23373] = { mana = { 425, 575 }, vocations = { VOCATION.BASE_ID.SORCERER, VOCATION.BASE_ID.DRUID }, level = 130, flask = 284, description = "Only druids and sorcerers of level 130 or above may drink this fluid." },
-	[23374] = { health = { 420, 580 }, mana = { 250, 350 }, vocations = { VOCATION.BASE_ID.PALADIN, VOCATION.BASE_ID.MONK }, level = 130, flask = 284, description = "Only monks and paladins of level 130 or above may drink this fluid." },
+	[23374] = { health = { 420, 580 }, mana = { 250, 350 }, vocations = { VOCATION.BASE_ID.PALADIN }, level = 130, flask = 284, description = "Only paladins and monks of level 130 or above may drink this fluid." },
 	[23375] = { health = { 875, 1125 }, vocations = { VOCATION.BASE_ID.KNIGHT }, level = 200, flask = 284, description = "Only knights of level 200 or above may drink this fluid." },
+	[60258] = { mana = { 1275, 1725 }, vocations = { VOCATION.BASE_ID.SORCERER, VOCATION.BASE_ID.DRUID }, level = 130, flask = 284, description = "Only druids and sorcerers of level 130 or above may drink this fluid." },
+	[60259] = { health = { 2625, 3375 }, vocations = { VOCATION.BASE_ID.KNIGHT }, level = 200, flask = 284, description = "Only knights of level 200 or above may drink this fluid." },
+	[60260] = { health = { 1260, 1740 }, mana = { 750, 1050 }, vocations = { VOCATION.BASE_ID.PALADIN }, level = 130, flask = 284, description = "Only paladins of level 130 or above may drink this fluid." },
 	[35563] = { vocations = { VOCATION.BASE_ID.SORCERER, VOCATION.BASE_ID.DRUID }, level = 14, func = magicshield, effect = CONST_ME_ENERGYAREA, description = "Only sorcerers and druids of level 14 or above may drink this potion." },
-	[49271] = { condition = transcendence, effect = CONST_ME_MAGIC_RED, text = "You feel more balanced.", achievement = "Inner Peace" },
 }
 
 local flaskPotion = Action()
@@ -104,15 +105,12 @@ function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHot
 		end
 
 		if potion.health then
-			local baseMin = potion.health[1]
-			local baseMax = potion.health[2]
-			local minHealth = math.floor(baseMin * potionMultiplier)
-			local maxHealth = math.floor(baseMax * potionMultiplier)
-			-- Snapshot post-badge range so we can attribute each bonus separately in the message
-			local afterBadgeMin = minHealth
-			local afterBadgeMax = maxHealth
+			local baseMinHealth = potion.health[1]
+			local baseMaxHealth = potion.health[2]
+			local minHealth = math.floor(baseMinHealth * potionMultiplier)
+			local maxHealth = math.floor(baseMaxHealth * potionMultiplier)
 
-			-- Relic: Potion healing bonus (storage 920030, value stored as bps, 10000 = 100%)
+			-- Relic: Potion healing bonus
 			local relicBonus = player:getStorageValue(920030)
 			if relicBonus and relicBonus > 0 then
 				local extraMin = math.floor(minHealth * relicBonus / 10000)
@@ -121,57 +119,32 @@ function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHot
 				maxHealth = maxHealth + extraMax
 			end
 
-			local parts = {}
-			if badgeBonusPercent > 0 then
-				local avgBonus = math.floor(((afterBadgeMin + afterBadgeMax) / 2) - ((baseMin + baseMax) / 2) + 0.5)
-				if avgBonus > 0 then
-					parts[#parts + 1] = string.format("badge +%d (%d%%)", avgBonus, badgeBonusPercent)
-				end
-			end
-			if relicBonus and relicBonus > 0 then
-				local avgRelicBonus = math.floor(((minHealth + maxHealth) / 2) - ((afterBadgeMin + afterBadgeMax) / 2) + 0.5)
-				if avgRelicBonus > 0 then
-					parts[#parts + 1] = string.format("+%d from relic", avgRelicBonus)
-				end
-			end
-			local exString = table.concat(parts, ", ")
+			local hpBefore = target:getHealth()
+			doTargetCombatHealth(player, target, COMBAT_HEALING, minHealth, maxHealth, CONST_ME_MAGIC_BLUE)
+			local realHeal = target:getHealth() - hpBefore
 
-			doTargetCombatHealth(player, target, COMBAT_HEALING, minHealth, maxHealth, CONST_ME_MAGIC_BLUE, ORIGIN_SPELL, exString)
+			if badgeBonusPercent > 0 and realHeal > 0 then
+				local badgeBonusValue = math.floor(realHeal * badgeBonusPercent / (100 + badgeBonusPercent) + 0.5)
+				if badgeBonusValue > 0 then
+					target:sendTextMessage(MESSAGE_HEALED, string.format("(badge +%d (%d%%))", badgeBonusValue, badgeBonusPercent))
+				end
+			end
 		end
 
 		if potion.mana then
-			local baseMin = potion.mana[1]
-			local baseMax = potion.mana[2]
-			local minMana = math.floor(baseMin * potionMultiplier)
-			local maxMana = math.floor(baseMax * potionMultiplier)
-			local afterBadgeMin = minMana
-			local afterBadgeMax = maxMana
+			local minMana = math.floor(potion.mana[1] * potionMultiplier)
+			local maxMana = math.floor(potion.mana[2] * potionMultiplier)
 
-			-- Relic: Potion healing bonus (storage 920030) also boosts mana potions
-			local relicBonus = player:getStorageValue(920030)
-			if relicBonus and relicBonus > 0 then
-				local extraMin = math.floor(minMana * relicBonus / 10000)
-				local extraMax = math.floor(maxMana * relicBonus / 10000)
-				minMana = minMana + extraMin
-				maxMana = maxMana + extraMax
-			end
+			local manaBefore = target:getMana()
+			doTargetCombatMana(0, target, minMana, maxMana, CONST_ME_MAGIC_BLUE)
+			local realMana = target:getMana() - manaBefore
 
-			local parts = {}
-			if badgeBonusPercent > 0 then
-				local avgBonus = math.floor(((afterBadgeMin + afterBadgeMax) / 2) - ((baseMin + baseMax) / 2) + 0.5)
-				if avgBonus > 0 then
-					parts[#parts + 1] = string.format("badge +%d mana (%d%%)", avgBonus, badgeBonusPercent)
+			if badgeBonusPercent > 0 and realMana > 0 then
+				local badgeBonusValue = math.floor(realMana * badgeBonusPercent / (100 + badgeBonusPercent) + 0.5)
+				if badgeBonusValue > 0 then
+					target:sendTextMessage(MESSAGE_HEALED, string.format("(badge +%d mana (%d%%))", badgeBonusValue, badgeBonusPercent))
 				end
 			end
-			if relicBonus and relicBonus > 0 then
-				local avgRelicBonus = math.floor(((minMana + maxMana) / 2) - ((afterBadgeMin + afterBadgeMax) / 2) + 0.5)
-				if avgRelicBonus > 0 then
-					parts[#parts + 1] = string.format("+%d mana from relic", avgRelicBonus)
-				end
-			end
-			local exString = table.concat(parts, ", ")
-
-			doTargetCombatMana(0, target, minMana, maxMana, CONST_ME_MAGIC_BLUE, ORIGIN_SPELL, exString)
 		end
 
 		if potion.combat then
@@ -186,7 +159,7 @@ function flaskPotion.onUse(player, item, fromPosition, target, toPosition, isHot
 		target:say("Aaaah...", MESSAGE_POTION)
 
 		local deactivatedFlasks = player:kv():get("talkaction.potions.flask") or false
-		if not deactivatedFlasks then
+		if not deactivatedFlasks and configManager.getBoolean(configKeys.REMOVE_POTION_CHARGES) then
 			if fromPosition.x == CONTAINER_POSITION then
 				player:addItem(potion.flask, 1)
 			else

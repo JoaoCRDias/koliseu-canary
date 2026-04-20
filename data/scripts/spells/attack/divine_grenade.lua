@@ -3,7 +3,9 @@ combatGrenade:setParameter(COMBAT_PARAM_TYPE, COMBAT_HOLYDAMAGE)
 combatGrenade:setArea(createCombatArea(AREA_CIRCLE2X2))
 combatGrenade:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_HOLYDAMAGE)
 
-function onGetFormulaValues(player, level, maglevel)
+function onGetFormulaValues(player, skill, attack, factor)
+	local level = player:getLevel()
+	local maglevel = player:getMagicLevel()
 	local min = (level / 5) + (maglevel * 4)
 	local max = (level / 5) + (maglevel * 6)
 
@@ -18,10 +20,11 @@ function onGetFormulaValues(player, level, maglevel)
 	min = min * multiplier
 	max = max * multiplier
 
-	return -min, -max
+	local weaponBonus = 1 + (attack * 0.002)
+	return -min * weaponBonus, -max * weaponBonus
 end
 
-combatGrenade:setCallback(CALLBACK_PARAM_LEVELMAGICVALUE, "onGetFormulaValues")
+combatGrenade:setCallback(CALLBACK_PARAM_SKILLVALUE, "onGetFormulaValues")
 
 local explodeGrenade = function(position, playerId)
 	local tile = Tile(position)
@@ -52,8 +55,8 @@ function onTargetCreature(creature, target)
 	end
 
 	local position = creature:getPosition():getWithinRange(target:getPosition(), 4)
-	addEvent(explodeGrenade, 3000, position, creature:getId())
-	addEvent(removeGrenadeEffect, 3000, position)
+	addEvent(explodeGrenade, 1000, position, creature:getId())
+	addEvent(removeGrenadeEffect, 1000, position)
 	return true
 end
 
@@ -75,17 +78,11 @@ function spell.onCastSpell(creature, var)
 		return false
 	end
 
-	local cooldownByGrade = { 26, 20, 14 }
-	local cooldown = cooldownByGrade[grade]
-
 	var.instantName = "Divine Grenade Cast"
 	if combatCast:execute(creature, var) then
 		local target = Creature(var:getNumber())
 		local position = creature:getPosition():getWithinRange(target:getPosition(), 4)
 		position:sendMagicEffect(CONST_ME_DIVINE_GRENADE)
-		local condition = Condition(CONDITION_SPELLCOOLDOWN, CONDITIONID_DEFAULT, 258)
-		condition:setTicks((cooldown * 1000) / configManager.getFloat(configKeys.RATE_SPELL_COOLDOWN))
-		creature:addCondition(condition)
 		return true
 	end
 	return false
@@ -101,7 +98,7 @@ spell:isPremium(true)
 spell:range(7)
 spell:needTarget(true)
 spell:blockWalls(true)
-spell:cooldown(1000) -- Cooldown is calculated on the casting
+spell:cooldown(26 * 1000)
 spell:groupCooldown(2 * 1000)
 spell:needLearn(true)
 spell:vocation("paladin;true", "royal paladin;true")

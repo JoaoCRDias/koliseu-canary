@@ -16,7 +16,7 @@ function onGetFormulaValues(player, skill, weaponDamage, attackFactor)
 	local basePower = 62
 	local attackValue = calculateAttackValue(player, skill, weaponDamage)
 	local spellFactor = 1.0
-	local total = (basePower * attackValue) / 100 + (spellFactor * attackValue)
+	local total = ((basePower * attackValue) / 100 + (spellFactor * attackValue)) * 1.5
 	return -total * 0.9, -total * 1.1
 end
 
@@ -37,17 +37,9 @@ local combatTypes = {
 local spell = Spell("instant")
 
 function spell.onCastSpell(creature, var)
-	local combat = combatPhysical
 	local weapon = creature:getSlotItem(CONST_SLOT_LEFT)
-	if weapon then
-		local itemType = weapon:getType()
-		if itemType then
-			local elementalBondType = itemType:getElementalBond()
-			if elementalBondType then
-				combat = combatTypes[elementalBondType] or combat
-			end
-		end
-	end
+	local elementalBondType = getWeaponElementalBond(weapon)
+	local combat = combatTypes[elementalBondType] or combatPhysical
 
 	return combat:execute(creature, var)
 
@@ -81,7 +73,8 @@ function spell.onCastSpell(creature, var)
 	end
 
 	return success
-	]]--
+	]]
+	--
 end
 
 spell:group("attack")

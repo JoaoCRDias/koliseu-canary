@@ -1,6 +1,7 @@
 local function formulaFunction(player, level, maglevel)
-	local min = (level / 5) + (maglevel * 4.5)
-	local max = (level / 5) + (maglevel * 9)
+	-- Wave: 30% weaker than SD (20-40% range)
+	local min = ((level / 1.15) + (maglevel * 12.0) + 50) * 0.7
+	local max = ((level / 1.15) + (maglevel * 17.0) + 80) * 0.7
 	return -min, -max
 end
 

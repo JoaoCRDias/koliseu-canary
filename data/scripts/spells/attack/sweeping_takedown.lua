@@ -45,10 +45,10 @@ combatEarth2:setParameter(COMBAT_PARAM_EFFECT, CONST_ME_GREEN_EXPLOSIONHIT)
 combatEarth2:setArea(createCombatArea(AREA_WAVE_2))
 
 function onGetFormulaValues(player, skill, weaponDamage, attackFactor)
-	local basePower = 48
+	local basePower = 58
 	local attackValue = calculateAttackValue(player, skill, weaponDamage)
-	local spellFactor = 1.0
-	local total = (basePower * attackValue) / 100 + (spellFactor * attackValue)
+	local spellFactor = 1.2
+	local total = ((basePower * attackValue) / 100 + (spellFactor * attackValue)) * 2.4
 	return -total * 0.9, -total * 1.1
 end
 
@@ -81,19 +81,10 @@ local combatTypes2 = {
 local spell = Spell("instant")
 
 function spell.onCastSpell(creature, var)
-	local combat1 = combatPhysical1
-	local combat2 = combatPhysical2
 	local weapon = creature:getSlotItem(CONST_SLOT_LEFT)
-	if weapon then
-		local itemType = weapon:getType()
-		if itemType and itemType.getElementalBond then
-			local elementalBondType = itemType:getElementalBond():lower()
-			if elementalBondType then
-				combat1 = combatTypes1[elementalBondType] or combat1
-				combat2 = combatTypes2[elementalBondType] or combat2
-			end
-		end
-	end
+	local elementalBondType = getWeaponElementalBond(weapon)
+	local combat1 = combatTypes1[elementalBondType] or combatPhysical1
+	local combat2 = combatTypes2[elementalBondType] or combatPhysical2
 
 	combat1:execute(creature, var)
 	combat2:execute(creature, var)
