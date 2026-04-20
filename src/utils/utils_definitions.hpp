@@ -542,6 +542,8 @@ enum ItemID_t : uint16_t {
 	ITEM_DOCUMENT_RO = 2834, // Read-only
 
 	ITEM_GOLD_POUCH = 60300,
+	ITEM_AMULET_POUCH = 60161,
+	ITEM_RING_POUCH = 60162,
 
 	// GemBag system (container + placeholder + fixed-slot lock visuals)
 	ITEM_GEM_BAG = 60165,
