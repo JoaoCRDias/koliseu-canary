@@ -8,7 +8,7 @@ defenseCondition:setParameter(CONDITION_PARAM_FORCEUPDATE, true)
 local roastedDragonWings = Action()
 
 function roastedDragonWings.onUse(player, item, fromPosition, target, toPosition, isHotkey)
-	if player:hasExhaustion("special-foods-cooldown") then
+	if player:hasExhaustion("roasted-dragon-wings-cooldown") then
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You need to wait before using it again.")
 		return true
 	end
@@ -17,7 +17,7 @@ function roastedDragonWings.onUse(player, item, fromPosition, target, toPosition
 	player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You feel less vulnerable.")
 	player:say("Chomp.", TALKTYPE_MONSTER_SAY)
 	player:getPosition():sendMagicEffect(CONST_ME_MAGIC_RED)
-	player:setExhaustion("special-foods-cooldown", 10 * 60)
+	player:setExhaustion("roasted-dragon-wings-cooldown", 10 * 60)
 	item:remove(1)
 	return true
 end

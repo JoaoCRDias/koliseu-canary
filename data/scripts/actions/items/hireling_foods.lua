@@ -42,7 +42,8 @@ function hirelingFoods.onUse(player, item, fromPosition, target, toPosition, isH
 		return true
 	end
 
-	if player:hasExhaustion("special-foods-cooldown") then
+	local cooldownKey = "hireling-food-" .. item.itemid .. "-cooldown"
+	if player:hasExhaustion(cooldownKey) then
 		player:sendCancelMessage("You're still too full to eat any gourmet dishes for a while.")
 		return true
 	end
@@ -56,7 +57,7 @@ function hirelingFoods.onUse(player, item, fromPosition, target, toPosition, isH
 	end
 
 	player:say(dish.message, TALKTYPE_MONSTER_SAY)
-	player:setExhaustion("special-foods-cooldown", 10 * 60)
+	player:setExhaustion(cooldownKey, 10 * 60)
 
 	item:remove(1)
 	return true

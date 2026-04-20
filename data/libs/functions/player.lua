@@ -72,6 +72,47 @@ function Player.sendExtendedOpcode(self, opcode, buffer)
 	return true
 end
 
+--- Delivers an item to the player with layered fallbacks: store inbox first,
+--- then main inventory, then the ground. Used by store packages and similar
+--- "we must not lose this reward" flows.
+--- @param itemId number The item ID to deliver
+--- @param count number The amount to deliver
+--- @param source string|nil Optional label for logging (e.g. "April Booster Package")
+--- @return Item|nil item The delivered item, or nil if all fallbacks failed
+--- @return string location Where it landed: "inbox", "inventory", "ground", or "failed"
+function Player:safeDeliverItem(itemId, count, source)
+	count = count or 1
+	source = source or "unknown"
+
+	local inbox = self:getStoreInbox()
+	if inbox then
+		local item = inbox:addItem(itemId, count, INDEX_WHEREEVER, FLAG_NOLIMIT)
+		if item then
+			return item, "inbox"
+		end
+	end
+
+	local item = self:addItem(itemId, count)
+	if item then
+		logger.warn("[safeDeliverItem] {} - Item {} x{} delivered to inventory (inbox full). Source: {}", self:getName(), itemId, count, source)
+		return item, "inventory"
+	end
+
+	local groundItem = Game.createItem(itemId, count)
+	if groundItem then
+		local ret = Tile(self:getPosition()):addItemEx(groundItem)
+		if ret == RETURNVALUE_NOERROR then
+			logger.warn("[safeDeliverItem] {} - Item {} x{} dropped on ground (inbox+inventory full). Source: {}", self:getName(), itemId, count, source)
+			self:sendTextMessage(MESSAGE_EVENT_ADVANCE, string.format("[%s] Some items were dropped on the ground because your inbox and inventory are full!", source))
+			return groundItem, "ground"
+		end
+		groundItem:remove()
+	end
+
+	logger.error("[safeDeliverItem] {} - FAILED to deliver item {} x{}. All fallbacks failed. Source: {}", self:getName(), itemId, count, source)
+	return nil, "failed"
+end
+
 APPLY_SKILL_MULTIPLIER = true
 local addSkillTriesFunc = Player.addSkillTries
 function Player.addSkillTries(...)

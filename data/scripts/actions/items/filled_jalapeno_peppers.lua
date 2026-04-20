@@ -5,7 +5,7 @@ speedCondition:setParameter(CONDITION_PARAM_SPEED, 729)
 local filledJalapenoPeppers = Action()
 
 function filledJalapenoPeppers.onUse(player, item, fromPosition, target, toPosition, isHotkey)
-	if player:hasExhaustion("special-foods-cooldown") then
+	if player:hasExhaustion("filled-jalapeno-peppers-cooldown") then
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You need to wait before using it again.")
 		return true
 	end
@@ -14,7 +14,7 @@ function filledJalapenoPeppers.onUse(player, item, fromPosition, target, toPosit
 	player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Your speed has been increased.")
 	player:say("Munch.", TALKTYPE_MONSTER_SAY)
 	player:getPosition():sendMagicEffect(CONST_ME_MAGIC_RED)
-	player:setExhaustion("special-foods-cooldown", 10 * 60)
+	player:setExhaustion("filled-jalapeno-peppers-cooldown", 10 * 60)
 	item:remove(1)
 	return true
 end

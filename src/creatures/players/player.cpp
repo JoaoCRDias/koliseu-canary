@@ -10398,15 +10398,16 @@ bool Player::saySpell(SpeakClasses type, const std::string &text, bool isGhostMo
 		spectators = (*spectatorsPtr);
 	}
 
-	int32_t valueEmote = 0;
+	// Emote decision is per-player (caster): storage STORAGEVALUE_EMOTE == 1
+	// means the caster disabled emote and their spells render as SPELL_USE;
+	// any other value (default) renders as MONSTER_SAY. Toggled via !settings.
+	const bool emoteEnabled = getStorageValue(STORAGEVALUE_EMOTE) != 1;
+
 	// Send to client
 	for (const auto &spectator : spectators) {
 		if (const auto &tmpPlayer = spectator->getPlayer()) {
-			if (g_configManager().getBoolean(EMOTE_SPELLS)) {
-				valueEmote = tmpPlayer->getStorageValue(STORAGEVALUE_EMOTE);
-			}
 			if (!isGhostMode || tmpPlayer->canSeeCreature(static_self_cast<Player>())) {
-				if (valueEmote == 1) {
+				if (emoteEnabled) {
 					tmpPlayer->sendCreatureSay(static_self_cast<Player>(), TALKTYPE_MONSTER_SAY, text, pos);
 				} else {
 					tmpPlayer->sendCreatureSay(static_self_cast<Player>(), TALKTYPE_SPELL_USE, text, pos);

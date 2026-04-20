@@ -1,3 +1,93 @@
+local berserkBuff = Condition(CONDITION_ATTRIBUTES)
+berserkBuff:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+berserkBuff:setParameter(CONDITION_PARAM_SUBID, JeanPierreMelee)
+berserkBuff:setParameter(CONDITION_PARAM_SKILL_MELEE, 5)
+berserkBuff:setParameter(CONDITION_PARAM_SKILL_SHIELD, -10)
+berserkBuff:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local mastermindBuff = Condition(CONDITION_ATTRIBUTES)
+mastermindBuff:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+mastermindBuff:setParameter(CONDITION_PARAM_SUBID, JeanPierreMagicLevel)
+mastermindBuff:setParameter(CONDITION_PARAM_STAT_MAGICPOINTS, 3)
+mastermindBuff:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local bullseyeBuff = Condition(CONDITION_ATTRIBUTES)
+bullseyeBuff:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+bullseyeBuff:setParameter(CONDITION_PARAM_SUBID, JeanPierreDistance)
+bullseyeBuff:setParameter(CONDITION_PARAM_SKILL_DISTANCE, 5)
+bullseyeBuff:setParameter(CONDITION_PARAM_SKILL_SHIELD, -10)
+bullseyeBuff:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local transcendenceBuff = Condition(CONDITION_ATTRIBUTES)
+transcendenceBuff:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+transcendenceBuff:setParameter(CONDITION_PARAM_SUBID, JeanPierreMelee)
+transcendenceBuff:setParameter(CONDITION_PARAM_SKILL_FIST, 4)
+transcendenceBuff:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local berserkBuffFood = Condition(CONDITION_ATTRIBUTES)
+berserkBuffFood:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+berserkBuffFood:setParameter(CONDITION_PARAM_SUBID, JeanPierreMelee)
+berserkBuffFood:setParameter(CONDITION_PARAM_SKILL_MELEE, 10)
+berserkBuffFood:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local mastermindBuffFood = Condition(CONDITION_ATTRIBUTES)
+mastermindBuffFood:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+mastermindBuffFood:setParameter(CONDITION_PARAM_SUBID, JeanPierreMagicLevel)
+mastermindBuffFood:setParameter(CONDITION_PARAM_STAT_MAGICPOINTS, 6)
+mastermindBuffFood:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local bullseyeBuffFood = Condition(CONDITION_ATTRIBUTES)
+bullseyeBuffFood:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+bullseyeBuffFood:setParameter(CONDITION_PARAM_SUBID, JeanPierreDistance)
+bullseyeBuffFood:setParameter(CONDITION_PARAM_SKILL_DISTANCE, 10)
+bullseyeBuffFood:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local transcendenceBuffFood = Condition(CONDITION_ATTRIBUTES)
+transcendenceBuffFood:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+transcendenceBuffFood:setParameter(CONDITION_PARAM_SUBID, JeanPierreMelee)
+transcendenceBuffFood:setParameter(CONDITION_PARAM_SKILL_FIST, 8)
+transcendenceBuffFood:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local berserkBuffFoodStage2 = Condition(CONDITION_ATTRIBUTES)
+berserkBuffFoodStage2:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+berserkBuffFoodStage2:setParameter(CONDITION_PARAM_SUBID, JeanPierreMelee)
+berserkBuffFoodStage2:setParameter(CONDITION_PARAM_SKILL_MELEE, 20)
+berserkBuffFoodStage2:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local mastermindBuffFoodStage2 = Condition(CONDITION_ATTRIBUTES)
+mastermindBuffFoodStage2:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+mastermindBuffFoodStage2:setParameter(CONDITION_PARAM_SUBID, JeanPierreMagicLevel)
+mastermindBuffFoodStage2:setParameter(CONDITION_PARAM_STAT_MAGICPOINTS, 16)
+mastermindBuffFoodStage2:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local bullseyeBuffFoodStage2 = Condition(CONDITION_ATTRIBUTES)
+bullseyeBuffFoodStage2:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+bullseyeBuffFoodStage2:setParameter(CONDITION_PARAM_SUBID, JeanPierreDistance)
+bullseyeBuffFoodStage2:setParameter(CONDITION_PARAM_SKILL_DISTANCE, 20)
+bullseyeBuffFoodStage2:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local transcendenceBuffFoodStage2 = Condition(CONDITION_ATTRIBUTES)
+transcendenceBuffFoodStage2:setParameter(CONDITION_PARAM_TICKS, 10 * 60 * 1000)
+transcendenceBuffFoodStage2:setParameter(CONDITION_PARAM_SUBID, JeanPierreMelee)
+transcendenceBuffFoodStage2:setParameter(CONDITION_PARAM_SKILL_FIST, 16)
+transcendenceBuffFoodStage2:setParameter(CONDITION_PARAM_BUFF_SPELL, true)
+
+local infiniteFoodBuffs = {
+	[VOCATION.BASE_ID.KNIGHT] = { condition = berserkBuffFood, text = "You feel stronger.", effect = CONST_ME_MAGIC_RED },
+	[VOCATION.BASE_ID.SORCERER] = { condition = mastermindBuffFood, text = "You feel smarter.", effect = CONST_ME_MAGIC_BLUE },
+	[VOCATION.BASE_ID.DRUID] = { condition = mastermindBuffFood, text = "You feel smarter.", effect = CONST_ME_MAGIC_BLUE },
+	[VOCATION.BASE_ID.PALADIN] = { condition = bullseyeBuffFood, text = "You feel more accurate.", effect = CONST_ME_MAGIC_GREEN },
+	[VOCATION.BASE_ID.MONK] = { condition = transcendenceBuffFood, text = "You feel more balanced.", effect = CONST_ME_MAGIC_RED },
+}
+
+local infiniteFoodBuffsStage2 = {
+	[VOCATION.BASE_ID.KNIGHT] = { condition = berserkBuffFoodStage2, text = "You feel stronger.", effect = CONST_ME_MAGIC_RED },
+	[VOCATION.BASE_ID.SORCERER] = { condition = mastermindBuffFoodStage2, text = "You feel smarter.", effect = CONST_ME_MAGIC_BLUE },
+	[VOCATION.BASE_ID.DRUID] = { condition = mastermindBuffFoodStage2, text = "You feel smarter.", effect = CONST_ME_MAGIC_BLUE },
+	[VOCATION.BASE_ID.PALADIN] = { condition = bullseyeBuffFoodStage2, text = "You feel more accurate.", effect = CONST_ME_MAGIC_GREEN },
+	[VOCATION.BASE_ID.MONK] = { condition = transcendenceBuffFoodStage2, text = "You feel more balanced.", effect = CONST_ME_MAGIC_RED },
+}
+
 local foods = {
 	[3606] = { 6, "Gulp." }, -- egg
 	[3250] = { 5, "Crunch." }, -- carrot
@@ -132,6 +222,8 @@ local foods = {
 	[48509] = { 120, "Yum." }, -- resinous fish fin
 	[48511] = { 120, "Yum." }, -- resin parasite
 	[48544] = { 124, "Yum." }, -- wad of fairy floss
+	[60023] = { 22, "Delicious" }, -- brown mushroom
+	[60055] = { 22, "Delicious" }, -- brown mushroom
 }
 
 local food = Action()
@@ -142,33 +234,35 @@ function food.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 		return false
 	end
 
-	local existingCondition = player:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
-	if not existingCondition then
-		player:sendTextMessage(MESSAGE_FAILURE, "Regeneration condition not found.")
-		return true
-	end
-
-	local foodTime = itemFood[1] * 12000
-
-	local currentFoodTicks = existingCondition:getFoodTicks()
-	if currentFoodTicks + foodTime > 1200000 then
+	local condition = player:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
+	if condition and math.floor(condition:getTicks() / 1000 + (itemFood[1] * 12)) >= 1200 then
 		player:sendTextMessage(MESSAGE_FAILURE, "You are full.")
 		return true
 	end
 
-	local condition = Condition(CONDITION_REGENERATION, CONDITIONID_DEFAULT, 0, true)
-	local vocation = player:getVocation()
-	condition:setParameter(CONDITION_PARAM_HEALTHGAIN, vocation:getHealthGainAmount())
-	condition:setParameter(CONDITION_PARAM_MANAGAIN, vocation:getManaGainAmount())
-	condition:setParameter(CONDITION_PARAM_TICKS, -1)
-	condition:setParameter(CONDITION_PARAM_FOODTICKS, foodTime)
-
-	player:addCondition(condition)
-
+	player:feed(itemFood[1] * 12)
 	player:say(itemFood[2], TALKTYPE_MONSTER_SAY)
 	player:updateSupplyTracker(item)
 	player:getPosition():sendSingleSoundEffect(SOUND_EFFECT_TYPE_ACTION_EAT, player:isInGhostMode() and nil or player)
-	item:remove(1)
+	if item.itemid == 60023 then
+		local vocationId = player:getVocation():getBaseId()
+		local buff = infiniteFoodBuffs[vocationId]
+		if buff then
+			player:addCondition(buff.condition)
+			player:say(buff.text, MESSAGE_POTION)
+			player:getPosition():sendMagicEffect(buff.effect)
+		end
+	elseif item.itemid == 60055 then
+		local vocationId = player:getVocation():getBaseId()
+		local buffStage2 = infiniteFoodBuffsStage2[vocationId]
+		if buffStage2 then
+			player:addCondition(buffStage2.condition)
+			player:say(buffStage2.text, MESSAGE_POTION)
+			player:getPosition():sendMagicEffect(buffStage2.effect)
+		end
+	else
+		item:remove(1)
+	end
 	return true
 end
 

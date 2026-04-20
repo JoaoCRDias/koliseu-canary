@@ -312,7 +312,6 @@ function parseTransferableCoins(playerId, msg)
 	GameStore.insertHistory(player:getAccountId(), GameStore.HistoryTypes.HISTORY_TYPE_TRANSFER, "You transferred this amount to " .. reciver, -1 * amount, GameStore.CoinType.Transferable, player:getGuid())
 	openStore(playerId)
 	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
-	player:setNextExAction(exhausted)
 end
 
 function parseOpenStore(playerId, msg)
@@ -404,7 +403,6 @@ function parseRequestStoreOffers(playerId, msg)
 		addPlayerEvent(sendShowStoreOffers, 250, playerId, searchResultsCategory)
 	end
 	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
-	player:setNextExAction(exhausted)
 end
 
 -- Used on cyclopedia store summary
@@ -418,6 +416,12 @@ local function insertPlayerTransactionSummary(player, offer)
 	player:createTransactionSummary(offer.type, math.max(1, offer.count or 1), id)
 end
 
+-- In-memory lock keyed by playerId. Prevents the "hold ctrl + click fast"
+-- exploit where the client fires several BuyStoreOffer packets before the
+-- engine finishes processing the first one (and thus before coins are
+-- debited), letting the player buy N items with enough coins for 1.
+_G.PendingStorePurchase = _G.PendingStorePurchase or {}
+
 function parseBuyStoreOffer(playerId, msg)
 	local player = Player(playerId)
 	local id = msg:getU32()
@@ -426,6 +430,19 @@ function parseBuyStoreOffer(playerId, msg)
 	if not offer then
 		return false
 	end
+
+	if _G.PendingStorePurchase[playerId] then
+		return queueSendStoreAlertToUser("Please wait for your previous purchase to finish.", 350, playerId, GameStore.StoreErrors.STORE_ERROR_PURCHASE)
+	end
+	_G.PendingStorePurchase[playerId] = true
+	-- Safety net: no matter which branch returns below, the lock must clear.
+	-- Matches the 650ms success-message delay plus a small buffer so the
+	-- player sees the result before any new click is accepted.
+	addEvent(function()
+		if _G.PendingStorePurchase then
+			_G.PendingStorePurchase[playerId] = nil
+		end
+	end, 1000)
 
 	-- All guarding conditions under which the offer should not be processed must be included here
 	if
@@ -577,7 +594,6 @@ function parseBuyStoreOffer(playerId, msg)
 	end
 
 	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
-	player:setNextExAction(exhausted)
 	return true
 end
 
@@ -592,7 +608,6 @@ function parseOpenTransactionHistory(playerId, msg)
 	GameStore.DefaultValues.DEFAULT_VALUE_ENTRIES_PER_PAGE = msg:getByte()
 	sendStoreTransactionHistory(playerId, page, GameStore.DefaultValues.DEFAULT_VALUE_ENTRIES_PER_PAGE)
 	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
-	player:setNextExAction(exhausted)
 end
 
 function parseRequestTransactionHistory(playerId, msg)
@@ -604,7 +619,6 @@ function parseRequestTransactionHistory(playerId, msg)
 	local page = msg:getU32()
 	sendStoreTransactionHistory(playerId, page + 1, GameStore.DefaultValues.DEFAULT_VALUE_ENTRIES_PER_PAGE)
 	local exhausted = configManager.getNumber(configKeys.UI_ACTIONS_DELAY_INTERVAL)
-	player:setNextExAction(exhausted)
 end
 
 local function getCategoriesRook()
@@ -795,6 +809,11 @@ function Player.canBuyOffer(self, offer)
 			if self:getXpBoostTime() > 0 then
 				disabled = 1
 				disabledReason = "You already have an active XP boost."
+			end
+		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_GEM_EXTENDER then
+			if GemBag and type(GemBag.playerHasExtender) == "function" and GemBag.playerHasExtender(self) then
+				disabled = 1
+				disabledReason = "You already own the Gem Extender."
 			end
 		elseif offer.type == GameStore.OfferTypes.OFFER_TYPE_HIRELING then
 			if self:getHirelingsCount() >= GameStore.ItemLimit.HIRELING then

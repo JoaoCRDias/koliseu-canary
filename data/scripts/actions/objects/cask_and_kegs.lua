@@ -1,89 +1,142 @@
-local requiredItems = { 283, 284, 285 }
+local kegCooldowns = {}
+local kegInProgress = {} -- Track players currently receiving potions
+local COOLDOWN_TIME = 60 -- 1 minute in seconds
+local POTION_AMOUNT = 500 -- Amount of potions to give
+local BATCH_SIZE = 100 -- Potions per batch to avoid client freeze
+local BATCH_DELAY = 100 -- Delay between batches in milliseconds
 
-local transformations = {
-	{ fromItemId = 25879, toItemId = 266 },
-	{ fromItemId = 25880, toItemId = 236 },
-	{ fromItemId = 25881, toItemId = 239 },
-	{ fromItemId = 25882, toItemId = 7643 },
-	{ fromItemId = 25883, toItemId = 23375 },
-	{ fromItemId = 25889, toItemId = 268 },
-	{ fromItemId = 25890, toItemId = 237 },
-	{ fromItemId = 25891, toItemId = 238 },
-	{ fromItemId = 25892, toItemId = 23373 },
-	{ fromItemId = 25899, toItemId = 7642 },
-	{ fromItemId = 25900, toItemId = 23374 },
-	{ fromItemId = 25903, toItemId = 266 },
-	{ fromItemId = 25904, toItemId = 236 },
-	{ fromItemId = 25905, toItemId = 239 },
-	{ fromItemId = 25906, toItemId = 7643 },
-	{ fromItemId = 25907, toItemId = 23375 },
-	{ fromItemId = 25908, toItemId = 268 },
-	{ fromItemId = 25909, toItemId = 237 },
-	{ fromItemId = 25910, toItemId = 238 },
-	{ fromItemId = 25911, toItemId = 23373 },
-	{ fromItemId = 25913, toItemId = 7642 },
-	{ fromItemId = 25914, toItemId = 23374 },
+local kegs = {
+	-- Supreme Health Kegs
+	[25879] = { potion = 23375, name = "supreme health potion" }, -- Health Cask
+	[25903] = { potion = 23375, name = "supreme health potion" }, -- Health Keg
+	[25907] = { potion = 60259, name = "cosmic health potion" }, -- Supreme Health Keg (Store)
+
+	-- Ultimate Mana Kegs
+	[25889] = { potion = 23373, name = "ultimate mana potion" }, -- Mana Cask
+	[25908] = { potion = 23373, name = "ultimate mana potion" }, -- Mana Keg
+	[25911] = { potion = 60258, name = "cosmic mana potion" }, -- Ultimate Mana Keg (Store)
+
+	-- Ultimate Spirit Kegs
+	[25899] = { potion = 23374, name = "ultimate spirit potion" }, -- Spirit Cask
+	[25913] = { potion = 23374, name = "ultimate spirit potion" }, -- Spirit Keg
+	[25914] = { potion = 60260, name = "cosmic spirit potion" }, -- Ultimate Spirit Keg (Store)
+
+	-- Great Health Potions
+	[25880] = { potion = 239, name = "great health potion" },
+	[25904] = { potion = 239, name = "great health potion" },
+
+	-- Great Mana Potions
+	[25890] = { potion = 238, name = "great mana potion" },
+	[25909] = { potion = 238, name = "great mana potion" },
+
+	-- Great Spirit Potions
+	[25900] = { potion = 7642, name = "great spirit potion" },
+
+	-- Health Potions
+	[25881] = { potion = 266, name = "health potion" },
+	[25905] = { potion = 266, name = "health potion" },
+
+	-- Mana Potions
+	[25891] = { potion = 237, name = "mana potion" },
+	[25910] = { potion = 237, name = "mana potion" },
+
+	-- Strong Health Potions
+	[25882] = { potion = 7643, name = "strong health potion" },
+	[25906] = { potion = 7643, name = "strong health potion" },
+
+	-- Strong Mana Potions
+	[25892] = { potion = 236, name = "strong mana potion" },
+
+	-- Ultimate Health Potions
+	[25883] = { potion = 268, name = "ultimate health potion" },
 }
 
-local function processTransformation(player, item, charges, transformation)
-	local transformedCount = 0
+-- Function to add potions in batches
+local function addPotionBatch(playerId, potionId, potionName, remaining, totalAmount)
+	local player = Player(playerId)
+	if not player then
+		kegInProgress[playerId] = nil
+		return
+	end
 
-	if charges <= 0 then
-		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The item has no charges remaining.")
+	local toAdd = math.min(BATCH_SIZE, remaining)
+	local addedItem = player:addItem(potionId, toAdd, true)
+
+	if not addedItem then
+		player:sendCancelMessage("Could not add more potions. Check your capacity.")
+		kegInProgress[playerId] = nil
+		return
+	end
+
+	remaining = remaining - toAdd
+
+	if remaining > 0 then
+		-- Schedule next batch
+		addEvent(addPotionBatch, BATCH_DELAY, playerId, potionId, potionName, remaining, totalAmount)
+	else
+		-- All done
+		kegInProgress[playerId] = nil
+		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You received " .. totalAmount .. " " .. potionName .. "s from the keg.")
+		player:getPosition():sendMagicEffect(CONST_ME_MAGIC_BLUE)
+	end
+end
+
+local function onUseKeg(player, item, fromPosition, target, toPosition, isHotkey)
+	local playerId = player:getId()
+	local itemId = item:getId()
+	local currentTime = os.time()
+
+	-- Get keg configuration
+	local kegConfig = kegs[itemId]
+	if not kegConfig then
 		return false
 	end
 
-	for _, requiredItemId in ipairs(requiredItems) do
-		local itemCount = player:getItemCount(requiredItemId)
+	-- Check if already receiving potions
+	if kegInProgress[playerId] then
+		player:sendCancelMessage("Please wait, you are still receiving potions.")
+		player:getPosition():sendMagicEffect(CONST_ME_POFF)
+		return true
+	end
 
-		if itemCount > 0 then
-			local transformable = math.min(itemCount, charges - transformedCount)
-
-			if transformable > 0 then
-				player:removeItem(requiredItemId, transformable)
-				player:addItem(transformation.toItemId, transformable)
-
-				transformedCount = transformedCount + transformable
-
-				if transformedCount >= charges then
-					break
-				end
-			end
+	-- Check cooldown
+	if kegCooldowns[playerId] and kegCooldowns[playerId][itemId] then
+		local timeLeft = kegCooldowns[playerId][itemId] - currentTime
+		if timeLeft > 0 then
+			player:sendCancelMessage("You need to wait " .. timeLeft .. " seconds before using this keg again.")
+			player:getPosition():sendMagicEffect(CONST_ME_POFF)
+			return true
 		end
 	end
 
-	if transformedCount > 0 then
-		local newCharges = charges - transformedCount
-
-		if newCharges > 0 then
-			item:setAttribute(ITEM_ATTRIBUTE_CHARGES, newCharges)
-		else
-			item:remove(1)
-		end
-
-		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Charges remaining: " .. newCharges)
-	else
-		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You need flasks to carry all that.")
+	-- Check if player has capacity for at least one batch
+	local potionWeight = ItemType(kegConfig.potion):getWeight()
+	if player:getFreeCapacity() < (potionWeight * BATCH_SIZE) then
+		player:sendCancelMessage("You don't have enough capacity.")
+		player:getPosition():sendMagicEffect(CONST_ME_POFF)
+		return true
 	end
+
+	-- Set cooldown immediately
+	if not kegCooldowns[playerId] then
+		kegCooldowns[playerId] = {}
+	end
+	kegCooldowns[playerId][itemId] = currentTime + COOLDOWN_TIME
+
+	-- Mark as in progress
+	kegInProgress[playerId] = true
+
+	-- Start adding potions in batches
+	player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "Receiving " .. POTION_AMOUNT .. " " .. kegConfig.name .. "s...")
+	addPotionBatch(playerId, kegConfig.potion, kegConfig.name, POTION_AMOUNT, POTION_AMOUNT)
 
 	return true
 end
 
-local function onUseTransformation(player, item, position, target, toPosition, isHotkey)
-	local charges = item:getAttribute(ITEM_ATTRIBUTE_CHARGES) or 0
-
-	for _, transformation in ipairs(transformations) do
-		if item:getId() == transformation.fromItemId then
-			return processTransformation(player, item, charges, transformation)
-		end
-	end
-
-	return false
-end
-
-for _, transformation in ipairs(transformations) do
-	local action = Action()
-	action:id(transformation.fromItemId)
-	action.onUse = onUseTransformation
-	action:register()
+-- Register all kegs
+for kegId, _ in pairs(kegs) do
+	local keg = Action()
+	keg:id(kegId)
+	keg.onUse = onUseKeg
+	keg:register()
 end

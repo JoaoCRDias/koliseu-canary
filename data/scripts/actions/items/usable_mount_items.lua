@@ -1,10 +1,15 @@
 local config = {
-	[23538] = { name = "vortexion", mountId = 94, tameMessage = "You receive the permission to ride a sparkion." },
+	[23538] = { name = "sparkion", mountId = 94, tameMessage = "You receive the permission to ride a sparkion." },
 	[23684] = { name = "neon sparkid", mountId = 98, tameMessage = "You receive the permission to ride a neon sparkid." },
 	[23685] = { name = "vortexion", mountId = 99, tameMessage = "You receive the permission to ride a vortexion." },
-	[32629] = { name = "haze", mountId = 162, achievement = "Nothing but Hot Air", tameMessage = "You are now versed to ride the haze!" },
-	[48424] = { name = "pegasus", mountId = 228, achievement = "I Wanna Fly Away", tameMessage = "You already tamed a pegasus." },
-	[50064] = { name = "primal demonsaur", mountId = 232, achievement = "Fiend Rider", tameMessage = "Bound by ancient magic, the primal demonic beast bows to the will of the boxes owner ... for now." },
+	[32629] = { name = "haze", mountId = 162, tameMessage = "You are now versed to ride the haze!" },
+	[5958] = { name = "survivor rhyno", mountId = 293, tameMessage = "Thanks for your effort!" },
+
+	[50064] = { name = "primal demonosaur", mountId = 232, tameMessage = "Bound by ancient magic, the primal demonic beast bows to the will of the boxes owner ... for now." },
+	[60126] = { name = "radiant horse", mountId = 251, tameMessage = "You receive the permission to ride a Radiant Horse." },
+	[60125] = { name = "obscure horse", mountId = 252, tameMessage = "You receive the permission to ride an Obscure Horse." },
+	[60237] = { name = "verdant raven", mountId = 250, tameMessage = "You receive the permission to ride a Verdant Raven." },
+	[60649] = { name = "pcd racing car", mountId = 282, tameMessage = "You receive the permission to ride a PCD Racing Car." },
 }
 
 local usableItemMounts = Action()
@@ -22,10 +27,6 @@ function usableItemMounts.onUse(player, item, fromPosition, target, toPosition, 
 
 	if useItem.achievement then
 		player:addAchievement(useItem.achievement)
-	end
-
-	if table.contains({ 23538, 23684, 23685 }, item.itemid) then
-		player:addAchievementProgress("Vortex Tamer", 3)
 	end
 
 	player:addMount(useItem.mountId)

@@ -1,11 +1,8 @@
+-- Fishing action: grants SKILL_FISHING tries, no loot rewards.
+-- Fish-loot removed intentionally (2026-04-20) — the setting toggle
+-- was dropped and the action should never yield items regardless of
+-- rod, water type, or bathtub.
 local waterIds = { 629, 630, 631, 632, 633, 634, 4597, 4598, 4599, 4600, 4601, 4602, 4609, 4610, 4611, 4612, 4613, 4614, 7236, 9582, 12560, 12562, 12561, 12563, 13988, 13989, BATHTUB_FILLED }
-local lootTrash = { 3119, 3123, 3264, 3409, 3578 }
-local lootCommon = { 3035, 3051, 3052, 3580, 236, 237 }
-local lootSemiRare = { 281, 282, 9303 }
-local lootRare = { 3026, 3029, 3032, 7158, 7159 }
-local lootVeryRare = { 281, 282, 9303, 12557 }
-local useWorms = false
-local STORAGE_FISHING_NO_LOOT = 47230
 
 local fishing = Action()
 
@@ -26,6 +23,7 @@ function fishing.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 		end
 	end
 
+	-- Fished-corpse variant (id 9582): consume/decay it but yield no loot.
 	if target.itemid == 9582 then
 		local owner = target:getAttribute(ITEM_ATTRIBUTE_CORPSEOWNER)
 		if owner ~= 0 and owner ~= player:getId() then
@@ -36,17 +34,6 @@ function fishing.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 		toPosition:sendMagicEffect(CONST_ME_WATERSPLASH)
 		target:transform(target.itemid + 1)
 		target:decay()
-
-		local rareChance = math.random(1, 100)
-		if rareChance == 1 then
-			player:addItem(lootVeryRare[math.random(#lootVeryRare)], 1)
-		elseif rareChance <= 3 then
-			player:addItem(lootRare[math.random(#lootRare)], 1)
-		elseif rareChance <= 10 then
-			player:addItem(lootCommon[math.random(#lootCommon)], 1)
-		else
-			player:addItem(lootTrash[math.random(#lootTrash)], 1)
-		end
 		return true
 	end
 
@@ -58,6 +45,7 @@ function fishing.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 		return true
 	end
 
+	-- Skill tries (still granted so players can level SKILL_FISHING)
 	if item.itemid == 60674 then
 		player:addSkillTries(SKILL_FISHING, 2, true)
 	else
@@ -68,38 +56,12 @@ function fishing.onUse(player, item, fromPosition, target, toPosition, isHotkey)
 		player:addSkillTries(SKILL_FISHING, 1, true)
 	end
 
-	local lootDisabled = player:getStorageValue(STORAGE_FISHING_NO_LOOT) == 1
-
-	if lootDisabled ~= true and math.random(1, 100) <= math.min(math.max(10 + (player:getEffectiveSkillLevel(SKILL_FISHING) - 10) * 0.597, 10), 50) then
-		if useWorms and not player:removeItem(3976, 1) then
-			return true
-		end
-
-		if target.itemid == 13988 then
-			target:transform(target.itemid + 1)
-			target:decay()
-
-			if math.random(1, 100) >= 97 then
-				player:addItem(13992, 1)
-				return true
-			end
-		elseif target.itemid == 7236 then
-			target:transform(target.itemid + 1)
-			target:decay()
-
-			local rareChance = math.random(1, 100)
-			if rareChance == 1 then
-				player:addItem(7158, 1)
-				return true
-			elseif rareChance <= 4 then
-				player:addItem(3580, 1)
-				return true
-			elseif rareChance <= 10 then
-				player:addItem(7159, 1)
-				return true
-			end
-		end
+	-- Decay sparkling pools (13988) and message-in-a-bottle water (7236) without dropping loot.
+	if target.itemid == 13988 or target.itemid == 7236 then
+		target:transform(target.itemid + 1)
+		target:decay()
 	end
+
 	return true
 end
 

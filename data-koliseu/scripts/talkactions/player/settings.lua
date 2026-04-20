@@ -1,8 +1,7 @@
 -- Settings modal that groups multiple toggle commands
--- Combines: autoloot, chain, flask, dmglog, fishloot, effects
+-- Combines: autoloot, chain, flask, dmglog, effects
 
 local STORAGE_DAMAGE_LOG_DISABLED = 53001
-local STORAGE_FISHING_NO_LOOT = 47230
 local STORAGE_MAGIC_EFFECTS_DISABLED = 53002
 local STORAGE_EMOTE_SPELL_DISABLED = 53003
 local STORAGE_TASK_ENHANCEMENT = 58100
@@ -91,21 +90,6 @@ local settingsConfig = {
 		end,
 		setStatus = function(player, enabled)
 			player:setStorageValue(STORAGE_DAMAGE_LOG_DISABLED, enabled and -1 or 1)
-		end,
-		checkEnabled = function()
-			return true
-		end,
-		checkVip = function(player)
-			return true
-		end,
-	},
-	{
-		name = "Fish Loot",
-		getStatus = function(player)
-			return player:getStorageValue(STORAGE_FISHING_NO_LOOT) ~= 1
-		end,
-		setStatus = function(player, enabled)
-			player:setStorageValue(STORAGE_FISHING_NO_LOOT, enabled and 0 or 1)
 		end,
 		checkEnabled = function()
 			return true
