@@ -9184,6 +9184,20 @@ bool Player::isGuildMate(const std::shared_ptr<Player> &player) const {
 	return guild == player->guild;
 }
 
+// Free slots a container has for a non-stackable item. Paginated containers
+// (amulet/ring pouch, store inbox) report a fake `capacity()` of 32; their
+// real limit is `getMaxCapacity()` (m_maxItems).
+static uint32_t containerFreeSlots(const std::shared_ptr<Container> &container) {
+	if (container->hasPagination()) {
+		const uint32_t maxItems = container->getMaxCapacity();
+		const uint32_t holding = container->getItemHoldingCount();
+		return maxItems > holding ? maxItems - holding : 0;
+	}
+	const uint32_t cap = container->capacity();
+	const uint32_t sz = container->size();
+	return cap > sz ? cap - sz : 0;
+}
+
 ReturnValue Player::addItemFromStash(uint16_t itemId, uint32_t itemCount) {
 	const auto &itemType = Item::items[itemId];
 	if (!itemType.id) {
@@ -9211,13 +9225,13 @@ ReturnValue Player::addItemFromStash(uint16_t itemId, uint32_t itemCount) {
 	auto objectCategory = g_game().getObjectCategory(itemType);
 	const auto &obtainContainer = g_game().findManagedContainer(thisPtr, fallbackConsumed, objectCategory, false);
 	if (obtainContainer) {
-		if (obtainContainer->capacity() > obtainContainer->size()) {
+		if (containerFreeSlots(obtainContainer) > 0) {
 			containersCache.emplace_back(obtainContainer);
 		}
 
 		for (const auto &item : obtainContainer->getItems(true)) {
 			const auto &subContainer = item->getContainer();
-			if (subContainer && subContainer->capacity() > subContainer->size()) {
+			if (subContainer && containerFreeSlots(subContainer) > 0) {
 				containersCache.emplace_back(subContainer);
 			}
 
@@ -9238,7 +9252,11 @@ ReturnValue Player::addItemFromStash(uint16_t itemId, uint32_t itemCount) {
 		uint32_t freeSlots = getFreeBackpackSlots();
 		maxBySlots = freeStackSpace + (freeSlots * itemType.stackSize);
 	} else {
-		maxBySlots = getFreeBackpackSlots();
+		// Sum free slots across every container in the cache (main backpack
+		// or the configured obtain container, e.g. amulet/ring pouch).
+		for (const auto &container : containersCache) {
+			maxBySlots += containerFreeSlots(container);
+		}
 	}
 
 	uint32_t finalRetrievable = std::min({ maxBySlots, retrievableCount });
@@ -9254,10 +9272,9 @@ ReturnValue Player::addItemFromStash(uint16_t itemId, uint32_t itemCount) {
 		}
 		canAddItems = totalSpace >= finalRetrievable;
 	} else {
-		// For non-stackable items, check free slots
 		uint32_t totalFreeSlots = 0;
 		for (const auto &container : containersCache) {
-			totalFreeSlots += container->capacity() - container->size();
+			totalFreeSlots += containerFreeSlots(container);
 		}
 		canAddItems = totalFreeSlots >= finalRetrievable;
 	}
@@ -9357,7 +9374,7 @@ ReturnValue Player::addItemFromStash(uint16_t itemId, uint32_t itemCount) {
 				continue;
 			}
 
-			if (targetContainer->capacity() > targetContainer->size()) {
+			if (containerFreeSlots(targetContainer) > 0) {
 				const auto &newItem = Item::createItemBatch(itemId, 1);
 				if (!newItem) {
 					g_logger().warn("[addItemFromStash] Failed to create new itemId: {} for player {}", itemId, getName());
@@ -9370,7 +9387,7 @@ ReturnValue Player::addItemFromStash(uint16_t itemId, uint32_t itemCount) {
 				finalRetrievable -= 1;
 			}
 
-			if (targetContainer->capacity() <= targetContainer->size()) {
+			if (containerFreeSlots(targetContainer) == 0) {
 				++cacheIndex;
 			}
 		}

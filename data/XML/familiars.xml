@@ -29,4 +29,20 @@
 	<familiar vocation="10" lookType="1818" name="Omniphant" premium="yes" unlocked="no" enabled="yes" />
 	<familiar vocation="9" lookType="1819" name="Moonhunter" premium="yes" unlocked="no" enabled="yes" type="quest" />
 	<familiar vocation="10" lookType="1819" name="Moonhunter" premium="yes" unlocked="no" enabled="yes" type="quest" />
+
+	<!-- Supreme Sorcerer -->
+	<familiar vocation="11" lookType="994" name="Thundergiant" premium="yes" unlocked="no" enabled="yes" />
+	<familiar vocation="11" lookType="1367" name="Bladespark" premium="yes" unlocked="no" enabled="yes" type="quest" />
+
+	<!-- Supreme Druid -->
+	<familiar vocation="12" lookType="993" name="Grovebeast" premium="no" unlocked="no" enabled="yes" />
+	<familiar vocation="12" lookType="1364" name="Mossmasher" premium="no" unlocked="no" enabled="yes" type="quest" />
+
+	<!-- Supreme Paladin -->
+	<familiar vocation="13" lookType="992" name="Emberwing" premium="no" unlocked="no" enabled="yes" />
+	<familiar vocation="13" lookType="1366" name="Sandscourge" premium="yes" unlocked="no" enabled="yes" type="quest" />
+
+	<!-- Supreme Knight -->
+	<familiar vocation="14" lookType="991" name="Skullfrost" premium="yes" unlocked="no" enabled="yes" />
+	<familiar vocation="14" lookType="1365" name="Snowbash" premium="yes" unlocked="no" enabled="yes" type="quest" />
 </familiars>

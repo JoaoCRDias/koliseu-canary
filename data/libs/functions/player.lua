@@ -10,21 +10,38 @@ if not Player.forceSkillsSend then
 end
 
 function Player.feed(self, food)
-	local condition = self:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
-	if condition then
-		condition:setTicks(condition:getTicks() + (food * 1000))
-	else
-		local vocation = self:getVocation()
-		if not vocation then
-			return nil
-		end
-
-		foodCondition:setTicks(food * 1000)
-		foodCondition:setParameter(CONDITION_PARAM_HEALTHGAIN, vocation:getHealthGainAmount())
-		foodCondition:setParameter(CONDITION_PARAM_MANAGAIN, vocation:getManaGainAmount())
-
-		self:addCondition(foodCondition)
+	-- Hunger on the client is controlled by `foodTicks` inside the active
+	-- CONDITION_REGENERATION. Canary guards Condition::updateCondition so
+	-- that re-applying a short regen onto a long-lived one (login seeds a
+	-- passive regen) returns false, and ConditionRegeneration::addCondition
+	-- only runs its `foodTicks += new.foodTicks` accumulator on that path.
+	-- Result: going through addCondition silently drops foodTicks and the
+	-- client stays hungry.
+	-- Fix: remove the current regen and install a fresh one. That forces
+	-- startCondition(), which calls sendStats() and ships the new foodTicks
+	-- value (see AddPlayerStats in protocolgame.cpp, opcode 0xA0).
+	local vocation = self:getVocation()
+	if not vocation then
+		return nil
 	end
+
+	local ticks = food * 1000
+	local existing = self:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
+	local carried = existing and (existing:getTicks() or 0) or 0
+	if carried < 0 then carried = 0 end -- ticks=-1 (persistent) should not extend food
+
+	local total = math.min(1200 * 1000, carried + ticks) -- engine caps foodTicks at 1.2M ms
+
+	if existing then
+		self:removeCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
+	end
+
+	foodCondition:setTicks(total)
+	foodCondition:setParameter(CONDITION_PARAM_HEALTHGAIN, vocation:getHealthGainAmount())
+	foodCondition:setParameter(CONDITION_PARAM_MANAGAIN, vocation:getManaGainAmount())
+	foodCondition:setParameter(CONDITION_PARAM_FOODTICKS, total)
+
+	self:addCondition(foodCondition)
 	return true
 end
 
@@ -288,23 +305,23 @@ function Player:vocationAbbrev()
 end
 
 function Player.isSorcerer(self)
-	return table.contains({ VOCATION.ID.SORCERER, VOCATION.ID.MASTER_SORCERER }, self:getVocation():getId())
+	return table.contains({ VOCATION.ID.SORCERER, VOCATION.ID.MASTER_SORCERER, VOCATION.ID.ARCANE_SORCERER }, self:getVocation():getId())
 end
 
 function Player.isDruid(self)
-	return table.contains({ VOCATION.ID.DRUID, VOCATION.ID.ELDER_DRUID }, self:getVocation():getId())
+	return table.contains({ VOCATION.ID.DRUID, VOCATION.ID.ELDER_DRUID, VOCATION.ID.PRIMAL_DRUID }, self:getVocation():getId())
 end
 
 function Player.isKnight(self)
-	return table.contains({ VOCATION.ID.KNIGHT, VOCATION.ID.ELITE_KNIGHT }, self:getVocation():getId())
+	return table.contains({ VOCATION.ID.KNIGHT, VOCATION.ID.ELITE_KNIGHT, VOCATION.ID.TITAN_KNIGHT }, self:getVocation():getId())
 end
 
 function Player.isPaladin(self)
-	return table.contains({ VOCATION.ID.PALADIN, VOCATION.ID.ROYAL_PALADIN }, self:getVocation():getId())
+	return table.contains({ VOCATION.ID.PALADIN, VOCATION.ID.ROYAL_PALADIN, VOCATION.ID.CELESTIAL_PALADIN }, self:getVocation():getId())
 end
 
 function Player.isMage(self)
-	return table.contains({ VOCATION.ID.SORCERER, VOCATION.ID.MASTER_SORCERER, VOCATION.ID.DRUID, VOCATION.ID.ELDER_DRUID }, self:getVocation():getId())
+	return table.contains({ VOCATION.ID.SORCERER, VOCATION.ID.MASTER_SORCERER, VOCATION.ID.ARCANE_SORCERER, VOCATION.ID.DRUID, VOCATION.ID.ELDER_DRUID, VOCATION.ID.PRIMAL_DRUID }, self:getVocation():getId())
 end
 
 function Player.isMonk(self)

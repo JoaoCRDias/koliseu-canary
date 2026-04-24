@@ -3,6 +3,16 @@ SoulWarQuest = {
 	bagYouDesireItemId = 34109,
 	bagYouDesireChancePerTaint = 10, -- Increases % per taint
 	theBloodOfCloakTerrorIds = { 33854, 34006, 34007 },
+
+	-- Experience boost applied on onGainExperience when killing bagYouDesireMonsters.
+	-- Indexed by player's taint level; used by data/events/scripts/player.lua.
+	taintExperienceBoostMap = {
+		[1] = { boost = 4.5 },
+		[2] = { boost = 9.2 },
+		[3] = { boost = 14.1 },
+		[4] = { boost = 19.2 },
+		[5] = { boost = 24.6 },
+	},
 	bagYouDesireMonsters = {
 		"Bony Sea Devil",
 		"Brachiodemon",

@@ -416,7 +416,7 @@ LinkedTask.Rooms = {
 				killsRequired = 4500,
 				rewards = {
 					{ type = "experience", amount = 6750000 },
-					{ item = I.PREY_WILDCARD, count = 5, type = "item" },
+					{ type = "item", id = I.PREY_WILDCARD, count = 5 },
 				},
 			},
 			{

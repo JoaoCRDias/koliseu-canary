@@ -18,10 +18,14 @@ function dungeonPlayerDeath.onDeath(player, corpse, killer, mostDamageKiller, la
 	end
 
 	local vocationId = DungeonSolo.getBaseVocation(player)
-	-- Delay: let death animation play, then teleport + cleanup
-	addEvent(function()
-		DungeonSolo.fail(vocationId, "death")
-	end, 1000)
+	local playerGuid = player:getGuid()
+	-- Delay: let death animation play, then teleport + cleanup.
+	-- The Player userdata captured here becomes stale once the engine finishes
+	-- the death flow (removeCreature + respawn at temple), so resolve by GUID
+	-- inside the event instead of passing `player` directly.
+	addEvent(function(guid, voc)
+		DungeonSolo.fail(voc, "death", guid)
+	end, 1000, playerGuid, vocationId)
 
 	return true
 end

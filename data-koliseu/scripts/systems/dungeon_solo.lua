@@ -341,6 +341,7 @@ function DungeonSolo.start(player, vocationId, difficultyKey)
 
 	inst.occupied = true
 	inst.player = player
+	inst.playerGuid = player:getGuid()
 	inst.difficulty = difficultyKey
 	inst.stage = 1
 	inst.monstersCount = 0
@@ -351,7 +352,7 @@ function DungeonSolo.start(player, vocationId, difficultyKey)
 
 	local vocName = DungeonSolo.CONFIG.vocationNames[vocationId] or "?"
 	player:sendTextMessage(MESSAGE_EVENT_ADVANCE,
-		string.format("[Dungeon] Entering %s dungeon — Stage 1/3 — Difficulty: %s", vocName, diffConfig.label))
+		string.format("[Dungeon] Entering %s dungeon - Stage 1/3 - Difficulty: %s", vocName, diffConfig.label))
 
 	local roomConfig = DungeonSolo.CONFIG.rooms[vocationId][1]
 	player:teleportTo(roomConfig.playerEntry, true)
@@ -434,7 +435,7 @@ function DungeonSolo.spawnStage(vocationId)
 	if player then
 		updateMonsterIcon(player, inst.monstersCount)
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE,
-			string.format("[Dungeon] Stage %d/3 — Kill %d monsters!", inst.stage, inst.monstersCount))
+			string.format("[Dungeon] Stage %d/3 - Kill %d monsters!", inst.stage, inst.monstersCount))
 	end
 end
 
@@ -484,7 +485,7 @@ function DungeonSolo.nextStage(vocationId)
 		player:teleportTo(roomConfig.playerEntry, true)
 		player:getPosition():sendMagicEffect(CONST_ME_TELEPORT)
 		player:sendTextMessage(MESSAGE_EVENT_ADVANCE,
-			string.format("[Dungeon] Stage %d/3 — The enemies grow stronger!", inst.stage))
+			string.format("[Dungeon] Stage %d/3 - The enemies grow stronger!", inst.stage))
 	end
 
 	inst.timerSeconds = diffConfig.stageTimes[inst.stage]
@@ -564,15 +565,17 @@ function DungeonSolo.finish(vocationId)
 	DungeonSolo._releaseInstance(vocationId)
 end
 
-function DungeonSolo.fail(vocationId, reason)
+function DungeonSolo.fail(vocationId, reason, playerGuid)
 	local inst = DungeonSolo._instances[vocationId]
 	if not inst then return end
-
-	local player = inst.player
 
 	-- Clean up remaining monsters BEFORE teleporting player to avoid dragging monsters to PZ
 	DungeonSolo._cleanRoomMonsters(vocationId)
 
+	-- Re-resolve by GUID when the caller passed one (death path fires from a
+	-- delayed addEvent, so the Player userdata captured there could have been
+	-- invalidated if the player logged out between death and teleport).
+	local player = playerGuid and Player(playerGuid) or inst.player
 	if player then
 		removePlayerIcons(player)
 
@@ -638,12 +641,18 @@ function DungeonSolo._releaseInstance(vocationId)
 		stopEvent(inst.timerEvent)
 	end
 
-	if inst.player then
-		inst.player:unregisterEvent("DungeonPlayerDeath")
+	-- inst.player may be stale (player died and was removed from the world),
+	-- so re-resolve by the GUID stored at start time.
+	if inst.playerGuid then
+		local livePlayer = Player(inst.playerGuid)
+		if livePlayer then
+			livePlayer:unregisterEvent("DungeonPlayerDeath")
+		end
 	end
 
 	inst.occupied = false
 	inst.player = nil
+	inst.playerGuid = nil
 	inst.difficulty = nil
 	inst.stage = 0
 	inst.monstersCount = 0
@@ -689,14 +698,15 @@ end
 
 function DungeonSolo.showDifficultyModal(player, vocationId)
 	local modal = ModalWindow({
-		title = "Dungeon — " .. (DungeonSolo.CONFIG.vocationNames[vocationId] or ""),
+		title = "Dungeon - " .. (DungeonSolo.CONFIG.vocationNames[vocationId] or ""),
 		message = "Choose your difficulty. Monsters scale to your power.\nCompleting the dungeon rewards Dungeon Tokens and a Boosted Exercise Token.",
 	})
 
 	for _, key in ipairs({ "very_easy", "easy", "medium", "hard", "very_hard", "epic" }) do
 		local diff = DungeonSolo.CONFIG.difficulty[key]
-		local label = string.format("%s (Level %s) — %d token%s",
-			diff.label, diff.levelRange, diff.tokens, diff.tokens ~= 1 and "s" or "")
+		local tokenWord = diff.tokens == 1 and "token" or "tokens"
+		local label = string.format("%s (Level %s) - %d %s",
+			diff.label, diff.levelRange, diff.tokens, tokenWord)
 
 		modal:addChoice(label, function(p, button, choice)
 			if button.name == "Enter" then

@@ -19,7 +19,6 @@ local RAID_BOSSES = {
 	"Ghazbaran",
 	"Mawhawk",
 	"Gaz'Haragoth",
-	"Apocalypse",
 	"Morshabaal",
 	"Orshabaal",
 	"The Abomination",

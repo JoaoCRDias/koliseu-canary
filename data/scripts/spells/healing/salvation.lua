@@ -22,7 +22,7 @@ end
 spell:name("Salvation")
 spell:words("exura gran san")
 spell:group("healing")
-spell:vocation("paladin;true", "royal paladin;true")
+spell:vocation("paladin;true", "royal paladin;true", "celestial paladin;true")
 spell:castSound(SOUND_EFFECT_TYPE_SPELL_SALVATION)
 spell:id(36)
 spell:cooldown(1000)

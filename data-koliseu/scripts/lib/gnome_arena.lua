@@ -32,8 +32,8 @@ GnomeArena.EXIT_TELEPORT_AID = 34701
 -- Action id for lever
 GnomeArena.LEVER_AID = 34700
 
--- Cooldown (seconds): 20 hours
-GnomeArena.COOLDOWN = 20 * 60 * 60
+-- Cooldown (seconds): 20 hours in PRD, disabled on DEV so testers can loop runs.
+GnomeArena.COOLDOWN = serverEnvironment == "PRD" and 20 * 60 * 60 or 0
 
 -- Wave cadence (milliseconds)
 GnomeArena.WAVE_INTERVAL = 30 * 1000

@@ -184,7 +184,9 @@ function playerLoginGlobal.onLogin(player)
 	-- login log
 	player:saveLoginLog()
 
+	player:registerEvent("WelcomeGuide")
 	player:registerEvent("PlayerDeath")
+	player:registerEvent("GnomeArenaPrepareDeath")
 	player:registerEvent("DropLoot")
 	player:registerEvent("BossParticipation")
 	player:registerEvent("UpdatePlayerOnAdvancedLevel")
@@ -192,14 +194,20 @@ function playerLoginGlobal.onLogin(player)
 	player:registerEvent("GemBagSchemaReset")
 	player:registerEvent("FallenCdReset")
 
-	-- Regeneration
+	-- Regeneration: seed a passive CONDITION_REGENERATION so the player gets
+	-- base HP/mana regen while idle (without food). We must NOT use ticks=-1
+	-- here: Condition::updateCondition returns false when re-applying onto a
+	-- ticks=-1 condition, which would block Player:feed from accumulating
+	-- foodTicks and leave the client stuck showing "You are hungry". Using a
+	-- large finite duration avoids that while still covering any reasonable
+	-- session length (renewed on every feed).
 	local regenCondition = player:getCondition(CONDITION_REGENERATION, CONDITIONID_DEFAULT)
 	if not regenCondition then
 		local condition = Condition(CONDITION_REGENERATION, CONDITIONID_DEFAULT, 0, true)
 		local vocation = player:getVocation()
 		condition:setParameter(CONDITION_PARAM_HEALTHGAIN, vocation:getHealthGainAmount())
 		condition:setParameter(CONDITION_PARAM_MANAGAIN, vocation:getManaGainAmount())
-		condition:setParameter(CONDITION_PARAM_TICKS, -1)
+		condition:setParameter(CONDITION_PARAM_TICKS, 24 * 60 * 60 * 1000) -- 24h, renewed on every feed
 		condition:setParameter(CONDITION_PARAM_FOODTICKS, 0)
 		player:addCondition(condition)
 	end

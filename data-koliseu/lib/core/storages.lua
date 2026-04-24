@@ -559,6 +559,42 @@ Storage = {
 		Cooldown = 54001, -- Shared cooldown for all difficulties (20h)
 	},
 	TaskEnhancement = 58100,
+	SupremeVocation = {
+		-- Reserved player storage from 60200 - 60219
+		QuestLine = 60200,
+		MissionAccess = 60201,
+		MissionReport = 60202,
+		MissionBasinRitual = 60203,
+		EnergyWallAccess = 60204,
+		NatureBossKilled = 60205,
+		NatureStageComplete = 60206,
+		PoisonStageAccess = 60207,
+		PoisonRoomCleared = 60208,
+		MissionPoisonReport = 60209,
+		PoisonStageComplete = 60211,
+		-- 60210 is reserved for the global active pattern (see GlobalStorage).
+		-- Death chamber
+		DeathPuzzleSolved = 60212,
+		DeathLabyrinthKeyTaken = 60213,
+		DeathChamberCleared = 60214,
+		MissionDeathReport = 60215,
+		DeathStageComplete = 60216,
+		-- Fire chamber
+		FireStageAccess = 60217,
+		FireChamberCleared = 60218,
+		MissionFireReport = 60219,
+		FireStageComplete = 60220,
+		-- Wealth chamber
+		WealthStageAccess = 60221,
+		WealthFeePaid = 60222,
+		WealthChamberCleared = 60223,
+		MissionWealthReport = 60224,
+		WealthStageComplete = 60225,
+		-- Summit (path of demons + promoter)
+		SummitAccess = 60226,
+		MissionSummitReport = 60228,
+		SupremeVocationGranted = 60229,
+	},
 }
 
 GlobalStorage = {
@@ -589,6 +625,10 @@ GlobalStorage = {
 		OutburstStage = 60181,
 		OutburstHealth = 60182,
 		OutburstChargingKilled = 60183,
+	},
+	SupremeVocation = {
+		-- Reserved global storage from 60210 - 60219
+		ActivePattern = 60210,
 	},
 }
 

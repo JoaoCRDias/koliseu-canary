@@ -8,6 +8,7 @@ dofile(DATA_DIRECTORY .. "/lib/quests/quest.lua")
 dofile(DATA_DIRECTORY .. "/lib/tables/load.lua")
 
 dofile(DATA_DIRECTORY .. "/lib/custom/second-floor-quests.lua")
+dofile(DATA_DIRECTORY .. "/lib/custom/supreme-vocation.lua")
 
 dofile(DATA_DIRECTORY .. '/scripts/magic_roulette/roulette.lua')
 dofile(DATA_DIRECTORY .. '/lib/custom/simple_crafting_system.lua')

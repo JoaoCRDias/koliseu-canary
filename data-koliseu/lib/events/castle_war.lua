@@ -385,7 +385,7 @@ function Castle.dominate(self)
 			if tmpPlayer:getPosition():isInRange(area.fromPosition, area.toPosition) then
 				local playerGuild = tmpPlayer:getGuild()
 				if playerGuild and playerGuild:getId() == newDominantId then
-					local casket = tmpPlayer:addItem(config.rewardCasketId, 2)
+					local casket = tmpPlayer:addItem(config.rewardCasketId, 1)
 					if casket then
 						tmpPlayer:sendTextMessage(MESSAGE_EVENT_ADVANCE, "[Castle War] You received a Castle Surprise Casket for dominating the castle!")
 					else

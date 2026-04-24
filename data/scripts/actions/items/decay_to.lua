@@ -484,6 +484,8 @@ local transformItems = {
 	[42349] = 42348, -- opulent floor lamp
 	[42363] = 42364, -- djinn lamp
 	[42365] = 42366, -- djinn lamp
+	[36709] = 36710,
+	[36710] = 36709, -- lever
 }
 
 local decayTo = Action()

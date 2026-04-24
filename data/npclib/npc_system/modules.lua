@@ -242,15 +242,6 @@ if Modules == nil then
 				player:teleportTo(destination)
 				playerPosition:sendMagicEffect(CONST_ME_TELEPORT)
 				player:addAchievementProgress("Ship's Kobold", 1250)
-
-				-- What a foolish Quest - Mission 3
-				if Storage.Quest.U8_1.WhatAFoolishQuest.PieBoxTimer ~= nil then
-					if player:getStorageValue(Storage.Quest.U8_1.WhatAFoolishQuest.PieBoxTimer) > os.time() then
-						if destination ~= Position(32660, 31957, 15) then -- kazordoon steamboat
-							player:setStorageValue(Storage.Quest.U8_1.WhatAFoolishQuest.PieBoxTimer, 1)
-						end
-					end
-				end
 			end
 		end
 

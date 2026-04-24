@@ -26,6 +26,20 @@ local config = {
 local othersHolyWater = Action()
 
 function othersHolyWater.onUse(player, item, fromPosition, target, toPosition, isHotkey)
+	-- Supreme Vocation: nature fountain purification
+	if target and target.actionid == SupremeVocation.NatureFountainActionId then
+		if SupremeVocation.hasPurifiedFountain(player) then
+			player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "You have already purified the fountain.")
+			return true
+		end
+		item:remove(1)
+		SupremeVocation.markFountainPurified(player)
+		toPosition:sendMagicEffect(CONST_ME_MAGIC_GREEN)
+		toPosition:sendMagicEffect(CONST_ME_BLUE_ENERGY_SPARK)
+		player:sendTextMessage(MESSAGE_EVENT_ADVANCE, "The fountain clears and blooms with light. Return to the elder warrior and report what you have done.")
+		return true
+	end
+
 	-- Tylko Inquisition Quest!
 	-- Przemiana Antler Talisman
 	if target.itemid == config.antler_talisman then

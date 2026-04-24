@@ -16,5 +16,5 @@ spell:cooldown(0) -- calculated in CreateFamiliarSpell
 spell:groupCooldown(2 * 1000)
 spell:needLearn(false)
 spell:isAggressive(false)
-spell:vocation("druid;true", "elder druid;true")
+spell:vocation("druid;true", "elder druid;true", "primal druid;true")
 spell:register()
