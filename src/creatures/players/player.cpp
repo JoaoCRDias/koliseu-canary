@@ -13438,12 +13438,14 @@ void Player::applyOutfitBonuses(uint16_t lookType) {
 			hpBonus = static_cast<int32_t>(healthMax * outfit->statsPercent[STAT_MAXHITPOINTS] / 100);
 			if (hpBonus > 0) {
 				setVarStats(STAT_MAXHITPOINTS, hpBonus);
+				changeHealth(hpBonus);
 			}
 		}
 		if (outfit->statsPercent[STAT_MAXMANAPOINTS]) {
 			manaBonus = static_cast<int32_t>(manaMax * outfit->statsPercent[STAT_MAXMANAPOINTS] / 100);
 			if (manaBonus > 0) {
 				setVarStats(STAT_MAXMANAPOINTS, manaBonus);
+				changeMana(manaBonus);
 			}
 		}
 		if (hpBonus > 0 || manaBonus > 0) {
@@ -13662,12 +13664,14 @@ void Player::applyMountBonuses(uint16_t mountId) {
 			hpBonus = static_cast<int32_t>(healthMax * mount->statsPercent[STAT_MAXHITPOINTS] / 100);
 			if (hpBonus > 0) {
 				setVarStats(STAT_MAXHITPOINTS, hpBonus);
+				changeHealth(hpBonus);
 			}
 		}
 		if (mount->statsPercent[STAT_MAXMANAPOINTS]) {
 			manaBonus = static_cast<int32_t>(manaMax * mount->statsPercent[STAT_MAXMANAPOINTS] / 100);
 			if (manaBonus > 0) {
 				setVarStats(STAT_MAXMANAPOINTS, manaBonus);
+				changeMana(manaBonus);
 			}
 		}
 		if (hpBonus > 0 || manaBonus > 0) {

@@ -471,14 +471,32 @@ bool Actions::useItemEx(const std::shared_ptr<Player> &player, const Position &f
 		return false;
 	}
 
+	const int64_t baseExDelay = g_configManager().getNumber(EX_ACTIONS_DELAY_INTERVAL);
+	int64_t exDelay = baseExDelay;
+
+	// Runes and potions participate in the Spell CDR system the same way instant
+	// spells do: the action delay between uses is reduced by the player's CDR%,
+	// with the same absolute floor used for short-cooldown spells. Other ex
+	// actions (fishing rod, pick, shovel, etc.) keep the configured rate.
 	if (it.isRune() || it.type == ITEM_TYPE_POTION) {
-		player->setNextPotionAction(OTSYS_TIME() + g_configManager().getNumber(EX_ACTIONS_DELAY_INTERVAL));
+		const float cdrPercent = Spell::getAttackSpeedCDRPercent(player);
+		if (cdrPercent > 0.0f) {
+			exDelay = static_cast<int64_t>(exDelay * (1.0f - cdrPercent));
+			const int64_t floor = g_configManager().getNumber(ATTACK_SPEED_CDR_FLOOR_ATTACK_SHORT);
+			if (exDelay < floor) {
+				exDelay = floor;
+			}
+		}
+	}
+
+	if (it.isRune() || it.type == ITEM_TYPE_POTION) {
+		player->setNextPotionAction(OTSYS_TIME() + exDelay);
 	} else {
-		player->setNextAction(OTSYS_TIME() + g_configManager().getNumber(EX_ACTIONS_DELAY_INTERVAL));
+		player->setNextAction(OTSYS_TIME() + exDelay);
 	}
 
 	if (it.isMultiUse()) {
-		player->sendUseItemCooldown(g_configManager().getNumber(EX_ACTIONS_DELAY_INTERVAL));
+		player->sendUseItemCooldown(exDelay);
 	}
 	return true;
 }

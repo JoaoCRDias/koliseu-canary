@@ -2,7 +2,7 @@ local mType = Game.createMonsterType("Gloomcaster President Spouse")
 local monster = {}
 
 monster.description = "a gloomcaster president spouse"
-monster.experience = 59900
+monster.experience = 950000
 monster.outfit = {
 	lookType = 3214,
 	lookHead = 0,
@@ -26,8 +26,8 @@ monster.Bestiary = {
 	Locations = "Gloomcaster Sanctum.",
 }
 
-monster.health = 90870
-monster.maxHealth = 90870
+monster.health = 1100000
+monster.maxHealth = 1100000
 monster.race = "blood"
 monster.corpse = 6068
 monster.speed = 860
@@ -113,16 +113,16 @@ monster.defenses = {
 }
 
 monster.elements = {
-	{ type = COMBAT_PHYSICALDAMAGE, percent = 5 },
-	{ type = COMBAT_ENERGYDAMAGE, percent = 35 },
-	{ type = COMBAT_EARTHDAMAGE, percent = 20 },
-	{ type = COMBAT_FIREDAMAGE, percent = -25 },
+	{ type = COMBAT_PHYSICALDAMAGE, percent = 10 },
+	{ type = COMBAT_ENERGYDAMAGE, percent = 10 },
+	{ type = COMBAT_EARTHDAMAGE, percent = 60 },
+	{ type = COMBAT_FIREDAMAGE, percent = -15 },
 	{ type = COMBAT_LIFEDRAIN, percent = 100 },
 	{ type = COMBAT_MANADRAIN, percent = 100 },
 	{ type = COMBAT_DROWNDAMAGE, percent = 100 },
-	{ type = COMBAT_ICEDAMAGE, percent = 30 },
-	{ type = COMBAT_HOLYDAMAGE, percent = -35 },
-	{ type = COMBAT_DEATHDAMAGE, percent = 45 },
+	{ type = COMBAT_ICEDAMAGE, percent = -5 },
+	{ type = COMBAT_HOLYDAMAGE, percent = -5 },
+	{ type = COMBAT_DEATHDAMAGE, percent = 0 },
 }
 
 monster.immunities = {
