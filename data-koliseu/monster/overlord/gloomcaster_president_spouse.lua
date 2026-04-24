@@ -98,18 +98,18 @@ monster.loot = {
 }
 
 monster.attacks = {
-	{ name = "melee", interval = 2000, chance = 100, minDamage = 0, maxDamage = -6237 },
-	{ name = "combat", interval = 2000, chance = 28, type = COMBAT_DEATHDAMAGE, minDamage = -5070, maxDamage = -6584, range = 7, radius = 3, shootEffect = CONST_ANI_DEATH, effect = CONST_ME_MORTAREA, target = false },
-	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_ENERGYDAMAGE, minDamage = -5070, maxDamage = -6584, range = 7, radius = 3, shootEffect = CONST_ANI_ENERGY, effect = CONST_ME_ENERGYAREA, target = false },
-	{ name = "combat", interval = 2000, chance = 22, type = COMBAT_ICEDAMAGE, minDamage = -5070, maxDamage = -6584, range = 7, radius = 2, shootEffect = CONST_ANI_ICE, effect = CONST_ME_ICEAREA, target = false },
-	{ name = "combat", interval = 3000, chance = 18, type = COMBAT_MANADRAIN, minDamage = -5070, maxDamage = -6584, range = 7, shootEffect = CONST_ANI_ENERGY, target = true },
+	{ name = "melee", interval = 2000, chance = 100, minDamage = -13000, maxDamage = -23000 },
+	{ name = "combat", interval = 2000, chance = 28, type = COMBAT_DEATHDAMAGE, minDamage = -21000, maxDamage = -32000, range = 7, radius = 3, shootEffect = CONST_ANI_DEATH, effect = CONST_ME_MORTAREA, target = false },
+	{ name = "combat", interval = 2000, chance = 25, type = COMBAT_ENERGYDAMAGE, minDamage = -21000, maxDamage = -32000, range = 7, radius = 3, shootEffect = CONST_ANI_ENERGY, effect = CONST_ME_ENERGYAREA, target = false },
+	{ name = "combat", interval = 2000, chance = 22, type = COMBAT_ICEDAMAGE, minDamage = -21000, maxDamage = -32000, range = 7, radius = 2, shootEffect = CONST_ANI_ICE, effect = CONST_ME_ICEAREA, target = false },
+	{ name = "combat", interval = 3000, chance = 18, type = COMBAT_MANADRAIN, minDamage = -21000, maxDamage = -32000, range = 7, shootEffect = CONST_ANI_ENERGY, target = true },
 }
 
 monster.defenses = {
-	defense = 282,
-	armor = 282,
-	mitigation = 33.00,
-	{ name = "combat", interval = 2000, chance = 35, type = COMBAT_HEALING, minDamage = 7500, maxDamage = 15000, effect = CONST_ME_MAGIC_BLUE, target = false },
+	defense = 320,
+	armor = 320,
+	mitigation = 4.25,
+	{ name = "combat", interval = 2000, chance = 35, type = COMBAT_HEALING, minDamage = 11000, maxDamage = 23000, effect = CONST_ME_MAGIC_BLUE, target = false },
 }
 
 monster.elements = {
